@@ -1,0 +1,9 @@
+keys,en,fr
+UI_SCORE,Score: {value},Score : {value}
+UI_BEST,Best: {value},Record : {value}
+UI_MAX_TILE,Max tile: {value},Tuile max : {value}
+UI_CURRENT_TILE,Tile,Tuile
+UI_REFLECTION,Reflection,Reflet
+UI_NEXT_TILE,Next,Suivante
+UI_GAME_OVER,Game over,Partie terminée
+UI_RESTART,Restart,Recommencer
