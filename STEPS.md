@@ -63,19 +63,19 @@
 
 Objectif : **savoir si le jeu est fun**, rien d'autre.
 
-- [ ] Créer la scène de jeu avec une grille 6×6 (rectangles et chiffres suffisent)
-- [ ] Coder la structure de données de la grille (tableau 2D) dans un script **indépendant de l'affichage**
-- [ ] Générer les tuiles proposées (niveaux pondérés) avec aperçu de la suivante
-- [ ] Gérer le tap sur une colonne gauche : pose de la tuile + **pose du reflet** à droite
-- [ ] Appliquer la **gravité**
-- [ ] Coder les **fusions** (voisins orthogonaux de même niveau, niveau +1)
-- [ ] Coder la **réévaluation en boucle** pour les chaînes (combos)
-- [ ] Gérer la fusion à travers l'axe central
-- [ ] Coder la **détection de fin de partie**
-- [ ] Afficher score, record, niveau max
-- [ ] Ajouter un bouton **Recommencer**
-- [ ] Écrire quelques **tests simples** de la logique (cas de fusion, chaînes, fin de partie)
-- [ ] Externaliser les paramètres d'équilibrage (taille de grille, pondérations, points)
+- [x] Créer la scène de jeu avec une grille 6×6 (rectangles et chiffres suffisent)
+- [x] Coder la structure de données de la grille (tableau 2D) dans un script **indépendant de l'affichage**
+- [x] Générer les tuiles proposées (niveaux pondérés) avec aperçu de la suivante
+- [x] Gérer le tap sur une colonne gauche : pose de la tuile + **pose du reflet** à droite
+- [x] Appliquer la **gravité**
+- [x] Coder les **fusions** (voisins orthogonaux de même niveau, niveau +1)
+- [x] Coder la **réévaluation en boucle** pour les chaînes (combos)
+- [x] Gérer la fusion à travers l'axe central
+- [x] Coder la **détection de fin de partie**
+- [x] Afficher score, record, niveau max
+- [x] Ajouter un bouton **Recommencer**
+- [x] Écrire quelques **tests simples** de la logique (cas de fusion, chaînes, fin de partie)
+- [x] Externaliser les paramètres d'équilibrage (taille de grille, pondérations, points)
 - [ ] Implémenter l'option d'équilibrage "reflet déformé" et la comparer à la version de base
 - [ ] Exporter un APK et y jouer sur téléphone
 

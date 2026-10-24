@@ -112,7 +112,7 @@ Rules:
 
 - Follow `STEPS.md`. Work **one step at a time**, respect the gates, and tick checkboxes when a step is truly done.
 - Before coding a feature, state in a few lines what will change and where. Prefer small, reviewable changes.
-- Write or update **unit tests** for core logic (merges, gravity, chains, game over, scoring, seeded generation). Test framework to be chosen in phase 1 (GdUnit4 or GUT).
+- Write or update **unit tests** for core logic (merges, gravity, chains, game over, scoring, seeded generation). Framework: GUT 9.7.1 (see `docs/decisions/0001-test-framework-and-godot-version.md`); run with `./run_tests.sh`.
 - Commits follow **Conventional Commits** in English (`feat:`, `fix:`, `refactor:`, `docs:`, `test:`, `chore:`), one logical change per commit.
 - Do not add dependencies or plugins without discussing it first. Plugin compatibility with the chosen Godot version must be checked.
 
@@ -138,4 +138,4 @@ Rules:
 
 Tracked in `STEPS.md` (tick the boxes). Keep this section to a single line naming the current phase.
 
-**Current phase:** not started.
+**Current phase:** Phase 1 — prototype built and tested, awaiting on-device play and Gate 1 playtest.
