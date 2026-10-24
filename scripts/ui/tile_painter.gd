@@ -24,7 +24,7 @@ static func draw_tile(canvas: CanvasItem, rect: Rect2, level: int) -> void:
 	if level == BoardState.EMPTY_CELL:
 		canvas.draw_rect(rect, EMPTY_CELL_COLOR)
 		return
-	canvas.draw_rect(rect, LEVEL_COLORS[level - 1])
+	canvas.draw_rect(rect, LEVEL_COLORS[(level - 1) % LEVEL_COLORS.size()])
 	_draw_value(canvas, rect, str(MergeScoring.calculate_tile_value(level)))
 
 

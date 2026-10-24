@@ -9,6 +9,7 @@ const AXIS_GAP_IN_CELLS: float = 0.3
 const AXIS_COLOR := Color("#e0e4ee")
 const AXIS_WIDTH: float = 6.0
 const BLOCKED_COLUMN_COLOR := Color(0.0, 0.0, 0.0, 0.45)
+const NO_COLUMN: int = -1
 
 var _session: GameSession
 
@@ -48,12 +49,12 @@ func _draw_axis() -> void:
 
 func _find_column_at(x: float) -> int:
 	if _session == null:
-		return -1
+		return NO_COLUMN
 	for column: int in _session.board.get_column_count():
 		var column_x: float = _get_column_x(column)
 		if x >= column_x and x < column_x + _get_cell_size():
 			return column
-	return -1
+	return NO_COLUMN
 
 
 func _get_cell_size() -> float:

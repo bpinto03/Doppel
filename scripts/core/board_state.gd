@@ -5,6 +5,7 @@ extends RefCounted
 ## Columns [0, column_count_per_side) are on the left of the mirror axis.
 
 const EMPTY_CELL: int = 0
+const SIDE_COUNT: int = 2
 const ORTHOGONAL_DIRECTIONS: Array[Vector2i] = [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]
 
 var column_count_per_side: int
@@ -19,7 +20,7 @@ func _init(columns_per_side: int, rows: int) -> void:
 
 
 func get_column_count() -> int:
-	return column_count_per_side * 2
+	return column_count_per_side * SIDE_COUNT
 
 
 func get_level(cell: Vector2i) -> int:
