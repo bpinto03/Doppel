@@ -1,0 +1,30 @@
+class_name TileGenerator
+extends RefCounted
+
+var current_level: int
+var next_level: int
+
+var _config: BalancingConfig
+var _rng: RandomNumberGenerator
+
+
+func _init(config: BalancingConfig, rng: RandomNumberGenerator, highest_level_reached: int) -> void:
+	_config = config
+	_rng = rng
+	current_level = draw_level(highest_level_reached)
+	next_level = draw_level(highest_level_reached)
+
+
+func advance(highest_level_reached: int) -> void:
+	current_level = next_level
+	next_level = draw_level(highest_level_reached)
+
+
+func draw_level(highest_level_reached: int) -> int:
+	var level_weights: Dictionary[int, float] = _config.find_spawn_weights(highest_level_reached)
+	var levels: Array[int] = []
+	var weights := PackedFloat32Array()
+	for level: int in level_weights:
+		levels.append(level)
+		weights.append(level_weights[level])
+	return levels[_rng.rand_weighted(weights)]
