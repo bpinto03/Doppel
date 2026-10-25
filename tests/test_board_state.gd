@@ -34,6 +34,19 @@ func test_columns_next_to_axis_are_orthogonal_neighbors() -> void:
 	assert_has(board.get_orthogonal_neighbors(Vector2i(2, 0)), Vector2i(3, 0))
 
 
+func test_highest_level_is_the_highest_tile_on_either_side() -> void:
+	var board: BoardState = BoardFixture.create_board([
+		"1 . . | . . .",
+		"3 . . | 2 . 5",
+	])
+
+	assert_eq(board.get_highest_level(), 5)
+
+
+func test_highest_level_of_empty_board_is_empty_cell() -> void:
+	assert_eq(BoardState.new(3, 6).get_highest_level(), BoardState.EMPTY_CELL)
+
+
 func test_column_is_full_when_every_row_holds_a_tile() -> void:
 	var board: BoardState = BoardFixture.create_board([
 		"1 . . | . . .",

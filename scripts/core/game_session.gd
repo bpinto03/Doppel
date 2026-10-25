@@ -12,10 +12,16 @@ var _config: BalancingConfig
 var _merge_resolver: MergeResolver
 
 
-func _init(config: BalancingConfig, rng: RandomNumberGenerator) -> void:
+## Without an initial board, the game starts on an empty board.
+func _init(config: BalancingConfig, rng: RandomNumberGenerator, initial_board: BoardState = null, scripted_levels: Array[int] = []) -> void:
 	_config = config
-	board = BoardState.new(config.column_count_per_side, config.row_count)
-	tile_generator = TileGenerator.new(config, rng, highest_level_reached)
+	board = initial_board if initial_board != null else BoardState.new(config.column_count_per_side, config.row_count)
+	assert(
+		board.column_count_per_side == config.column_count_per_side and board.row_count == config.row_count,
+		"Initial board size does not match the balancing config"
+	)
+	highest_level_reached = board.get_highest_level()
+	tile_generator = TileGenerator.new(config, rng, highest_level_reached, scripted_levels)
 	_merge_resolver = MergeResolver.new(config)
 
 

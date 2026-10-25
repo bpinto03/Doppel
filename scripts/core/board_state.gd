@@ -61,6 +61,13 @@ func get_column_height(column: int) -> int:
 	return height
 
 
+func get_highest_level() -> int:
+	var highest_level: int = EMPTY_CELL
+	for level: int in _levels:
+		highest_level = maxi(highest_level, level)
+	return highest_level
+
+
 func is_column_full(column: int) -> bool:
 	return get_column_height(column) >= row_count
 

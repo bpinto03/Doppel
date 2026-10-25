@@ -40,6 +40,19 @@ func test_highest_unlocked_tier_is_used() -> void:
 	assert_ne(generator.draw_level(6), 5)
 
 
+func test_scripted_levels_are_drawn_in_order_before_weighted_draws() -> void:
+	var config: BalancingConfig = BalancingFixture.create_config()
+	config.spawn_weight_tiers = [BalancingFixture.create_tier(0, {1: 1.0})]
+	var generator := TileGenerator.new(config, BalancingFixture.create_seeded_rng(3), 0, [4, 6, 5])
+
+	assert_eq(generator.current_level, 4)
+	assert_eq(generator.next_level, 6)
+	generator.advance(0)
+	assert_eq(generator.next_level, 5)
+	generator.advance(0)
+	assert_eq(generator.next_level, 1)
+
+
 func test_shipped_balancing_data_loads_with_a_starting_tier() -> void:
 	var config: BalancingConfig = load("res://data/balancing.tres")
 

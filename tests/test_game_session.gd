@@ -135,6 +135,26 @@ func test_game_continues_while_a_column_pair_has_space() -> void:
 	assert_false(session.is_game_over)
 
 
+func test_session_starts_from_given_board_and_tile_sequence() -> void:
+	var initial_board: BoardState = BoardFixture.create_board([
+		". . . | . . .",
+		". . . | . . .",
+		". . . | . . .",
+		". . . | . . .",
+		". . . | 1 . .",
+		". . . | 2 . .",
+	])
+
+	var session := GameSession.new(BalancingFixture.create_config(), BalancingFixture.create_seeded_rng(SEED), initial_board, [2, 3])
+
+	assert_eq(session.highest_level_reached, 2)
+	assert_eq(session.tile_generator.current_level, 2)
+	assert_eq(session.tile_generator.next_level, 3)
+	session.play_column(2)
+	assert_eq(BoardFixture.describe_board(session.board)[4], ". . . | 2 . .")
+	assert_eq(BoardFixture.describe_board(session.board)[5], ". . 3 | 1 . .")
+
+
 func test_same_seed_replays_the_same_game() -> void:
 	var first_session := GameSession.new(BalancingFixture.create_config(), BalancingFixture.create_seeded_rng(SEED))
 	var second_session := GameSession.new(BalancingFixture.create_config(), BalancingFixture.create_seeded_rng(SEED))

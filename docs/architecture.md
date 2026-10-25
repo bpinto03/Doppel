@@ -10,11 +10,11 @@ Game logic is separated from presentation. The core never touches nodes, scenes,
 |-------|----------------|
 | `BalancingConfig`, `SpawnWeightTier` | Typed balancing values, loaded from `data/balancing.tres` by the presentation layer and injected into the core |
 | `BoardState` | Grid of tile levels (`0` = empty), mirror columns, drop, gravity |
-| `TileGenerator` | Weighted draw of the current and next tile from an injected `RandomNumberGenerator` |
+| `TileGenerator` | Weighted draw of the current and next tile from an injected `RandomNumberGenerator`; optional scripted levels are drawn first |
 | `MergeResolver` | Finds merge groups, picks where each result lands, loops merge + gravity until stable |
 | `MergeGroup`, `ChainResult` | Data returned by the resolver |
 | `MergeScoring` | Tile values, chain multiplier, merge points |
-| `GameSession` | One game: turn flow, reflection, distorted reflection, score, highest level, game over |
+| `GameSession` | One game: turn flow, reflection, distorted reflection, score, highest level, game over. Starts on an empty board, or from a given board and scripted tile sequence |
 
 ### `scripts/ui/` — presentation
 
