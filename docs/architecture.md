@@ -16,6 +16,15 @@ Game logic is separated from presentation. The core never touches nodes, scenes,
 | `MergeScoring` | Tile values, chain multiplier, merge points |
 | `GameSession` | One game: turn flow, reflection, distorted reflection, score, highest level, game over. Starts on an empty board, or from a given board and scripted tile sequence |
 
+### `scripts/tutorial/` — tutorial content
+
+Not part of the core: steps carry translation keys and highlight hints for the presentation.
+
+| Class | Responsibility |
+|-------|----------------|
+| `TutorialStep` | One step: texts, initial board, scripted tiles, target column, cells and axis to highlight. Creates its `GameSession` with dedicated rules (6×6 grid, no distorted reflection) independent of `data/balancing.tres` |
+| `TutorialScenarios` | The three steps: drop, merge, merge across the axis |
+
 ### `scripts/ui/` — presentation
 
 | Script | Responsibility |
@@ -47,4 +56,4 @@ Game logic is separated from presentation. The core never touches nodes, scenes,
 
 ## Tests
 
-`tests/` holds GUT tests for the core (`test_*.gd`) and fixtures (`BoardFixture` describes boards as text, `BalancingFixture` builds explicit configs). Tests and GUT are excluded from exports.
+`tests/` holds GUT tests for the core and the tutorial scenarios (`test_*.gd`) and fixtures (`BoardFixture` describes boards as text, `BalancingFixture` builds explicit configs). Tests and GUT are excluded from exports.
