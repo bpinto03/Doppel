@@ -31,7 +31,7 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 | Script | Responsibility |
 |--------|----------------|
 | `game_screen.gd` | Owns the `GameSession`, forwards released columns, starts the playback of each turn, refreshes the HUD when it ends, emits `turn_playback_finished`, keeps the session best score in memory |
-| `board_view.gd` | Draws the displayed board, moving tiles, merge pulses and the placement ghost, dims unplayable columns, emits `column_released` and `pressed_while_locked` |
+| `board_view.gd` | Draws the displayed board, moving tiles, merge pulses and the placement ghost, dims unplayable columns, maps a touched column to the played left column (`find_played_column`), emits `column_released` and `pressed_while_locked` |
 | `resolution_playback.gd` | Replays a turn's resolution events with simple tweens, emits `playback_finished` |
 | `resolution_playback_config.gd` | Playback durations, loaded from `data/resolution_playback.tres` |
 | `tile_swatch.gd` | Draws one tile (current, reflection, next previews) |
@@ -51,7 +51,7 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 
 ## Data flow of a turn
 
-1. `BoardView` emits `column_released(column)` when a press made while input was enabled ends on a left column.
+1. `BoardView` emits `column_released(column)` when a press made while input was enabled ends on a playable column pair. A touch on a right column is mapped to its mirror, so `column` is always a left column.
 2. `GameScreen` checks `GameSession.can_play_column()` and calls `play_column()`.
 3. `GameSession` drops the tile and its reflection in `BoardState`, then calls `MergeResolver.resolve_chain()`.
 4. The resolver merges, applies gravity and repeats; it returns a `ChainResult` (chain length, points, highest level, events).
@@ -75,7 +75,7 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 
 ## Placement ghost
 
-While a finger is down on the board, or the mouse hovers it on PC, `BoardView` asks `GameSession.preview_placement()` for the hovered left column and draws the tile and its reflection, translucent, where they will land, linked by a thin line across the axis. The ghost is hidden while input is locked (`BoardView.is_ghost_visible()`).
+While a finger is down on the board, or the mouse hovers it on PC, `BoardView` asks `GameSession.preview_placement()` for the played left column under the pointer (either half) and draws the tile and its reflection, translucent, where they will land, linked by a thin line across the axis. The ghost is hidden while input is locked (`BoardView.is_ghost_visible()`).
 
 ## Resolution playback
 

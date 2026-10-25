@@ -17,7 +17,7 @@ This file is the source of truth for the rules once coded. Values in *italics* a
 
 ## Turn
 
-1. The player presses the board, can slide, and releases on a playable left column. Releasing on the right half or outside the board cancels. While the finger is down (or the mouse hovers, on PC), a translucent ghost shows where the tile and its reflection will land.
+1. The player presses the board, can slide, and releases on a column of either half. A right column stands for its mirror left column: the tile always drops on the left and its reflection on the right. Releasing outside the board, or on a column whose pair is not playable, does nothing. While the finger is down (or the mouse hovers, on PC), a translucent ghost shows where the tile and its reflection will land. The six columns have touch zones of the same width, the axis gap included.
 2. The tile drops in that column; its reflection drops in the mirror column, at the same moment.
 3. Merges and chains are resolved.
 4. Game over is checked, then the next tile becomes current.

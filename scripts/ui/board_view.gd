@@ -76,6 +76,25 @@ func clear_animation() -> void:
 	queue_redraw()
 
 
+## Touching a right column plays its mirror: the tile always lands on the left.
+static func find_played_column(touched_column: int, board: BoardState) -> int:
+	if touched_column == NO_COLUMN or board.is_left_column(touched_column):
+		return touched_column
+	return board.get_mirror_column(touched_column)
+
+
+## Touch zones split the whole board width, axis gap included, into equal parts,
+## so every column is as easy to hit and crossing the axis never leaves a zone.
+func find_touched_column(point: Vector2) -> int:
+	if _displayed_board == null:
+		return NO_COLUMN
+	var board_rect: Rect2 = _get_board_rect()
+	if not board_rect.has_point(point):
+		return NO_COLUMN
+	var zone_width: float = board_rect.size.x / _displayed_board.get_column_count()
+	return floori((point.x - board_rect.position.x) / zone_width)
+
+
 func is_ghost_visible() -> bool:
 	return is_input_enabled and _session != null and _session.can_play_column(_hovered_column)
 
@@ -83,7 +102,7 @@ func is_ghost_visible() -> bool:
 func _gui_input(event: InputEvent) -> void:
 	var motion_event := event as InputEventMouseMotion
 	if motion_event != null:
-		_set_hovered_column(_find_column_at(motion_event.position))
+		_set_hovered_column(_find_played_column_at(motion_event.position))
 		return
 	var button_event := event as InputEventMouseButton
 	if button_event == null or button_event.button_index != MOUSE_BUTTON_LEFT:
@@ -104,7 +123,7 @@ func _on_pressed(press_position: Vector2) -> void:
 		pressed_while_locked.emit()
 		return
 	_is_press_armed = true
-	_set_hovered_column(_find_column_at(press_position))
+	_set_hovered_column(_find_played_column_at(press_position))
 
 
 ## A press made while locked never plays on release, so skipping a playback cannot place a tile.
@@ -113,9 +132,13 @@ func _on_released(release_position: Vector2) -> void:
 		return
 	_is_press_armed = false
 	_set_hovered_column(NO_COLUMN)
-	var column: int = _find_column_at(release_position)
-	if is_input_enabled and _displayed_board.is_left_column(column):
+	var column: int = _find_played_column_at(release_position)
+	if is_input_enabled and _session != null and _session.can_play_column(column):
 		column_released.emit(column)
+
+
+func _find_played_column_at(point: Vector2) -> int:
+	return find_played_column(find_touched_column(point), _displayed_board)
 
 
 func _set_hovered_column(column: int) -> void:
@@ -179,26 +202,21 @@ func _draw_axis() -> void:
 	draw_line(Vector2(axis_x, board_top), Vector2(axis_x, board_bottom), AXIS_COLOR, AXIS_WIDTH)
 
 
-func _find_column_at(point: Vector2) -> int:
-	if _displayed_board == null:
-		return NO_COLUMN
-	for column: int in _displayed_board.get_column_count():
-		if _get_column_rect(column).has_point(point):
-			return column
-	return NO_COLUMN
-
-
 func _get_cell_size() -> float:
 	var width_in_cells: float = _displayed_board.get_column_count() + AXIS_GAP_IN_CELLS
 	return minf(size.x / width_in_cells, size.y / _displayed_board.row_count)
 
 
-func _get_board_origin() -> Vector2:
+func _get_board_rect() -> Rect2:
 	var cell_size: float = _get_cell_size()
 	var board_size := Vector2(
 		(_displayed_board.get_column_count() + AXIS_GAP_IN_CELLS) * cell_size, _displayed_board.row_count * cell_size
 	)
-	return (size - board_size) / 2.0
+	return Rect2((size - board_size) / 2.0, board_size)
+
+
+func _get_board_origin() -> Vector2:
+	return _get_board_rect().position
 
 
 func _get_column_x(column: int) -> float:

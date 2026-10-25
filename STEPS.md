@@ -77,10 +77,11 @@ Objectif : **savoir si le jeu est fun**, rien d'autre.
 - [x] Écrire quelques **tests simples** de la logique (cas de fusion, chaînes, fin de partie)
 - [x] Externaliser les paramètres d'équilibrage (taille de grille, pondérations, points)
 - [x] Enregistrer les événements de résolution de chaque tour (pose, fusions, chutes) et les tester
-- [ ] Rejouer les événements avec des animations simples (pulsation, chute, « x2 », saut par tap) — implémenté, à valider sur téléphone
-- [ ] Poser au relâchement du doigt et afficher l'aperçu fantôme de la tuile et de son reflet — implémenté, à valider sur téléphone
+- [x] Rejouer les événements avec des animations simples (pulsation, chute, « x2 », saut par tap)
+- [x] Poser au relâchement du doigt et afficher l'aperçu fantôme de la tuile et de son reflet
+- [x] Accepter le toucher sur les deux moitiés (tuile toujours à gauche, reflet toujours à droite)
 - [x] Écrire les scénarios du mini tutoriel (pose, fusion, fusion à travers l'axe) et leurs tests unitaires
-- [ ] Mini tutoriel jouable en 3 étapes, passable, accessible via un bouton « ? » (affiché à chaque lancement, sans sauvegarde)
+- [ ] Mini tutoriel jouable en 3 étapes, passable, accessible via un bouton « ? » (affiché à chaque lancement, sans sauvegarde) ; colonne cible et sa symétrique acceptées et mises en évidence
 - [ ] Implémenter l'option d'équilibrage "reflet déformé" et la comparer à la version de base
 - [ ] Exporter un APK et y jouer sur téléphone
 

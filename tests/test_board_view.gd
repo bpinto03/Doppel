@@ -2,9 +2,16 @@ extends GutTest
 
 ## With 6 columns, a 0.3 cell axis gap and 6 rows, this size gives 100 px cells and no margin.
 const BOARD_VIEW_SIZE := Vector2(630.0, 600.0)
-const LEFT_OUTER_COLUMN_POINT := Vector2(50.0, 300.0)
-const RIGHT_INNER_COLUMN_POINT := Vector2(380.0, 300.0)
+## The 630 px board width split into 6 equal touch zones.
+const TOUCH_ZONE_WIDTH: float = 105.0
+const MIDDLE_Y: float = 300.0
+const LEFT_OUTER_COLUMN_POINT := Vector2(50.0, MIDDLE_Y)
+const LEFT_AXIS_COLUMN_POINT := Vector2(250.0, MIDDLE_Y)
+const RIGHT_AXIS_COLUMN_POINT := Vector2(380.0, MIDDLE_Y)
+const RIGHT_MIDDLE_COLUMN_POINT := Vector2(480.0, MIDDLE_Y)
+const RIGHT_OUTER_COLUMN_POINT := Vector2(580.0, MIDDLE_Y)
 const BELOW_BOARD_POINT := Vector2(50.0, 650.0)
+const SLIDE_STEP: float = 5.0
 const SEED: int = 1234
 
 var _board_view: BoardView
@@ -14,8 +21,37 @@ func before_each() -> void:
 	_board_view = BoardView.new()
 	_board_view.size = BOARD_VIEW_SIZE
 	add_child_autofree(_board_view)
-	_board_view.show_session(GameSession.new(BalancingFixture.create_config(), BalancingFixture.create_seeded_rng(SEED)))
-	watch_signals(_board_view)
+	_show_session_with_board(BoardState.new(3, 6))
+
+
+func test_played_column_keeps_left_columns() -> void:
+	var board := BoardState.new(3, 6)
+
+	for column: int in board.column_count_per_side:
+		assert_eq(BoardView.find_played_column(column, board), column)
+
+
+func test_played_column_of_a_right_column_is_its_mirror() -> void:
+	var board := BoardState.new(3, 6)
+
+	assert_eq(BoardView.find_played_column(3, board), 2)
+	assert_eq(BoardView.find_played_column(4, board), 1)
+	assert_eq(BoardView.find_played_column(5, board), 0)
+
+
+func test_played_column_outside_the_board_is_none() -> void:
+	assert_eq(BoardView.find_played_column(BoardView.NO_COLUMN, BoardState.new(3, 6)), BoardView.NO_COLUMN)
+
+
+func test_every_column_has_a_touch_zone_of_the_same_width() -> void:
+	for column: int in _board_view.get_displayed_board().get_column_count():
+		var zone_start: float = column * TOUCH_ZONE_WIDTH
+		assert_eq(_board_view.find_touched_column(Vector2(zone_start + 1.0, MIDDLE_Y)), column)
+		assert_eq(_board_view.find_touched_column(Vector2(zone_start + TOUCH_ZONE_WIDTH - 1.0, MIDDLE_Y)), column)
+
+
+func test_touching_outside_the_board_hits_no_column() -> void:
+	assert_eq(_board_view.find_touched_column(BELOW_BOARD_POINT), BoardView.NO_COLUMN)
 
 
 func test_hovering_a_playable_left_column_shows_the_ghost() -> void:
@@ -24,10 +60,10 @@ func test_hovering_a_playable_left_column_shows_the_ghost() -> void:
 	assert_true(_board_view.is_ghost_visible())
 
 
-func test_hovering_a_right_column_shows_no_ghost() -> void:
-	_move_to(RIGHT_INNER_COLUMN_POINT)
+func test_hovering_a_right_column_shows_the_ghost_of_its_mirror() -> void:
+	_move_to(RIGHT_OUTER_COLUMN_POINT)
 
-	assert_false(_board_view.is_ghost_visible())
+	assert_true(_board_view.is_ghost_visible())
 
 
 func test_ghost_is_hidden_while_input_is_locked() -> void:
@@ -46,6 +82,13 @@ func test_releasing_on_a_left_column_plays_it() -> void:
 	assert_false(_board_view.is_ghost_visible())
 
 
+func test_releasing_on_a_right_column_plays_its_mirror() -> void:
+	_press_at(LEFT_OUTER_COLUMN_POINT)
+	_release_at(RIGHT_MIDDLE_COLUMN_POINT)
+
+	assert_signal_emitted_with_parameters(_board_view, "column_released", [1])
+
+
 func test_pressing_alone_does_not_play() -> void:
 	_press_at(LEFT_OUTER_COLUMN_POINT)
 
@@ -53,18 +96,42 @@ func test_pressing_alone_does_not_play() -> void:
 	assert_true(_board_view.is_ghost_visible())
 
 
-func test_releasing_on_the_right_half_cancels() -> void:
-	_press_at(LEFT_OUTER_COLUMN_POINT)
-	_release_at(RIGHT_INNER_COLUMN_POINT)
-
-	assert_signal_not_emitted(_board_view, "column_released")
-
-
 func test_releasing_outside_the_board_cancels() -> void:
 	_press_at(LEFT_OUTER_COLUMN_POINT)
 	_release_at(BELOW_BOARD_POINT)
 
 	assert_signal_not_emitted(_board_view, "column_released")
+
+
+func test_right_column_whose_mirror_is_full_shows_no_ghost_and_does_not_play() -> void:
+	_show_session_with_board(BoardFixture.create_board([
+		". . 2 | . . .",
+		". . 1 | . . .",
+		". . 2 | . . .",
+		". . 1 | . . .",
+		". . 2 | . . .",
+		". . 1 | . . .",
+	]))
+
+	_press_at(RIGHT_AXIS_COLUMN_POINT)
+	var is_ghost_shown: bool = _board_view.is_ghost_visible()
+	_release_at(RIGHT_AXIS_COLUMN_POINT)
+
+	assert_false(is_ghost_shown)
+	assert_signal_not_emitted(_board_view, "column_released")
+
+
+func test_sliding_across_the_axis_keeps_the_ghost_visible() -> void:
+	_press_at(LEFT_AXIS_COLUMN_POINT)
+
+	var x: float = LEFT_AXIS_COLUMN_POINT.x
+	while x <= RIGHT_AXIS_COLUMN_POINT.x:
+		_move_to(Vector2(x, MIDDLE_Y))
+		assert_true(_board_view.is_ghost_visible(), "Ghost hidden at x = %s" % x)
+		x += SLIDE_STEP
+	_release_at(RIGHT_AXIS_COLUMN_POINT)
+
+	assert_signal_emitted_with_parameters(_board_view, "column_released", [2])
 
 
 func test_press_while_locked_requests_skip_and_its_release_never_plays() -> void:
@@ -75,6 +142,11 @@ func test_press_while_locked_requests_skip_and_its_release_never_plays() -> void
 
 	assert_signal_emit_count(_board_view, "pressed_while_locked", 1)
 	assert_signal_not_emitted(_board_view, "column_released")
+
+
+func _show_session_with_board(board: BoardState) -> void:
+	_board_view.show_session(GameSession.new(BalancingFixture.create_config(), BalancingFixture.create_seeded_rng(SEED), board))
+	watch_signals(_board_view)
 
 
 func _move_to(point: Vector2) -> void:

@@ -58,8 +58,8 @@ Une grille de tuiles numérotées partagée autour d'un **axe central miroir**. 
 - Niveau de la tuile proposée : tirage pondéré, par exemple niveau 1 (60 %), niveau 2 (30 %), niveau 3 (10 %). Les pondérations évoluent selon le niveau maximum atteint dans la partie. **[À TESTER]**
 
 ### 4.3 Tour de jeu
-1. Le joueur touche une des 3 colonnes de gauche.
-2. La tuile tombe dans cette colonne ; son **reflet** tombe dans la colonne symétrique à droite.
+1. Le joueur touche une colonne, sur n'importe quelle moitié. Toucher une colonne de droite revient à choisir sa colonne symétrique à gauche.
+2. La tuile tombe toujours à gauche, dans la colonne choisie ; son **reflet** tombe toujours dans la colonne symétrique à droite.
 3. Les fusions sont résolues (voir 4.4).
 4. Si la partie n'est pas terminée, on passe à la tuile suivante.
 
