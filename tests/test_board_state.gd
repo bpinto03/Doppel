@@ -1,23 +1,20 @@
 extends GutTest
 
 
-func test_drop_tile_lands_at_bottom_of_empty_column() -> void:
+func test_tile_lands_at_bottom_of_empty_column() -> void:
 	var board := BoardState.new(3, 6)
 
-	var landing_cell: Vector2i = board.drop_tile(1, 2)
-
-	assert_eq(landing_cell, Vector2i(1, 0))
-	assert_eq(board.get_level(landing_cell), 2)
+	assert_eq(board.get_landing_cell(1), Vector2i(1, 0))
 
 
-func test_drop_tile_stacks_on_top_of_existing_tiles() -> void:
+func test_tile_lands_on_top_of_existing_tiles() -> void:
 	var board: BoardState = BoardFixture.create_board([
 		". . . | . . .",
 		"3 . . | . . .",
 		"1 . . | . . .",
 	])
 
-	assert_eq(board.drop_tile(0, 2), Vector2i(0, 2))
+	assert_eq(board.get_landing_cell(0), Vector2i(0, 2))
 
 
 func test_mirror_column_reflects_across_axis() -> void:

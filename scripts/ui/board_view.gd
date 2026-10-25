@@ -1,7 +1,7 @@
 class_name BoardView
 extends Control
 
-signal column_tapped(column: int)
+signal column_released(column: int)
 signal pressed_while_locked
 
 const CELL_GAP_RATIO: float = 0.06
@@ -11,6 +11,9 @@ const AXIS_COLOR := Color("#e0e4ee")
 const AXIS_WIDTH: float = 6.0
 const BLOCKED_COLUMN_COLOR := Color(0.0, 0.0, 0.0, 0.45)
 const PULSE_COLOR := Color(1.0, 1.0, 1.0, 0.6)
+const GHOST_OPACITY: float = 0.4
+const GHOST_LINK_COLOR := Color(1.0, 1.0, 1.0, 0.3)
+const GHOST_LINK_WIDTH: float = 3.0
 const NO_COLUMN: int = -1
 
 var is_input_enabled: bool = true:
@@ -20,6 +23,8 @@ var is_input_enabled: bool = true:
 
 var _session: GameSession
 var _displayed_board: BoardState
+var _hovered_column: int = NO_COLUMN
+var _is_press_armed: bool
 var _moving_tiles: Array[MovingTile] = []
 var _move_progress: float
 var _hidden_cells: Array[Vector2i] = []
@@ -71,16 +76,52 @@ func clear_animation() -> void:
 	queue_redraw()
 
 
+func is_ghost_visible() -> bool:
+	return is_input_enabled and _session != null and _session.can_play_column(_hovered_column)
+
+
 func _gui_input(event: InputEvent) -> void:
-	var mouse_event := event as InputEventMouseButton
-	if mouse_event == null or not mouse_event.pressed or mouse_event.button_index != MOUSE_BUTTON_LEFT:
+	var motion_event := event as InputEventMouseMotion
+	if motion_event != null:
+		_set_hovered_column(_find_column_at(motion_event.position))
 		return
+	var button_event := event as InputEventMouseButton
+	if button_event == null or button_event.button_index != MOUSE_BUTTON_LEFT:
+		return
+	if button_event.pressed:
+		_on_pressed(button_event.position)
+	else:
+		_on_released(button_event.position)
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_MOUSE_EXIT and not _is_press_armed:
+		_set_hovered_column(NO_COLUMN)
+
+
+func _on_pressed(press_position: Vector2) -> void:
 	if not is_input_enabled:
 		pressed_while_locked.emit()
 		return
-	var column: int = _find_column_at(mouse_event.position.x)
-	if _displayed_board != null and _displayed_board.is_left_column(column):
-		column_tapped.emit(column)
+	_is_press_armed = true
+	_set_hovered_column(_find_column_at(press_position))
+
+
+## A press made while locked never plays on release, so skipping a playback cannot place a tile.
+func _on_released(release_position: Vector2) -> void:
+	if not _is_press_armed:
+		return
+	_is_press_armed = false
+	_set_hovered_column(NO_COLUMN)
+	var column: int = _find_column_at(release_position)
+	if is_input_enabled and _displayed_board.is_left_column(column):
+		column_released.emit(column)
+
+
+func _set_hovered_column(column: int) -> void:
+	if column != _hovered_column:
+		_hovered_column = column
+		queue_redraw()
 
 
 func _draw() -> void:
@@ -95,6 +136,7 @@ func _draw() -> void:
 	_draw_moving_tiles()
 	_draw_pulse()
 	_draw_axis()
+	_draw_ghost()
 
 
 func _draw_blocked_columns() -> void:
@@ -117,6 +159,19 @@ func _draw_pulse() -> void:
 		draw_rect(_get_tile_rect(cell), pulse_color)
 
 
+func _draw_ghost() -> void:
+	if not is_ghost_visible():
+		return
+	var preview: TilesPlacedEvent = _session.preview_placement(_hovered_column)
+	var tile_rect: Rect2 = _get_tile_rect(preview.tile_cell)
+	var reflection_rect: Rect2 = _get_tile_rect(preview.reflection_cell)
+	var link_start := Vector2(tile_rect.end.x, tile_rect.get_center().y)
+	var link_end := Vector2(reflection_rect.position.x, reflection_rect.get_center().y)
+	draw_line(link_start, link_end, GHOST_LINK_COLOR, GHOST_LINK_WIDTH)
+	TilePainter.draw_tile(self, tile_rect, preview.tile_level, GHOST_OPACITY)
+	TilePainter.draw_tile(self, reflection_rect, preview.reflection_level, GHOST_OPACITY)
+
+
 func _draw_axis() -> void:
 	var axis_x: float = _get_column_x(_displayed_board.column_count_per_side) - _get_cell_size() * AXIS_GAP_IN_CELLS / 2.0
 	var board_top: float = _get_board_origin().y
@@ -124,12 +179,11 @@ func _draw_axis() -> void:
 	draw_line(Vector2(axis_x, board_top), Vector2(axis_x, board_bottom), AXIS_COLOR, AXIS_WIDTH)
 
 
-func _find_column_at(x: float) -> int:
+func _find_column_at(point: Vector2) -> int:
 	if _displayed_board == null:
 		return NO_COLUMN
 	for column: int in _displayed_board.get_column_count():
-		var column_x: float = _get_column_x(column)
-		if x >= column_x and x < column_x + _get_cell_size():
+		if _get_column_rect(column).has_point(point):
 			return column
 	return NO_COLUMN
 

@@ -9,13 +9,13 @@ Game logic is separated from presentation. The core never touches nodes, scenes,
 | Class | Responsibility |
 |-------|----------------|
 | `BalancingConfig`, `SpawnWeightTier` | Typed balancing values, loaded from `data/balancing.tres` by the presentation layer and injected into the core |
-| `BoardState` | Grid of tile levels (`0` = empty), mirror columns, drop, gravity |
+| `BoardState` | Grid of tile levels (`0` = empty), mirror columns, landing cells, gravity |
 | `TileGenerator` | Weighted draw of the current and next tile from an injected `RandomNumberGenerator`; optional scripted levels are drawn first |
 | `MergeResolver` | Finds merge groups, picks where each result lands, loops merge + gravity until stable |
 | `MergeGroup`, `ChainResult` | Data returned by the resolver; `ChainResult.events` lists the turn's resolution events in order |
 | `ResolutionEvent` and subclasses, `TileFall` | One step of a turn (see below) |
 | `MergeScoring` | Tile values, chain multiplier, merge points |
-| `GameSession` | One game: turn flow, reflection, distorted reflection, score, highest level, game over. Starts on an empty board, or from a given board and scripted tile sequence |
+| `GameSession` | One game: turn flow, reflection, distorted reflection, score, highest level, game over. Starts on an empty board, or from a given board and scripted tile sequence. `preview_placement()` tells where the tile and its reflection would land, without changing the board |
 
 ### `scripts/tutorial/` — tutorial content
 
@@ -30,8 +30,8 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 
 | Script | Responsibility |
 |--------|----------------|
-| `game_screen.gd` | Owns the `GameSession`, forwards column taps, starts the playback of each turn, refreshes the HUD when it ends, emits `turn_playback_finished`, keeps the session best score in memory |
-| `board_view.gd` | Draws the displayed board, moving tiles and merge pulses, dims unplayable columns, emits `column_tapped` and `pressed_while_locked` |
+| `game_screen.gd` | Owns the `GameSession`, forwards released columns, starts the playback of each turn, refreshes the HUD when it ends, emits `turn_playback_finished`, keeps the session best score in memory |
+| `board_view.gd` | Draws the displayed board, moving tiles, merge pulses and the placement ghost, dims unplayable columns, emits `column_released` and `pressed_while_locked` |
 | `resolution_playback.gd` | Replays a turn's resolution events with simple tweens, emits `playback_finished` |
 | `resolution_playback_config.gd` | Playback durations, loaded from `data/resolution_playback.tres` |
 | `tile_swatch.gd` | Draws one tile (current, reflection, next previews) |
@@ -51,7 +51,7 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 
 ## Data flow of a turn
 
-1. `BoardView` emits `column_tapped(column)`.
+1. `BoardView` emits `column_released(column)` when a press made while input was enabled ends on a left column.
 2. `GameScreen` checks `GameSession.can_play_column()` and calls `play_column()`.
 3. `GameSession` drops the tile and its reflection in `BoardState`, then calls `MergeResolver.resolve_chain()`.
 4. The resolver merges, applies gravity and repeats; it returns a `ChainResult` (chain length, points, highest level, events).
@@ -72,6 +72,10 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 - Groups of the same chain link merge at the same time: their `GroupMergedEvent`s follow each other with the same `chain_link`.
 - `TilesFellEvent.chain_link` is always 1 or more. A placed tile lands directly on top of its column, so gravity never runs before the first merge. The drop from the top of the board is not an event: the presentation animates it from `TilesPlacedEvent`.
 - `ResolutionEvent.apply_to(board)` replays one step. Applying every event, in order, to a copy of the board taken before the turn (`BoardState.duplicate_board()`) gives the final board. Tests check this, and that the events' points add up to the score gained.
+
+## Placement ghost
+
+While a finger is down on the board, or the mouse hovers it on PC, `BoardView` asks `GameSession.preview_placement()` for the hovered left column and draws the tile and its reflection, translucent, where they will land, linked by a thin line across the axis. The ghost is hidden while input is locked (`BoardView.is_ghost_visible()`).
 
 ## Resolution playback
 

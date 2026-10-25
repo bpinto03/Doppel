@@ -36,6 +36,7 @@ Goal: find out if the mechanic is fun. **Gate 1 passes if at least 3 testers out
 | Understood merges alone? | |
 | Understood chains alone? | |
 | Understood how a chain formed from its animation? (yes / partly / no) | |
+| Slid the finger to look at the ghost before releasing? Tried to cancel a placement? | |
 | Animations: too slow / right / too fast? Skipped them by tapping? | |
 | Restarted spontaneously after the first game? (yes / no) | |
 | Number of games played in a row | |

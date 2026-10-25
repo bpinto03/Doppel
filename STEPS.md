@@ -76,6 +76,11 @@ Objectif : **savoir si le jeu est fun**, rien d'autre.
 - [x] Ajouter un bouton **Recommencer**
 - [x] Écrire quelques **tests simples** de la logique (cas de fusion, chaînes, fin de partie)
 - [x] Externaliser les paramètres d'équilibrage (taille de grille, pondérations, points)
+- [x] Enregistrer les événements de résolution de chaque tour (pose, fusions, chutes) et les tester
+- [ ] Rejouer les événements avec des animations simples (pulsation, chute, « x2 », saut par tap) — implémenté, à valider sur téléphone
+- [ ] Poser au relâchement du doigt et afficher l'aperçu fantôme de la tuile et de son reflet — implémenté, à valider sur téléphone
+- [x] Écrire les scénarios du mini tutoriel (pose, fusion, fusion à travers l'axe) et leurs tests unitaires
+- [ ] Mini tutoriel jouable en 3 étapes, passable, accessible via un bouton « ? » (affiché à chaque lancement, sans sauvegarde)
 - [ ] Implémenter l'option d'équilibrage "reflet déformé" et la comparer à la version de base
 - [ ] Exporter un APK et y jouer sur téléphone
 
@@ -106,7 +111,7 @@ Objectif : **savoir si le jeu est fun**, rien d'autre.
 - [ ] Animer la fusion ("pop", léger rebond)
 - [ ] Animer les chaînes avec intensité croissante
 - [ ] Ajouter particules (`CPUParticles2D`) et petit tremblement d'écran sur gros combos
-- [ ] Ajouter l'**aperçu visuel du reflet** avant de poser (aide à la lisibilité)
+- [ ] Animer et soigner l'**aperçu du reflet** (version simple faite en phase 1)
 - [ ] Afficher les messages de combo, sobres
 
 ### 2.4 Audio et haptique
@@ -130,7 +135,7 @@ Objectif : **savoir si le jeu est fun**, rien d'autre.
 - [ ] Écran de fin de partie (score, record, pièces gagnées, rejouer)
 - [ ] Écran de pause
 - [ ] Écran de réglages (son, musique, vibration, langue, daltonisme)
-- [ ] **Tutoriel** jouable en 3 étapes maximum, passable
+- [ ] **Tutoriel** : version finale (mémoriser qu'il a été vu, visuels soignés ; version simple faite en phase 1)
 
 ### 3.2 Pièces et boutique
 - [ ] Définir la formule des pièces gagnées par partie

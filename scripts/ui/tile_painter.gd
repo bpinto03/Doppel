@@ -20,17 +20,17 @@ const LEVEL_COLORS: Array[Color] = [
 ]
 
 
-static func draw_tile(canvas: CanvasItem, rect: Rect2, level: int) -> void:
+static func draw_tile(canvas: CanvasItem, rect: Rect2, level: int, opacity: float = 1.0) -> void:
 	if level == BoardState.EMPTY_CELL:
-		canvas.draw_rect(rect, EMPTY_CELL_COLOR)
+		canvas.draw_rect(rect, Color(EMPTY_CELL_COLOR, opacity))
 		return
-	canvas.draw_rect(rect, LEVEL_COLORS[(level - 1) % LEVEL_COLORS.size()])
-	_draw_value(canvas, rect, str(MergeScoring.calculate_tile_value(level)))
+	canvas.draw_rect(rect, Color(LEVEL_COLORS[(level - 1) % LEVEL_COLORS.size()], opacity))
+	_draw_value(canvas, rect, str(MergeScoring.calculate_tile_value(level)), opacity)
 
 
-static func _draw_value(canvas: CanvasItem, rect: Rect2, text: String) -> void:
+static func _draw_value(canvas: CanvasItem, rect: Rect2, text: String, opacity: float) -> void:
 	var font: Font = ThemeDB.fallback_font
 	var font_size: int = roundi(minf(rect.size.x, rect.size.y) * VALUE_FONT_SIZE_RATIO)
 	var baseline_y: float = rect.get_center().y + (font.get_ascent(font_size) - font.get_descent(font_size)) / 2.0
 	var baseline := Vector2(rect.position.x, baseline_y)
-	canvas.draw_string(font, baseline, text, HORIZONTAL_ALIGNMENT_CENTER, rect.size.x, font_size, VALUE_TEXT_COLOR)
+	canvas.draw_string(font, baseline, text, HORIZONTAL_ALIGNMENT_CENTER, rect.size.x, font_size, Color(VALUE_TEXT_COLOR, opacity))

@@ -155,6 +155,31 @@ func test_session_starts_from_given_board_and_tile_sequence() -> void:
 	assert_eq(BoardFixture.describe_board(session.board)[5], ". . 3 | 1 . .")
 
 
+func test_preview_shows_landing_cells_and_levels_without_changing_the_board() -> void:
+	var config: BalancingConfig = BalancingFixture.create_config_always_drawing(2)
+	config.is_distorted_reflection_enabled = true
+	var initial_board: BoardState = BoardFixture.create_board([
+		". . . | . . .",
+		". . . | . . .",
+		". . . | . . .",
+		". . . | . . .",
+		". . . | . . .",
+		"1 . . | . . .",
+	])
+	var session := GameSession.new(config, BalancingFixture.create_seeded_rng(SEED), initial_board)
+	session.placement_count = config.distorted_reflection_period - 1
+	var board_before: Array[String] = BoardFixture.describe_board(session.board)
+
+	var preview: TilesPlacedEvent = session.preview_placement(0)
+
+	assert_eq(preview.tile_cell, Vector2i(0, 1))
+	assert_eq(preview.tile_level, 2)
+	assert_eq(preview.reflection_cell, Vector2i(5, 0))
+	assert_eq(preview.reflection_level, 3)
+	assert_true(preview.is_reflection_distorted)
+	assert_eq(BoardFixture.describe_board(session.board), board_before)
+
+
 func test_same_seed_replays_the_same_game() -> void:
 	var first_session := GameSession.new(BalancingFixture.create_config(), BalancingFixture.create_seeded_rng(SEED))
 	var second_session := GameSession.new(BalancingFixture.create_config(), BalancingFixture.create_seeded_rng(SEED))

@@ -26,7 +26,7 @@ func _ready() -> void:
 	_playback = ResolutionPlayback.new(PLAYBACK_CONFIG, _board_view, _chain_label)
 	_playback.playback_finished.connect(_on_playback_finished)
 	_board_view.pressed_while_locked.connect(_playback.skip)
-	_board_view.column_tapped.connect(_on_column_tapped)
+	_board_view.column_released.connect(_on_column_released)
 	_restart_button.pressed.connect(start_new_game)
 	start_new_game()
 
@@ -38,7 +38,7 @@ func start_new_game() -> void:
 	_refresh()
 
 
-func _on_column_tapped(column: int) -> void:
+func _on_column_released(column: int) -> void:
 	if not _session.can_play_column(column):
 		return
 	var board_before: BoardState = _session.board.duplicate_board()

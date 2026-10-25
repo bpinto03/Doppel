@@ -81,12 +81,10 @@ func get_orthogonal_neighbors(cell: Vector2i) -> Array[Vector2i]:
 	return neighbors
 
 
-## Expects a settled column. Returns the cell where the tile landed.
-func drop_tile(column: int, level: int) -> Vector2i:
-	assert(not is_column_full(column), "Cannot drop a tile in full column %d" % column)
-	var landing_cell := Vector2i(column, get_column_height(column))
-	set_level(landing_cell, level)
-	return landing_cell
+## Expects a settled column that is not full.
+func get_landing_cell(column: int) -> Vector2i:
+	assert(not is_column_full(column), "Column %d is full" % column)
+	return Vector2i(column, get_column_height(column))
 
 
 func duplicate_board() -> BoardState:

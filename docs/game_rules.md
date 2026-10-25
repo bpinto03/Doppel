@@ -17,10 +17,12 @@ This file is the source of truth for the rules once coded. Values in *italics* a
 
 ## Turn
 
-1. The player taps a playable left column.
+1. The player presses the board, can slide, and releases on a playable left column. Releasing on the right half or outside the board cancels. While the finger is down (or the mouse hovers, on PC), a translucent ghost shows where the tile and its reflection will land.
 2. The tile drops in that column; its reflection drops in the mirror column, at the same moment.
 3. Merges and chains are resolved.
 4. Game over is checked, then the next tile becomes current.
+
+The turn is computed at once, then shown step by step (drop, merges, falls). Input is locked during the playback; a press on the board skips to the end. The outcome is the same whether it is skipped or not.
 
 ## Merges
 

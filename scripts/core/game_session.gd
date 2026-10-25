@@ -47,19 +47,23 @@ func get_next_reflection_level() -> int:
 	return mini(reflection_level, _config.max_tile_level)
 
 
-func play_column(column: int) -> ChainResult:
+## Where the current tile and its reflection would land, without changing the board.
+func preview_placement(column: int) -> TilesPlacedEvent:
 	assert(can_play_column(column), "Column %d cannot be played" % column)
-	var tile_level: int = tile_generator.current_level
-	var reflection_level: int = get_next_reflection_level()
-	var placed_event := TilesPlacedEvent.new(
-		board.drop_tile(column, tile_level),
-		tile_level,
-		board.drop_tile(board.get_mirror_column(column), reflection_level),
-		reflection_level,
+	return TilesPlacedEvent.new(
+		board.get_landing_cell(column),
+		tile_generator.current_level,
+		board.get_landing_cell(board.get_mirror_column(column)),
+		get_next_reflection_level(),
 		is_next_reflection_distorted(),
 	)
+
+
+func play_column(column: int) -> ChainResult:
+	var placed_event: TilesPlacedEvent = preview_placement(column)
+	placed_event.apply_to(board)
 	placement_count += 1
-	_register_level(maxi(tile_level, reflection_level))
+	_register_level(maxi(placed_event.tile_level, placed_event.reflection_level))
 
 	var chain_result: ChainResult = _merge_resolver.resolve_chain(board, [placed_event.tile_cell, placed_event.reflection_cell])
 	chain_result.events.push_front(placed_event)
