@@ -32,7 +32,6 @@ enabled=PackedStringArray("res://addons/gut/plugin.cfg")
 [internationalization]
 
 locale/translations=PackedStringArray("res://assets/translations/ui.en.translation", "res://assets/translations/ui.fr.translation")
-locale/fallback="en"
 
 [physics]
 
