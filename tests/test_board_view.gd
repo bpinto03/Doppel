@@ -144,6 +144,32 @@ func test_press_while_locked_requests_skip_and_its_release_never_plays() -> void
 	assert_signal_not_emitted(_board_view, "column_released")
 
 
+func test_restricted_column_accepts_only_itself_or_its_mirror() -> void:
+	_board_view.restricted_column = 2
+
+	_move_to(LEFT_OUTER_COLUMN_POINT)
+	assert_false(_board_view.is_ghost_visible())
+	_move_to(RIGHT_AXIS_COLUMN_POINT)
+	assert_true(_board_view.is_ghost_visible())
+	_press_at(LEFT_OUTER_COLUMN_POINT)
+	_release_at(LEFT_OUTER_COLUMN_POINT)
+	assert_signal_not_emitted(_board_view, "column_released")
+	_press_at(RIGHT_AXIS_COLUMN_POINT)
+	_release_at(RIGHT_AXIS_COLUMN_POINT)
+	assert_signal_emitted_with_parameters(_board_view, "column_released", [2])
+
+
+func test_tutorial_hint_restricts_play_until_cleared() -> void:
+	_board_view.show_tutorial_hint(TutorialScenarios.create_axis_step(), 1.0)
+	assert_true(_board_view.is_tutorial_hint_shown())
+	assert_eq(_board_view.restricted_column, 2)
+
+	_board_view.clear_tutorial_hint()
+
+	assert_false(_board_view.is_tutorial_hint_shown())
+	assert_eq(_board_view.restricted_column, BoardView.NO_COLUMN)
+
+
 func _show_session_with_board(board: BoardState) -> void:
 	_board_view.show_session(GameSession.new(BalancingFixture.create_config(), BalancingFixture.create_seeded_rng(SEED), board))
 	watch_signals(_board_view)

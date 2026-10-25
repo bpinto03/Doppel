@@ -32,6 +32,8 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 |--------|----------------|
 | `game_screen.gd` | Owns the `GameSession`, forwards released columns, starts the playback of each turn, refreshes the HUD when it ends, emits `turn_playback_finished`, keeps the session best score in memory |
 | `board_view.gd` | Draws the displayed board, moving tiles, merge pulses and the placement ghost, dims unplayable columns, maps a touched column to the played left column (`find_played_column`), emits `column_released` and `pressed_while_locked` |
+| `tutorial_panel.gd` | Shows a step's instruction, then its explanation with Next / Play; Skip at any time. Emits `next_requested`, `skip_requested` |
+| `tutorial_hint_config.gd` | Tutorial highlight pulse period, loaded from `data/tutorial_hint.tres` |
 | `resolution_playback.gd` | Replays a turn's resolution events with simple tweens, emits `playback_finished` |
 | `resolution_playback_config.gd` | Playback durations, loaded from `data/resolution_playback.tres` |
 | `tile_swatch.gd` | Draws one tile (current, reflection, next previews) |
@@ -40,12 +42,14 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 ### Scenes
 
 - `scenes/main.tscn`: entry point, hosts the game screen.
-- `scenes/game/game_screen.tscn`: HUD, previews, board, restart button.
+- `scenes/game/game_screen.tscn`: HUD with "?" button, previews, board, tutorial panel, restart button.
+- `scenes/game/tutorial_panel.tscn`: tutorial message and buttons.
 
 ### Data and assets
 
 - `data/balancing.tres`: every gameplay value (see [balancing.md](balancing.md)).
 - `data/resolution_playback.tres`: playback durations (see [balancing.md](balancing.md)).
+- `data/tutorial_hint.tres`: tutorial highlight pulse period.
 - `assets/translations/ui.csv`: player-facing texts (en, fr).
 - `assets/themes/prototype_theme.tres`: font size for the prototype.
 
@@ -85,6 +89,13 @@ While a finger is down on the board, or the mouse hovers it on PC, `BoardView` a
 - While playing, the board ignores taps and the restart button is disabled. A press on the board skips: the tween stops, the remaining events are applied, and `playback_finished` fires. It fires exactly once per turn, whether the playback ends or is skipped, any number of times.
 - At the end, the board view shows the session board again, which matches the replayed board.
 
+## Tutorial flow
+
+1. `GameScreen.start_tutorial()` runs at launch and from the "?" button. It replaces the current session with the step's `TutorialStep.create_session()`.
+2. `BoardView.show_tutorial_hint()` pulses the target column, its mirror, the step's cells and the axis, and sets `restricted_column` so only the target column (or its mirror) can be played.
+3. On release, `GameScreen` plays the turn like any other, through `ResolutionPlayback`. The hint is cleared.
+4. On `playback_finished`, the board stays locked and `TutorialPanel` shows the explanation. Next loads the following step; after the last one, or on Skip, `start_new_game()` starts a real game.
+
 ## Tests
 
-`tests/` holds GUT tests for the core, the tutorial scenarios and the resolution playback (`test_*.gd`) and fixtures (`BoardFixture` describes boards as text, `BalancingFixture` builds explicit configs). Tests and GUT are excluded from exports.
+`tests/` holds GUT tests for the core, the tutorial scenarios, the resolution playback, board input and the tutorial flow on the game screen (`test_*.gd`) and fixtures (`BoardFixture` describes boards as text, `BalancingFixture` builds explicit configs). Tests and GUT are excluded from exports.

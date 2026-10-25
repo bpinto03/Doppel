@@ -14,11 +14,20 @@ const PULSE_COLOR := Color(1.0, 1.0, 1.0, 0.6)
 const GHOST_OPACITY: float = 0.4
 const GHOST_LINK_COLOR := Color(1.0, 1.0, 1.0, 0.3)
 const GHOST_LINK_WIDTH: float = 3.0
+const HINT_COLOR := Color("#ffd24d")
+const HINT_COLUMN_OPACITY: float = 0.25
+const HINT_CELL_OUTLINE_WIDTH: float = 6.0
+const HINT_AXIS_WIDTH: float = 14.0
 const NO_COLUMN: int = -1
 
 var is_input_enabled: bool = true:
 	set(value):
 		is_input_enabled = value
+		queue_redraw()
+## When set, only this left column (or a touch on its mirror) can be played.
+var restricted_column: int = NO_COLUMN:
+	set(value):
+		restricted_column = value
 		queue_redraw()
 
 var _session: GameSession
@@ -30,6 +39,9 @@ var _move_progress: float
 var _hidden_cells: Array[Vector2i] = []
 var _pulsing_cells: Array[Vector2i] = []
 var _pulse_strength: float
+var _hint_step: TutorialStep
+var _hint_strength: float
+var _hint_tween: Tween
 
 
 func show_session(session: GameSession) -> void:
@@ -76,6 +88,26 @@ func clear_animation() -> void:
 	queue_redraw()
 
 
+## Pulses the step's target column and its mirror, its highlighted cells and, if asked, the axis,
+## and restricts play to the target column.
+func show_tutorial_hint(step: TutorialStep, pulse_period: float) -> void:
+	_stop_hint_pulse()
+	_hint_step = step
+	restricted_column = step.target_column
+	_hint_tween = create_tween().set_loops()
+	_hint_tween.tween_method(_set_hint_progress, 0.0, 1.0, pulse_period)
+
+
+func clear_tutorial_hint() -> void:
+	_stop_hint_pulse()
+	_hint_step = null
+	restricted_column = NO_COLUMN
+
+
+func is_tutorial_hint_shown() -> bool:
+	return _hint_step != null
+
+
 ## Touching a right column plays its mirror: the tile always lands on the left.
 static func find_played_column(touched_column: int, board: BoardState) -> int:
 	if touched_column == NO_COLUMN or board.is_left_column(touched_column):
@@ -96,7 +128,7 @@ func find_touched_column(point: Vector2) -> int:
 
 
 func is_ghost_visible() -> bool:
-	return is_input_enabled and _session != null and _session.can_play_column(_hovered_column)
+	return is_input_enabled and _is_column_selectable(_hovered_column)
 
 
 func _gui_input(event: InputEvent) -> void:
@@ -133,8 +165,13 @@ func _on_released(release_position: Vector2) -> void:
 	_is_press_armed = false
 	_set_hovered_column(NO_COLUMN)
 	var column: int = _find_played_column_at(release_position)
-	if is_input_enabled and _session != null and _session.can_play_column(column):
+	if is_input_enabled and _is_column_selectable(column):
 		column_released.emit(column)
+
+
+func _is_column_selectable(column: int) -> bool:
+	var is_allowed: bool = restricted_column == NO_COLUMN or column == restricted_column
+	return is_allowed and _session != null and _session.can_play_column(column)
 
 
 func _find_played_column_at(point: Vector2) -> int:
@@ -159,15 +196,31 @@ func _draw() -> void:
 	_draw_moving_tiles()
 	_draw_pulse()
 	_draw_axis()
+	_draw_tutorial_hint()
 	_draw_ghost()
 
 
+## Both halves of a blocked pair are dimmed, since either one can be touched.
 func _draw_blocked_columns() -> void:
 	if not is_input_enabled or _session == null:
 		return
 	for column: int in _displayed_board.column_count_per_side:
-		if not _session.can_play_column(column):
+		if not _is_column_selectable(column):
 			draw_rect(_get_column_rect(column), BLOCKED_COLUMN_COLOR)
+			draw_rect(_get_column_rect(_displayed_board.get_mirror_column(column)), BLOCKED_COLUMN_COLOR)
+
+
+func _draw_tutorial_hint() -> void:
+	if _hint_step == null:
+		return
+	var column_color := Color(HINT_COLOR, HINT_COLUMN_OPACITY * _hint_strength)
+	draw_rect(_get_column_rect(_hint_step.target_column), column_color)
+	draw_rect(_get_column_rect(_displayed_board.get_mirror_column(_hint_step.target_column)), column_color)
+	var outline_color := Color(HINT_COLOR, _hint_strength)
+	for cell: Vector2i in _hint_step.highlighted_cells:
+		draw_rect(_get_tile_rect(cell), outline_color, false, HINT_CELL_OUTLINE_WIDTH)
+	if _hint_step.is_axis_highlighted:
+		_draw_axis_line(outline_color, HINT_AXIS_WIDTH)
 
 
 func _draw_moving_tiles() -> void:
@@ -196,10 +249,28 @@ func _draw_ghost() -> void:
 
 
 func _draw_axis() -> void:
+	_draw_axis_line(AXIS_COLOR, AXIS_WIDTH)
+
+
+func _draw_axis_line(color: Color, width: float) -> void:
 	var axis_x: float = _get_column_x(_displayed_board.column_count_per_side) - _get_cell_size() * AXIS_GAP_IN_CELLS / 2.0
 	var board_top: float = _get_board_origin().y
 	var board_bottom: float = board_top + _get_cell_size() * _displayed_board.row_count
-	draw_line(Vector2(axis_x, board_top), Vector2(axis_x, board_bottom), AXIS_COLOR, AXIS_WIDTH)
+	draw_line(Vector2(axis_x, board_top), Vector2(axis_x, board_bottom), color, width)
+
+
+## Rises and falls back once per period.
+func _set_hint_progress(progress: float) -> void:
+	_hint_strength = sin(progress * PI)
+	queue_redraw()
+
+
+func _stop_hint_pulse() -> void:
+	if _hint_tween != null:
+		_hint_tween.kill()
+		_hint_tween = null
+	_hint_strength = 0.0
+	queue_redraw()
 
 
 func _get_cell_size() -> float:

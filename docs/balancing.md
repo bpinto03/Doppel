@@ -37,6 +37,12 @@ Durations in seconds, in `data/resolution_playback.tres` (a `ResolutionPlaybackC
 | `step_pause` | 0.08 | Pause after each step **[TO TEST]** |
 | `max_chain_duration` | 2.5 | Longest playback of a turn; longer turns are sped up uniformly **[TO TEST]** |
 
+## Tutorial highlight
+
+| Parameter | File | Default | Controls |
+|-----------|------|---------|----------|
+| `pulse_period` | `data/tutorial_hint.tres` | 1.2 | Seconds for one rise and fall of the tutorial highlight |
+
 ## Playtest results
 
 None yet. Record Gate 1 findings and the values changed here.

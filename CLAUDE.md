@@ -138,4 +138,4 @@ Rules:
 
 Tracked in `STEPS.md` (tick the boxes). Keep this section to a single line naming the current phase.
 
-**Current phase:** Phase 1 — prototype with animated playback and placement ghost, awaiting on-device test; playable tutorial pending.
+**Current phase:** Phase 1 — prototype with playback, ghost and tutorial validated on device; distorted reflection comparison and Gate 1 playtest next.

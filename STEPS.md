@@ -81,7 +81,7 @@ Objectif : **savoir si le jeu est fun**, rien d'autre.
 - [x] Poser au relâchement du doigt et afficher l'aperçu fantôme de la tuile et de son reflet
 - [x] Accepter le toucher sur les deux moitiés (tuile toujours à gauche, reflet toujours à droite)
 - [x] Écrire les scénarios du mini tutoriel (pose, fusion, fusion à travers l'axe) et leurs tests unitaires
-- [ ] Mini tutoriel jouable en 3 étapes, passable, accessible via un bouton « ? » (affiché à chaque lancement, sans sauvegarde) ; colonne cible et sa symétrique acceptées et mises en évidence
+- [x] Mini tutoriel jouable en 3 étapes, passable, accessible via un bouton « ? » (affiché à chaque lancement, sans sauvegarde) ; colonne cible et sa symétrique acceptées et mises en évidence
 - [ ] Implémenter l'option d'équilibrage "reflet déformé" et la comparer à la version de base
 - [ ] Exporter un APK et y jouer sur téléphone
 

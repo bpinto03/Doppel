@@ -56,6 +56,17 @@ When *enabled*, every *5th* placement gives a reflection of level +*1* (capped a
   - All merges of the same chain link share the same multiplier.
 - The HUD shows score, best score of the session (in memory only) and highest tile reached.
 
+## Tutorial
+
+- Shown on every launch in Phase 1 (no save), and again with the "?" button, which abandons the current game.
+- Three steps, each on a predefined board with a fixed tile sequence and its own rules (6×6 grid, no distorted reflection):
+  1. **Drop**: on an empty board, the tile and its reflection drop on the outer columns.
+  2. **Merge**: the same tile dropped on its twin merges on both sides.
+  3. **Axis**: a matching tile waits in D1, with a tile above it so the reflection lands higher. Dropping in G3 merges the placed tile with the waiting one across the axis. The text then presents playing next to the axis as one option among others.
+- Each step accepts only its target column, or a touch on its mirror; both are highlighted with a pulse, along with the cells involved and, in step 3, the axis.
+- The explanation shows once the turn's playback has finished. "Skip" starts a real game at any time; "Play" does so after step 3.
+- Tutorial scores do not count toward the session best score.
+
 ## Game over
 
 - A left column is playable only if **both** it and its mirror column have at least one empty cell.
