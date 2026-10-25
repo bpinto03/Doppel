@@ -12,7 +12,8 @@ Game logic is separated from presentation. The core never touches nodes, scenes,
 | `BoardState` | Grid of tile levels (`0` = empty), mirror columns, drop, gravity |
 | `TileGenerator` | Weighted draw of the current and next tile from an injected `RandomNumberGenerator`; optional scripted levels are drawn first |
 | `MergeResolver` | Finds merge groups, picks where each result lands, loops merge + gravity until stable |
-| `MergeGroup`, `ChainResult` | Data returned by the resolver |
+| `MergeGroup`, `ChainResult` | Data returned by the resolver; `ChainResult.events` lists the turn's resolution events in order |
+| `ResolutionEvent` and subclasses, `TileFall` | One step of a turn (see below) |
 | `MergeScoring` | Tile values, chain multiplier, merge points |
 | `GameSession` | One game: turn flow, reflection, distorted reflection, score, highest level, game over. Starts on an empty board, or from a given board and scripted tile sequence |
 
@@ -29,8 +30,10 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 
 | Script | Responsibility |
 |--------|----------------|
-| `game_screen.gd` | Owns the `GameSession`, forwards column taps, refreshes the HUD, keeps the session best score in memory |
-| `board_view.gd` | Draws the board, dims unplayable columns, emits `column_tapped` |
+| `game_screen.gd` | Owns the `GameSession`, forwards column taps, starts the playback of each turn, refreshes the HUD when it ends, emits `turn_playback_finished`, keeps the session best score in memory |
+| `board_view.gd` | Draws the displayed board, moving tiles and merge pulses, dims unplayable columns, emits `column_tapped` and `pressed_while_locked` |
+| `resolution_playback.gd` | Replays a turn's resolution events with simple tweens, emits `playback_finished` |
+| `resolution_playback_config.gd` | Playback durations, loaded from `data/resolution_playback.tres` |
 | `tile_swatch.gd` | Draws one tile (current, reflection, next previews) |
 | `tile_painter.gd` | Shared tile drawing and level colors |
 
@@ -42,6 +45,7 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 ### Data and assets
 
 - `data/balancing.tres`: every gameplay value (see [balancing.md](balancing.md)).
+- `data/resolution_playback.tres`: playback durations (see [balancing.md](balancing.md)).
 - `assets/translations/ui.csv`: player-facing texts (en, fr).
 - `assets/themes/prototype_theme.tres`: font size for the prototype.
 
@@ -50,10 +54,33 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 1. `BoardView` emits `column_tapped(column)`.
 2. `GameScreen` checks `GameSession.can_play_column()` and calls `play_column()`.
 3. `GameSession` drops the tile and its reflection in `BoardState`, then calls `MergeResolver.resolve_chain()`.
-4. The resolver merges, applies gravity and repeats; it returns a `ChainResult` (chain length, points, highest level).
+4. The resolver merges, applies gravity and repeats; it returns a `ChainResult` (chain length, points, highest level, events).
 5. `GameSession` updates score, highest level and game over, then advances the `TileGenerator`.
-6. `GameScreen` redraws the board and HUD from the session state.
+6. `GameScreen` locks input and hands a copy of the board taken before the turn, with the events, to `ResolutionPlayback`.
+7. When `playback_finished` fires, `GameScreen` unlocks input, redraws the board and HUD from the session state, and emits `turn_playback_finished`.
+
+## Resolution events
+
+`GameSession.play_column()` computes the whole turn at once. `ChainResult.events` records what happened, in order, so the presentation can replay it. The core has no delays or animations.
+
+| Event | Recorded | Content |
+|-------|----------|---------|
+| `TilesPlacedEvent` | Always, first | Landing cell and level of the tile and of its reflection, distorted or not |
+| `GroupMergedEvent` | Once per merge group | Chain link, multiplier, group cells and level, result cell and level, points, crossing the axis or not |
+| `TilesFellEvent` | After the merges of a link, only if a tile moved | Chain link, one `TileFall` (from, to, level) per tile |
+
+- Groups of the same chain link merge at the same time: their `GroupMergedEvent`s follow each other with the same `chain_link`.
+- `TilesFellEvent.chain_link` is always 1 or more. A placed tile lands directly on top of its column, so gravity never runs before the first merge. The drop from the top of the board is not an event: the presentation animates it from `TilesPlacedEvent`.
+- `ResolutionEvent.apply_to(board)` replays one step. Applying every event, in order, to a copy of the board taken before the turn (`BoardState.duplicate_board()`) gives the final board. Tests check this, and that the events' points add up to the score gained.
+
+## Resolution playback
+
+- `ResolutionPlayback` builds one `Tween` for the whole turn: placed tiles drop from the top row, each chain link pulses its groups then merges them together, fallen tiles slide down, with a short pause after each step. From link 2 on, a label shows the multiplier (`x2`, `x3` …).
+- The displayed board only changes through `ResolutionEvent.apply_to()`; the presentation never applies game rules.
+- A turn longer than `max_chain_duration` plays faster: the tween speed scale is raised so the whole turn fits.
+- While playing, the board ignores taps and the restart button is disabled. A press on the board skips: the tween stops, the remaining events are applied, and `playback_finished` fires. It fires exactly once per turn, whether the playback ends or is skipped, any number of times.
+- At the end, the board view shows the session board again, which matches the replayed board.
 
 ## Tests
 
-`tests/` holds GUT tests for the core and the tutorial scenarios (`test_*.gd`) and fixtures (`BoardFixture` describes boards as text, `BalancingFixture` builds explicit configs). Tests and GUT are excluded from exports.
+`tests/` holds GUT tests for the core, the tutorial scenarios and the resolution playback (`test_*.gd`) and fixtures (`BoardFixture` describes boards as text, `BalancingFixture` builds explicit configs). Tests and GUT are excluded from exports.

@@ -19,7 +19,7 @@ func resolve_chain(board: BoardState, placed_cells: Array[Vector2i]) -> ChainRes
 	while not groups.is_empty():
 		result.chain_length += 1
 		recently_moved_cells = _merge_groups(board, groups, recently_moved_cells, result)
-		recently_moved_cells.append_array(board.apply_gravity())
+		recently_moved_cells.append_array(_apply_gravity(board, result))
 		groups = find_merge_groups(board)
 	return result
 
@@ -75,13 +75,27 @@ func _merge_groups(board: BoardState, groups: Array[MergeGroup], recently_moved_
 	for group: MergeGroup in groups:
 		var result_cell: Vector2i = choose_result_cell(board, group, recently_moved_cells)
 		var result_level: int = group.level + 1
-		for cell: Vector2i in group.cells:
-			board.set_level(cell, BoardState.EMPTY_CELL)
-		board.set_level(result_cell, result_level)
+		var points: int = MergeScoring.calculate_merge_points(result_level, group.cells.size(), result.chain_length, _config)
+		var multiplier: float = MergeScoring.calculate_chain_multiplier(result.chain_length, _config)
+		var event := GroupMergedEvent.new(result.chain_length, multiplier, group, result_cell, points, group.is_crossing_axis(board))
+		event.apply_to(board)
+		result.events.append(event)
 		result_cells.append(result_cell)
-		result.points_earned += MergeScoring.calculate_merge_points(result_level, group.cells.size(), result.chain_length, _config)
+		result.points_earned += points
 		result.highest_level_created = maxi(result.highest_level_created, result_level)
 	return result_cells
+
+
+## Returns the cells where tiles landed.
+func _apply_gravity(board: BoardState, result: ChainResult) -> Array[Vector2i]:
+	var falls: Array[TileFall] = board.apply_gravity()
+	if falls.is_empty():
+		return []
+	result.events.append(TilesFellEvent.new(result.chain_length, falls))
+	var landing_cells: Array[Vector2i] = []
+	for fall: TileFall in falls:
+		landing_cells.append(fall.to_cell)
+	return landing_cells
 
 
 func _find_lowest_cell_closest_to_axis(board: BoardState, cells: Array[Vector2i]) -> Vector2i:

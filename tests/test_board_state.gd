@@ -57,21 +57,24 @@ func test_column_is_full_when_every_row_holds_a_tile() -> void:
 	assert_false(board.is_column_full(1))
 
 
-func test_gravity_drops_floating_tiles_and_reports_their_new_cells() -> void:
+func test_gravity_drops_floating_tiles_and_reports_each_fall() -> void:
 	var board: BoardState = BoardFixture.create_board([
 		"2 . . | . . .",
 		"1 . . | . . 4",
 		". . . | . . .",
 	])
 
-	var fallen_cells: Array[Vector2i] = board.apply_gravity()
+	var falls: Array[TileFall] = board.apply_gravity()
 
 	assert_eq(BoardFixture.describe_board(board), [
 		". . . | . . .",
 		"2 . . | . . .",
 		"1 . . | . . 4",
 	])
-	assert_eq_deep(fallen_cells, [Vector2i(0, 0), Vector2i(0, 1), Vector2i(5, 0)])
+	assert_eq(falls.size(), 3)
+	_assert_fall(falls[0], Vector2i(0, 1), Vector2i(0, 0), 1)
+	_assert_fall(falls[1], Vector2i(0, 2), Vector2i(0, 1), 2)
+	_assert_fall(falls[2], Vector2i(5, 1), Vector2i(5, 0), 4)
 
 
 func test_gravity_does_not_move_settled_tiles() -> void:
@@ -81,3 +84,21 @@ func test_gravity_does_not_move_settled_tiles() -> void:
 	])
 
 	assert_true(board.apply_gravity().is_empty())
+
+
+func test_duplicated_board_is_independent_of_the_original() -> void:
+	var board: BoardState = BoardFixture.create_board([
+		"1 . . | . . 2",
+	])
+
+	var copy: BoardState = board.duplicate_board()
+	copy.set_level(Vector2i(0, 0), 5)
+
+	assert_eq(board.get_level(Vector2i(0, 0)), 1)
+	assert_eq(copy.get_level(Vector2i(5, 0)), 2)
+
+
+func _assert_fall(fall: TileFall, from_cell: Vector2i, to_cell: Vector2i, level: int) -> void:
+	assert_eq(fall.from_cell, from_cell)
+	assert_eq(fall.to_cell, to_cell)
+	assert_eq(fall.level, level)

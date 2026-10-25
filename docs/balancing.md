@@ -25,6 +25,18 @@ The tier with the highest `min_highest_level` not above the highest level reache
 
 Weights are relative; they do not need to sum to 100.
 
+## Resolution playback
+
+Durations in seconds, in `data/resolution_playback.tres` (a `ResolutionPlaybackConfig`). They only change how a turn is shown, never its outcome.
+
+| Parameter | Default | Controls |
+|-----------|---------|----------|
+| `drop_duration` | 0.15 | Drop of the placed tile and its reflection from the top row **[TO TEST]** |
+| `fall_duration` | 0.15 | Slide of tiles falling after a merge **[TO TEST]** |
+| `merge_pulse_duration` | 0.3 | Pulse on the groups of a chain link before they merge **[TO TEST]** |
+| `step_pause` | 0.08 | Pause after each step **[TO TEST]** |
+| `max_chain_duration` | 2.5 | Longest playback of a turn; longer turns are sped up uniformly **[TO TEST]** |
+
 ## Playtest results
 
 None yet. Record Gate 1 findings and the values changed here.

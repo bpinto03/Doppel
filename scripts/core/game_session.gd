@@ -51,14 +51,18 @@ func play_column(column: int) -> ChainResult:
 	assert(can_play_column(column), "Column %d cannot be played" % column)
 	var tile_level: int = tile_generator.current_level
 	var reflection_level: int = get_next_reflection_level()
-	var placed_cells: Array[Vector2i] = [
+	var placed_event := TilesPlacedEvent.new(
 		board.drop_tile(column, tile_level),
+		tile_level,
 		board.drop_tile(board.get_mirror_column(column), reflection_level),
-	]
+		reflection_level,
+		is_next_reflection_distorted(),
+	)
 	placement_count += 1
 	_register_level(maxi(tile_level, reflection_level))
 
-	var chain_result: ChainResult = _merge_resolver.resolve_chain(board, placed_cells)
+	var chain_result: ChainResult = _merge_resolver.resolve_chain(board, [placed_event.tile_cell, placed_event.reflection_cell])
+	chain_result.events.push_front(placed_event)
 	score += chain_result.points_earned
 	_register_level(chain_result.highest_level_created)
 	is_game_over = not _has_playable_column()

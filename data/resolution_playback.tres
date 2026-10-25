@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ResolutionPlaybackConfig" format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/resolution_playback_config.gd" id="1_config"]
+
+[resource]
+script = ExtResource("1_config")
+drop_duration = 0.15
+fall_duration = 0.15
+merge_pulse_duration = 0.3
+step_pause = 0.08
+max_chain_duration = 2.5

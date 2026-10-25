@@ -13,3 +13,4 @@ TUTORIAL_STEP_2,Drop the same tile on top of it.,Pose la même tuile par-dessus.
 TUTORIAL_STEP_2_DONE,"Two identical tiles that touch merge into the next tile. Here, it happened on both sides.","Deux tuiles identiques qui se touchent fusionnent en la tuile suivante. Ici, c'est arrivé des deux côtés."
 TUTORIAL_STEP_3,A matching tile is waiting just across the mirror line. Drop your tile next to the line.,Une tuile identique attend juste de l'autre côté de l'axe. Pose ta tuile à côté de l'axe.
 TUTORIAL_STEP_3_DONE,"Your tile touched the tile on the right across the mirror line, and they merged. Playing next to the line is one option among others.","Ta tuile a touché celle de droite à travers l'axe, et elles ont fusionné. Jouer près de l'axe est une possibilité parmi d'autres."
+UI_CHAIN_MULTIPLIER,x{value},x{value}

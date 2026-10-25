@@ -1,10 +1,14 @@
 extends Control
 
+signal turn_playback_finished
+
 const BALANCING_CONFIG: BalancingConfig = preload("res://data/balancing.tres")
+const PLAYBACK_CONFIG: ResolutionPlaybackConfig = preload("res://data/resolution_playback.tres")
 const NO_TILE_TEXT: String = "-"
 
 var _session: GameSession
 var _best_score: int
+var _playback: ResolutionPlayback
 
 @onready var _board_view: BoardView = %BoardView
 @onready var _score_label: Label = %ScoreLabel
@@ -15,9 +19,13 @@ var _best_score: int
 @onready var _next_swatch: TileSwatch = %NextSwatch
 @onready var _game_over_label: Label = %GameOverLabel
 @onready var _restart_button: Button = %RestartButton
+@onready var _chain_label: Label = %ChainLabel
 
 
 func _ready() -> void:
+	_playback = ResolutionPlayback.new(PLAYBACK_CONFIG, _board_view, _chain_label)
+	_playback.playback_finished.connect(_on_playback_finished)
+	_board_view.pressed_while_locked.connect(_playback.skip)
 	_board_view.column_tapped.connect(_on_column_tapped)
 	_restart_button.pressed.connect(start_new_game)
 	start_new_game()
@@ -33,9 +41,22 @@ func start_new_game() -> void:
 func _on_column_tapped(column: int) -> void:
 	if not _session.can_play_column(column):
 		return
-	_session.play_column(column)
+	var board_before: BoardState = _session.board.duplicate_board()
+	var chain_result: ChainResult = _session.play_column(column)
 	_best_score = maxi(_best_score, _session.score)
+	_set_input_enabled(false)
+	_playback.play(board_before, chain_result.events)
+
+
+func _on_playback_finished() -> void:
+	_set_input_enabled(true)
 	_refresh()
+	turn_playback_finished.emit()
+
+
+func _set_input_enabled(is_enabled: bool) -> void:
+	_board_view.is_input_enabled = is_enabled
+	_restart_button.disabled = not is_enabled
 
 
 func _refresh() -> void:

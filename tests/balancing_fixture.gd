@@ -18,6 +18,12 @@ static func create_config() -> BalancingConfig:
 	return config
 
 
+static func create_config_always_drawing(level: int) -> BalancingConfig:
+	var config: BalancingConfig = create_config()
+	config.spawn_weight_tiers = [create_tier(0, {level: 1.0})]
+	return config
+
+
 static func create_tier(min_highest_level: int, level_weights: Dictionary[int, float]) -> SpawnWeightTier:
 	var tier := SpawnWeightTier.new()
 	tier.min_highest_level = min_highest_level

@@ -89,16 +89,21 @@ func drop_tile(column: int, level: int) -> Vector2i:
 	return landing_cell
 
 
-## Returns the new position of every tile that fell.
-func apply_gravity() -> Array[Vector2i]:
-	var fallen_cells: Array[Vector2i] = []
+func duplicate_board() -> BoardState:
+	var copy := BoardState.new(column_count_per_side, row_count)
+	copy._levels = _levels.duplicate()
+	return copy
+
+
+func apply_gravity() -> Array[TileFall]:
+	var falls: Array[TileFall] = []
 	for column: int in get_column_count():
-		fallen_cells.append_array(_settle_column(column))
-	return fallen_cells
+		falls.append_array(_settle_column(column))
+	return falls
 
 
-func _settle_column(column: int) -> Array[Vector2i]:
-	var fallen_cells: Array[Vector2i] = []
+func _settle_column(column: int) -> Array[TileFall]:
+	var falls: Array[TileFall] = []
 	var landing_row: int = 0
 	for row: int in row_count:
 		var level: int = get_level(Vector2i(column, row))
@@ -107,9 +112,9 @@ func _settle_column(column: int) -> Array[Vector2i]:
 		if row != landing_row:
 			set_level(Vector2i(column, landing_row), level)
 			set_level(Vector2i(column, row), EMPTY_CELL)
-			fallen_cells.append(Vector2i(column, landing_row))
+			falls.append(TileFall.new(Vector2i(column, row), Vector2i(column, landing_row), level))
 		landing_row += 1
-	return fallen_cells
+	return falls
 
 
 func _to_index(cell: Vector2i) -> int:
