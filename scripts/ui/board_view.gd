@@ -5,6 +5,8 @@ signal column_released(column: int)
 signal pressed_while_locked
 
 const CELL_GAP_RATIO: float = 0.06
+## Cells stretch up to this height/width ratio to fill the available height, so wider boards keep a similar size.
+const MAX_CELL_HEIGHT_RATIO: float = 1.3
 ## Width of the space around the mirror axis, in cells.
 const AXIS_GAP_IN_CELLS: float = 0.3
 const AXIS_COLOR := Color("#e0e4ee")
@@ -253,9 +255,9 @@ func _draw_axis() -> void:
 
 
 func _draw_axis_line(color: Color, width: float) -> void:
-	var axis_x: float = _get_column_x(_displayed_board.column_count_per_side) - _get_cell_size() * AXIS_GAP_IN_CELLS / 2.0
+	var axis_x: float = _get_column_x(_displayed_board.column_count_per_side) - _get_cell_size().x * AXIS_GAP_IN_CELLS / 2.0
 	var board_top: float = _get_board_origin().y
-	var board_bottom: float = board_top + _get_cell_size() * _displayed_board.row_count
+	var board_bottom: float = board_top + _get_cell_size().y * _displayed_board.row_count
 	draw_line(Vector2(axis_x, board_top), Vector2(axis_x, board_bottom), color, width)
 
 
@@ -273,15 +275,18 @@ func _stop_hint_pulse() -> void:
 	queue_redraw()
 
 
-func _get_cell_size() -> float:
+func _get_cell_size() -> Vector2:
 	var width_in_cells: float = _displayed_board.get_column_count() + AXIS_GAP_IN_CELLS
-	return minf(size.x / width_in_cells, size.y / _displayed_board.row_count)
+	var height_limited_size: float = size.y / _displayed_board.row_count
+	var cell_width: float = minf(size.x / width_in_cells, height_limited_size)
+	var cell_height: float = minf(height_limited_size, cell_width * MAX_CELL_HEIGHT_RATIO)
+	return Vector2(cell_width, cell_height)
 
 
 func _get_board_rect() -> Rect2:
-	var cell_size: float = _get_cell_size()
+	var cell_size: Vector2 = _get_cell_size()
 	var board_size := Vector2(
-		(_displayed_board.get_column_count() + AXIS_GAP_IN_CELLS) * cell_size, _displayed_board.row_count * cell_size
+		(_displayed_board.get_column_count() + AXIS_GAP_IN_CELLS) * cell_size.x, _displayed_board.row_count * cell_size.y
 	)
 	return Rect2((size - board_size) / 2.0, board_size)
 
@@ -292,12 +297,12 @@ func _get_board_origin() -> Vector2:
 
 func _get_column_x(column: int) -> float:
 	var axis_offset: float = 0.0 if _displayed_board.is_left_column(column) else AXIS_GAP_IN_CELLS
-	return _get_board_origin().x + (column + axis_offset) * _get_cell_size()
+	return _get_board_origin().x + (column + axis_offset) * _get_cell_size().x
 
 
 func _get_column_rect(column: int) -> Rect2:
-	var height: float = _get_cell_size() * _displayed_board.row_count
-	return Rect2(_get_column_x(column), _get_board_origin().y, _get_cell_size(), height)
+	var cell_size: Vector2 = _get_cell_size()
+	return Rect2(_get_column_x(column), _get_board_origin().y, cell_size.x, cell_size.y * _displayed_board.row_count)
 
 
 func _get_tile_rect(cell: Vector2i) -> Rect2:
@@ -306,11 +311,11 @@ func _get_tile_rect(cell: Vector2i) -> Rect2:
 
 ## Row is fractional while a tile is moving.
 func _get_tile_rect_at(column: int, row: float) -> Rect2:
-	var cell_size: float = _get_cell_size()
-	var gap: float = cell_size * CELL_GAP_RATIO
+	var cell_size: Vector2 = _get_cell_size()
+	var gap: float = cell_size.x * CELL_GAP_RATIO
 	var row_from_top: float = _displayed_board.row_count - 1 - row
-	var top_left := Vector2(_get_column_x(column), _get_board_origin().y + row_from_top * cell_size)
-	return Rect2(top_left, Vector2.ONE * cell_size).grow(-gap / 2.0)
+	var top_left := Vector2(_get_column_x(column), _get_board_origin().y + row_from_top * cell_size.y)
+	return Rect2(top_left, cell_size).grow(-gap / 2.0)
 
 
 class MovingTile:

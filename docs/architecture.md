@@ -77,6 +77,10 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 - `TilesFellEvent.chain_link` is always 1 or more. A placed tile lands directly on top of its column, so gravity never runs before the first merge. The drop from the top of the board is not an event: the presentation animates it from `TilesPlacedEvent`.
 - `ResolutionEvent.apply_to(board)` replays one step. Applying every event, in order, to a copy of the board taken before the turn (`BoardState.duplicate_board()`) gives the final board. Tests check this, and that the events' points add up to the score gained.
 
+## Board layout
+
+`BoardView` fits the board to its width. Cells stretch vertically up to `MAX_CELL_HEIGHT_RATIO` (1.3) to fill the free height, so a board with more columns stays about as tall. When the height is the limit, cells stay square. The board is centered in `BoardView`.
+
 ## Placement ghost
 
 While a finger is down on the board, or the mouse hovers it on PC, `BoardView` asks `GameSession.preview_placement()` for the played left column under the pointer (either half) and draws the tile and its reflection, translucent, where they will land, linked by a thin line across the axis. The ghost is hidden while input is locked (`BoardView.is_ghost_visible()`).
