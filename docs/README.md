@@ -6,6 +6,7 @@
 | [game_rules.md](game_rules.md) | Rules as implemented (source of truth) |
 | [balancing.md](balancing.md) | Tunable values and what they control |
 | [playtest_phase1.md](playtest_phase1.md) | Gate 1 playtest protocol and results sheet |
+| [release_checklist.md](release_checklist.md) | Package ID, signing and store submission notes |
 | [decisions/](decisions/) | Decision records |
 
 Decision records:

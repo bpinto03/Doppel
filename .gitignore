@@ -1,12 +1,25 @@
-# Godot 4+ specific ignores
+# Godot 4 cache, import data and export credentials (.godot/export_credentials.cfg)
 .godot/
 /android/
+
+# Generated from ui.csv on import
+*.translation
 
 # Build output
 /build/
 *.apk
 *.aab
+*.idsig
 
 # Signing credentials must never be committed
 *.keystore
 *.jks
+keystore.properties
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+desktop.ini
+*.tmp
+.vscode/
+.idea/

@@ -33,9 +33,9 @@
 
 ### 0.2 Identité du projet
 - [x] Nom définitif choisi : **Doppel** (vérifications faites : pas de marque existante, nom libre sur Google Play, domaine et pseudos disponibles)
-- [ ] Définir l'identifiant de package (ex : `com.tonnom.doppel`) — **définitif, impossible à changer après publication**
-- [ ] Créer un dépôt Git privé, ajouter un `.gitignore` adapté à Godot
-- [ ] Copier `CAHIER_DES_CHARGES.md` et `STEPS.md` à la racine du dépôt
+- [x] Définir l'identifiant de package : `com.rumble.doppel` — **définitif, impossible à changer après publication**
+- [x] Créer un dépôt Git privé, ajouter un `.gitignore` adapté à Godot
+- [x] Copier `CAHIER_DES_CHARGES.md` et `STEPS.md` à la racine du dépôt
 
 ### 0.3 Comptes
 - [ ] Créer le compte développeur **Google Play Console** (frais d'inscription uniques, vérification d'identité)
@@ -44,12 +44,12 @@
 - [ ] Prévoir où héberger la politique de confidentialité (page web publique, ex : GitHub Pages)
 
 ### 0.4 Environnement de dev
-- [ ] Installer la version stable de **Godot 4.x** et la figer pour tout le projet
-- [ ] Installer le **JDK** et l'**Android SDK** requis, configurer Godot (Éditeur > Paramètres > Export > Android)
-- [ ] Installer les **modèles d'export** Android
-- [ ] Préparer un téléphone Android de test (mode développeur, débogage USB) et si possible un deuxième appareil plus modeste
-- [ ] Vérifier qu'un projet "Hello World" s'exporte et s'installe sur le téléphone
-- [ ] Générer un **keystore** de signature et le **sauvegarder** (copie hors ligne + gestionnaire de mots de passe)
+- [x] Installer la version stable de **Godot 4.x** et la figer pour tout le projet
+- [x] Installer le **JDK** et l'**Android SDK** requis, configurer Godot (Éditeur > Paramètres > Export > Android)
+- [x] Installer les **modèles d'export** Android
+- [x] Préparer un téléphone Android de test (mode développeur, débogage USB) et si possible un deuxième appareil plus modeste
+- [x] Vérifier qu'un projet "Hello World" s'exporte et s'installe sur le téléphone
+- [x] Générer un **keystore** de signature et le **sauvegarder** (copie hors ligne + gestionnaire de mots de passe)
 
 ### 0.5 Recrutement précoce des testeurs
 - [ ] Faire une liste d'au moins 15 personnes avec un téléphone Android (amis, famille, collègues, communautés Godot / indie / Reddit / Discord)
@@ -82,8 +82,8 @@ Objectif : **savoir si le jeu est fun**, rien d'autre.
 - [x] Accepter le toucher sur les deux moitiés (tuile toujours à gauche, reflet toujours à droite)
 - [x] Écrire les scénarios du mini tutoriel (pose, fusion, fusion à travers l'axe) et leurs tests unitaires
 - [x] Mini tutoriel jouable en 3 étapes, passable, accessible via un bouton « ? » (affiché à chaque lancement, sans sauvegarde) ; colonne cible et sa symétrique acceptées et mises en évidence
-- [ ] Implémenter l'option d'équilibrage "reflet déformé" et la comparer à la version de base
-- [ ] Exporter un APK et y jouer sur téléphone
+- [x] Implémenter l'option d'équilibrage "reflet déformé" et la comparer à la version de base
+- [x] Exporter un APK et y jouer sur téléphone
 
 ### Test de validation
 - [ ] Faire tester à **5 personnes** sans explication préalable (observer en silence)
