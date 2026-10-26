@@ -97,10 +97,10 @@ Objectif : **savoir si le jeu est fun**, rien d'autre.
 ## Phase 2 — Jeu de base et "juice"
 
 ### 2.1 Fondations de production
-- [ ] Mettre en place la structure de dossiers (scenes / scripts / assets / data)
-- [ ] Configurer le projet : portrait, 1080×1920, stretch `canvas_items`, renderer **Compatibility**
-- [ ] Gérer les zones sûres (encoche, barre de navigation)
-- [ ] Créer les autoloads : `SaveManager`, `AudioManager`, `Settings`, `I18n`
+- [x] Mettre en place la structure de dossiers (scenes / scripts / assets / data)
+- [x] Configurer le projet : portrait, 1080×1920, stretch `canvas_items`, renderer **Compatibility**
+- [x] Gérer les zones sûres (encoche, barre de navigation)
+- [x] Créer les autoloads : `SaveManager`, `AudioManager`, `Settings`, `I18n`
 
 ### 2.2 Direction artistique
 - [ ] Choisir une palette de couleurs lisible et une police

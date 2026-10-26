@@ -5,6 +5,7 @@
 [ext_resource type="Script" uid="uid://dc7pqdo3imhjx" path="res://scripts/ui/tile_swatch.gd" id="3_swatch"]
 [ext_resource type="Theme" path="res://assets/themes/prototype_theme.tres" id="4_theme"]
 [ext_resource type="PackedScene" path="res://scenes/game/tutorial_panel.tscn" id="5_tutorial_panel"]
+[ext_resource type="Script" path="res://scripts/ui/safe_area_margin.gd" id="6_safe_area"]
 
 [node name="GameScreen" type="Control" unique_id=1464355714]
 layout_mode = 3
@@ -36,6 +37,7 @@ theme_override_constants/margin_left = 48
 theme_override_constants/margin_top = 120
 theme_override_constants/margin_right = 48
 theme_override_constants/margin_bottom = 120
+script = ExtResource("6_safe_area")
 
 [node name="Layout" type="VBoxContainer" parent="Margin" unique_id=2030166005]
 layout_mode = 2

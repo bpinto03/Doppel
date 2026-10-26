@@ -7,6 +7,8 @@ const PLAYBACK_CONFIG: ResolutionPlaybackConfig = preload("res://data/resolution
 const TUTORIAL_HINT_CONFIG: TutorialHintConfig = preload("res://data/tutorial_hint.tres")
 const NO_TILE_TEXT: String = "-"
 const NO_TUTORIAL_STEP: int = -1
+const RECORD_SECTION: String = "record"
+const BEST_SCORE_KEY: String = "best_score"
 
 var _session: GameSession
 var _best_score: int
@@ -29,6 +31,7 @@ var _tutorial_step_index: int = NO_TUTORIAL_STEP
 
 
 func _ready() -> void:
+	_best_score = SaveManager.get_value(RECORD_SECTION, BEST_SCORE_KEY, 0)
 	_playback = ResolutionPlayback.new(PLAYBACK_CONFIG, _board_view, _chain_label)
 	_playback.playback_finished.connect(_on_playback_finished)
 	_board_view.pressed_while_locked.connect(_playback.skip)
@@ -94,8 +97,9 @@ func _on_column_released(column: int) -> void:
 	var chain_result: ChainResult = _session.play_column(column)
 	if is_tutorial_running():
 		_board_view.clear_tutorial_hint()
-	else:
-		_best_score = maxi(_best_score, _session.score)
+	elif _session.score > _best_score:
+		_best_score = _session.score
+		SaveManager.set_value(RECORD_SECTION, BEST_SCORE_KEY, _best_score)
 	_set_input_enabled(false)
 	_playback.play(board_before, chain_result.events)
 

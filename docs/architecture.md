@@ -1,6 +1,6 @@
 # Architecture
 
-Game logic is separated from presentation. The core never touches nodes, scenes, audio, ads or files.
+Game logic is separated from presentation. The core never touches nodes, scenes, audio, ads or files. Platform services live in autoloads.
 
 ## Modules
 
@@ -30,7 +30,7 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 
 | Script | Responsibility |
 |--------|----------------|
-| `game_screen.gd` | Owns the `GameSession`, forwards released columns, starts the playback of each turn, refreshes the HUD when it ends, emits `turn_playback_finished`, keeps the session best score in memory |
+| `game_screen.gd` | Owns the `GameSession`, forwards released columns, starts the playback of each turn, refreshes the HUD when it ends, emits `turn_playback_finished`, saves the best score through `SaveManager` |
 | `board_view.gd` | Draws the displayed board, moving tiles, merge pulses and the placement ghost, dims unplayable columns, maps a touched column to the played left column (`find_played_column`), emits `column_released` and `pressed_while_locked` |
 | `tutorial_panel.gd` | Shows a step's instruction, then its explanation with Next / Play; Skip at any time. Emits `next_requested`, `skip_requested` |
 | `tutorial_hint_config.gd` | Tutorial highlight pulse period, loaded from `data/tutorial_hint.tres` |
@@ -38,6 +38,18 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 | `resolution_playback_config.gd` | Playback durations, loaded from `data/resolution_playback.tres` |
 | `tile_swatch.gd` | Draws one tile (current, reflection, next previews) |
 | `tile_painter.gd` | Shared tile drawing and level colors |
+| `safe_area_margin.gd` | `MarginContainer` whose scene margins are measured from the safe area (notch, system bars), on mobile only |
+
+### `scripts/autoload/` — platform services
+
+Loaded in this order; each one may use the ones above it.
+
+| Autoload | Responsibility |
+|----------|----------------|
+| `SaveManager` | Versioned local save in `user://save.cfg` (see [0002](decisions/0002-save-format.md)). `get_value` / `set_value` by section and key; every change is written at once |
+| `Settings` | Sound, music, vibration and language, stored in the `settings` section. Emits `changed` |
+| `I18n` | Sets the locale: chosen language, else the device language if supported (en, fr), else English |
+| `AudioManager` | `play_sound()` and `play_music()`, silent when the matching setting is off |
 
 ### Scenes
 
