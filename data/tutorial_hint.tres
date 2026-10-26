@@ -1,6 +1,6 @@
-[gd_resource type="Resource" script_class="TutorialHintConfig" format=3]
+[gd_resource type="Resource" script_class="TutorialHintConfig" format=3 uid="uid://q8ytq6ltal44"]
 
-[ext_resource type="Script" path="res://scripts/ui/tutorial_hint_config.gd" id="1_config"]
+[ext_resource type="Script" uid="uid://dwb1j53ffsql4" path="res://scripts/ui/tutorial_hint_config.gd" id="1_config"]
 
 [resource]
 script = ExtResource("1_config")
