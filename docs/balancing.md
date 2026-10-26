@@ -9,6 +9,7 @@ All gameplay values live in `data/balancing.tres` (a `BalancingConfig` resource,
 | `max_tile_level` | 12 | Highest level; tiles at this level do not merge |
 | `spawn_weight_tiers` | see below | Draw weights per level, chosen by highest level reached **[TO TEST]** |
 | `chain_multiplier_step` | 1.0 | Multiplier added per chain link (×1, ×2, ×3 …) **[TO TEST]** |
+| `is_cross_axis_merge_enabled` | false | Lets G3 and D1 tiles merge across the axis **[TO TEST]** |
 | `large_group_bonus_per_extra_tile` | 0 | Points per tile beyond a pair in a merge group, before the chain multiplier |
 | `is_distorted_reflection_enabled` | true | Turns the distorted reflection lever on or off |
 | `distorted_reflection_period` | 5 | Every Nth placement has a distorted reflection **[TO TEST]** |

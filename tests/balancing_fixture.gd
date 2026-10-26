@@ -12,6 +12,7 @@ static func create_config() -> BalancingConfig:
 	config.spawn_weight_tiers = [create_tier(0, {1: 60.0, 2: 30.0, 3: 10.0})]
 	config.chain_multiplier_step = 1.0
 	config.large_group_bonus_per_extra_tile = 0
+	config.is_cross_axis_merge_enabled = true
 	config.is_distorted_reflection_enabled = false
 	config.distorted_reflection_period = 5
 	config.distorted_reflection_level_bonus = 1

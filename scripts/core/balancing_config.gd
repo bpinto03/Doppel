@@ -6,6 +6,10 @@ extends Resource
 @export var row_count: int
 @export var max_tile_level: int
 
+@export_group("Merging")
+## Defaults to true so the .tres stores it explicitly when turned off.
+@export var is_cross_axis_merge_enabled: bool = true
+
 @export_group("Spawning")
 @export var spawn_weight_tiers: Array[SpawnWeightTier]
 

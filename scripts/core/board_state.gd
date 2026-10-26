@@ -81,6 +81,10 @@ func get_orthogonal_neighbors(cell: Vector2i) -> Array[Vector2i]:
 	return neighbors
 
 
+func is_across_axis(cell: Vector2i, other_cell: Vector2i) -> bool:
+	return is_left_column(cell.x) != is_left_column(other_cell.x)
+
+
 ## Expects a settled column that is not full.
 func get_landing_cell(column: int) -> Vector2i:
 	assert(not is_column_full(column), "Column %d is full" % column)

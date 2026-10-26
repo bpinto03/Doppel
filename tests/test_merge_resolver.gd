@@ -143,6 +143,32 @@ func test_merge_across_axis_leaves_board_asymmetric_with_independent_gravity() -
 	])
 
 
+func test_tiles_across_axis_do_not_merge_when_cross_axis_merge_is_disabled() -> void:
+	var config: BalancingConfig = BalancingFixture.create_config()
+	config.is_cross_axis_merge_enabled = false
+	var board: BoardState = BoardFixture.create_board([
+		". . 2 | 2 . .",
+	])
+
+	var result: ChainResult = MergeResolver.new(config).resolve_chain(board, [Vector2i(2, 0), Vector2i(3, 0)])
+
+	assert_eq(result.chain_length, 0)
+	assert_eq(BoardFixture.describe_board(board), [". . 2 | 2 . ."])
+
+
+func test_axis_splits_a_group_when_cross_axis_merge_is_disabled() -> void:
+	var config: BalancingConfig = BalancingFixture.create_config()
+	config.is_cross_axis_merge_enabled = false
+	var board: BoardState = BoardFixture.create_board([
+		". 2 2 | 2 2 .",
+	])
+
+	var result: ChainResult = MergeResolver.new(config).resolve_chain(board, [Vector2i(2, 0), Vector2i(3, 0)])
+
+	assert_eq(result.chain_length, 1)
+	assert_eq(BoardFixture.describe_board(board), [". . 3 | 3 . ."])
+
+
 func test_max_level_tiles_do_not_merge() -> void:
 	var board: BoardState = BoardFixture.create_board([
 		"12 12 . | . . .",

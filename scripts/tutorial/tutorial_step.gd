@@ -46,6 +46,7 @@ static func create_config() -> BalancingConfig:
 	config.spawn_weight_tiers = [fallback_tier]
 	config.chain_multiplier_step = CHAIN_MULTIPLIER_STEP
 	config.large_group_bonus_per_extra_tile = 0
+	config.is_cross_axis_merge_enabled = true
 	config.is_distorted_reflection_enabled = false
 	return config
 

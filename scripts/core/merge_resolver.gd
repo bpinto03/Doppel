@@ -63,10 +63,16 @@ func _collect_connected_cells(board: BoardState, start_cell: Vector2i, visited_c
 		var cell: Vector2i = cells_to_visit.pop_back()
 		connected_cells.append(cell)
 		for neighbor: Vector2i in board.get_orthogonal_neighbors(cell):
-			if not visited_cells.has(neighbor) and board.get_level(neighbor) == level:
+			if not visited_cells.has(neighbor) and _can_connect(board, cell, neighbor, level):
 				visited_cells[neighbor] = true
 				cells_to_visit.append(neighbor)
 	return connected_cells
+
+
+func _can_connect(board: BoardState, cell: Vector2i, neighbor: Vector2i, level: int) -> bool:
+	if not _config.is_cross_axis_merge_enabled and board.is_across_axis(cell, neighbor):
+		return false
+	return board.get_level(neighbor) == level
 
 
 ## Returns the cells holding the merged tiles.
