@@ -37,7 +37,7 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 | `resolution_playback.gd` | Replays a turn's resolution events with simple tweens, emits `playback_finished` |
 | `resolution_playback_config.gd` | Playback durations, loaded from `data/resolution_playback.tres` |
 | `tile_swatch.gd` | Draws one tile (current, reflection, next previews) |
-| `tile_painter.gd` | Draws a tile with the active palette; sizes its value with `TileTextConfig` |
+| `tile_painter.gd` | Draws a tile with the active palette: a rounded `StyleBoxFlat` with a darker bottom relief, and its value sized with `TileTextConfig`. `draw_tile_shape()` draws the same rounded shape, filled or outlined, for empty cells, merge pulses and tutorial highlights |
 | `theme_palette.gd` | `ThemePalette`: colors of one theme, for the interface, board and tiles |
 | `tile_text_config.gd` | Font and size limits of tile values, loaded from `data/tile_text.tres` |
 | `ui_theme_builder.gd` | Builds the interface `Theme` (label color, panels, buttons) of a palette on top of `assets/themes/base_theme.tres` |

@@ -103,7 +103,7 @@ Objectif : **savoir si le jeu est fun**, rien d'autre.
 - [x] Créer les autoloads : `SaveManager`, `AudioManager`, `Settings`, `I18n`
 
 ### 2.2 Direction artistique
-- [ ] Choisir une palette de couleurs lisible et une police
+- [x] Choisir une palette de couleurs lisible et une police
 - [ ] Concevoir les visuels de tuiles (niveaux 1 à 12) avec symboles ou motifs en plus des couleurs (daltonisme)
 - [ ] Concevoir l'arrière-plan, la grille, l'axe central
 

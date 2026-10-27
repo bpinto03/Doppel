@@ -17,10 +17,11 @@ Step 2.2 needs a visual identity readable on a small screen, in sunlight and for
 - **Font: Fredoka** (SemiBold for the interface, Bold for tile values), one family for the whole game. Chosen over Rubik for its compact digits: "4096" is 2.16 em wide in Fredoka Bold against 2.66 em in Rubik Bold, so it is drawn about 23 % larger in the same tile. It lacks "≈": avoid it in texts.
 - **Tile value size** follows `data/tile_text.tres`: as large as possible within a height ratio and a width ratio of the tile, measured with the font, so longer values shrink without per-length cases.
 - **Layered tiles**: neutral base and level symbols tinted by the palette, so a theme is only a palette.
+- **Tile base**: a `StyleBoxFlat` drawn by `TilePainter`, no image asset. Rounded corners and a darker bottom border as relief, both relative to the shorter side of the cell; like a 9-slice, corners keep their shape on stretched cells. The relief color is the tile color darkened, so it follows any palette.
 - No automatic theme following the system for now. Godot 4.7 has `DisplayServer.is_dark_mode()`; debug builds log it at launch to check Android support.
 
 ## Consequences
 
-- To validate on a phone: Paper tiles 4, 32, 256 and 2048 are very dark and may be confused in low light.
+- Both themes were validated on a phone (Night indoors, Paper near a window). Paper tiles 4, 32, 256 and 2048 stay the darkest; the symbols must separate them.
 - A shop theme with textures (pixel art, marble) would need optional textures in `ThemePalette`; not built until such a theme is wanted.
 - Until the settings screen (step 3.1), debug builds show a "Theme" button in the HUD to switch themes.

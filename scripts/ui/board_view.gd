@@ -17,7 +17,7 @@ const GHOST_OPACITY: float = 0.4
 const GHOST_LINK_OPACITY: float = 0.3
 const GHOST_LINK_WIDTH: float = 3.0
 const HINT_COLUMN_OPACITY: float = 0.25
-const HINT_CELL_OUTLINE_WIDTH: float = 6.0
+const HINT_CELL_OUTLINE_WIDTH: int = 6
 const HINT_AXIS_WIDTH: float = 14.0
 const NO_COLUMN: int = -1
 
@@ -225,7 +225,7 @@ func _draw_tutorial_hint() -> void:
 	draw_rect(_get_column_rect(_displayed_board.get_mirror_column(_hint_step.target_column)), column_color)
 	var outline_color := Color(tile_painter.palette.highlight, _hint_strength)
 	for cell: Vector2i in _hint_step.highlighted_cells:
-		draw_rect(_get_tile_rect(cell), outline_color, false, HINT_CELL_OUTLINE_WIDTH)
+		tile_painter.draw_tile_shape(self, _get_tile_rect(cell), outline_color, HINT_CELL_OUTLINE_WIDTH)
 	if _hint_step.is_axis_highlighted:
 		_draw_axis_line(outline_color, HINT_AXIS_WIDTH)
 
@@ -239,7 +239,7 @@ func _draw_moving_tiles() -> void:
 func _draw_pulse() -> void:
 	var pulse_color := Color(PULSE_COLOR, PULSE_COLOR.a * _pulse_strength)
 	for cell: Vector2i in _pulsing_cells:
-		draw_rect(_get_tile_rect(cell), pulse_color)
+		tile_painter.draw_tile_shape(self, _get_tile_rect(cell), pulse_color)
 
 
 func _draw_ghost() -> void:
