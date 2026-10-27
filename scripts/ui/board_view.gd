@@ -55,6 +55,7 @@ var _hint_tween: Tween
 var _frame_box := StyleBoxFlat.new()
 ## Holds the axis and board effects, so they move with the drawn board.
 var _effects_layer := Node2D.new()
+var _shake_offset := Vector2.ZERO
 var _axis := ColorRect.new()
 
 
@@ -69,6 +70,17 @@ func _ready() -> void:
 
 func add_board_effect(effect: Node2D) -> void:
 	_effects_layer.add_child(effect)
+
+
+## Moves the drawn board and its effects without touching the layout.
+func set_shake_offset(offset: Vector2) -> void:
+	_shake_offset = offset
+	_effects_layer.position = offset
+	queue_redraw()
+
+
+func get_shake_offset() -> Vector2:
+	return _shake_offset
 
 
 func get_cell_center(cell: Vector2i) -> Vector2:
@@ -254,6 +266,7 @@ func _set_hovered_column(column: int) -> void:
 func _draw() -> void:
 	if _displayed_board == null or tile_painter == null:
 		return
+	draw_set_transform(_shake_offset)
 	_frame_box.draw(get_canvas_item(), _get_frame_rect())
 	for column: int in _displayed_board.get_column_count():
 		for row: int in _displayed_board.row_count:

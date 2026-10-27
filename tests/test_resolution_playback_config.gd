@@ -25,3 +25,10 @@ func test_particle_count_rises_with_the_link_up_to_its_cap() -> void:
 	assert_eq(CONFIG.get_particle_count(1), CONFIG.particles_per_merge)
 	assert_gt(CONFIG.get_particle_count(2), CONFIG.get_particle_count(1))
 	assert_eq(CONFIG.get_particle_count(LONG_CHAIN_LINK), CONFIG.max_particles_per_burst)
+
+
+func test_shake_starts_at_its_link_then_grows_up_to_its_cap() -> void:
+	assert_eq(CONFIG.get_shake_amplitude(CONFIG.shake_min_link - 1), 0.0)
+	assert_eq(CONFIG.get_shake_amplitude(CONFIG.shake_min_link), CONFIG.shake_amplitude)
+	assert_gt(CONFIG.get_shake_amplitude(CONFIG.shake_min_link + 1), CONFIG.shake_amplitude)
+	assert_eq(CONFIG.get_shake_amplitude(LONG_CHAIN_LINK), CONFIG.shake_max_amplitude)

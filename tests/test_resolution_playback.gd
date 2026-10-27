@@ -48,6 +48,27 @@ func test_playback_left_to_run_finishes_once_on_the_session_board() -> void:
 	assert_eq(BoardFixture.describe_board(_board_view.get_displayed_board()), BoardFixture.describe_board(session.board))
 
 
+func test_board_shake_is_cleared_when_the_turn_ends() -> void:
+	var session: GameSession = _create_chain_session()
+	var playback: ResolutionPlayback = _create_playback()
+
+	_play_turn(session, playback)
+	await wait_for_signal(playback.playback_finished, MAX_WAIT_SECONDS)
+
+	assert_eq(_board_view.get_shake_offset(), Vector2.ZERO)
+
+
+func test_board_shake_is_cleared_when_the_turn_is_skipped() -> void:
+	var session: GameSession = _create_chain_session()
+	var playback: ResolutionPlayback = _create_playback()
+
+	_play_turn(session, playback)
+	await wait_seconds(SETTLE_SECONDS)
+	playback.skip()
+
+	assert_eq(_board_view.get_shake_offset(), Vector2.ZERO)
+
+
 func test_displayed_board_starts_from_the_board_before_the_turn() -> void:
 	var session: GameSession = _create_chain_session()
 	var board_before: Array[String] = BoardFixture.describe_board(session.board)
@@ -83,6 +104,10 @@ func _create_playback() -> ResolutionPlayback:
 	config.max_particles_per_burst = 1
 	config.max_live_particles = 1
 	config.particle_lifetime = SHORT_DURATION
+	config.shake_min_link = 1
+	config.shake_amplitude = 0.1
+	config.shake_max_amplitude = 0.1
+	config.shake_duration = MAX_WAIT_SECONDS
 	config.step_pause = SHORT_DURATION
 	config.max_chain_duration = MAX_WAIT_SECONDS
 	return ResolutionPlayback.new(config, _board_view, _chain_label)

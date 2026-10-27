@@ -26,6 +26,12 @@ var is_music_enabled: bool:
 	set(value):
 		_store("is_music_enabled", value)
 
+var is_screen_shake_enabled: bool:
+	get:
+		return SaveManager.get_value(SECTION, "is_screen_shake_enabled", true)
+	set(value):
+		_store("is_screen_shake_enabled", value)
+
 var is_vibration_enabled: bool:
 	get:
 		return SaveManager.get_value(SECTION, "is_vibration_enabled", true)

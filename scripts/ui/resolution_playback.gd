@@ -17,6 +17,8 @@ var _events: Array[ResolutionEvent]
 var _next_event_index: int
 var _tween: Tween
 var _planned_duration: float
+var _shake_tween: Tween
+var _shake_rng := RandomNumberGenerator.new()
 
 
 func _init(config: ResolutionPlaybackConfig, board_view: BoardView, chain_label: Label) -> void:
@@ -126,6 +128,7 @@ func _queue_chain_link(link_start: int, link_end: int) -> void:
 	_tween.tween_method(_board_view.set_move_progress, 0.0, 1.0, converge_duration).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	_tween.tween_callback(_apply_events_until.bind(link_end))
 	_tween.tween_callback(_burst_particles.bind(merges))
+	_tween.tween_callback(_start_shake.bind(_config.get_shake_amplitude(first_merge.chain_link)))
 	_queue_pop(result_cells, _config.get_pop_scale(first_merge.chain_link), pop_duration)
 	_queue_pause(pulse_duration + converge_duration + pop_duration)
 
@@ -160,6 +163,29 @@ func _burst_particles(merges: Array[GroupMergedEvent]) -> void:
 		_particles.burst(_board_view.get_cell_center(merge.result_cell), color, _config.get_particle_count(merge.chain_link), cell_width)
 
 
+## Runs beside the turn tween, so it never lengthens the turn.
+func _start_shake(amplitude: float) -> void:
+	if amplitude <= 0.0 or not Settings.is_screen_shake_enabled:
+		return
+	_stop_shake()
+	_shake_tween = _board_view.create_tween()
+	_shake_tween.tween_method(_set_shake_progress.bind(amplitude * _board_view.get_cell_width()), 0.0, 1.0, _config.shake_duration)
+	_shake_tween.tween_callback(_stop_shake)
+
+
+## A random offset each frame, fading out over the shake.
+func _set_shake_progress(progress: float, amplitude: float) -> void:
+	var direction := Vector2.from_angle(_shake_rng.randf() * TAU)
+	_board_view.set_shake_offset(direction * amplitude * (1.0 - progress))
+
+
+func _stop_shake() -> void:
+	if _shake_tween != null:
+		_shake_tween.kill()
+		_shake_tween = null
+	_board_view.set_shake_offset(Vector2.ZERO)
+
+
 ## Wider and shorter, then back to the tile size.
 func _set_squash_progress(progress: float) -> void:
 	var squash: float = _config.landing_squash * sin(progress * PI)
@@ -187,6 +213,7 @@ func _finish() -> void:
 	if not is_playing:
 		return
 	is_playing = false
+	_stop_shake()
 	_chain_label.visible = false
 	_board_view.clear_animation()
 	playback_finished.emit()

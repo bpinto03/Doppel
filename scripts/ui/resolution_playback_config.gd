@@ -49,6 +49,14 @@ extends Resource
 ## Particles start on a circle of this radius around the result tile center, so they leave from its edge.
 @export var particle_start_radius: float
 
+@export_group("Shake")
+## From this chain link on, the board shakes; amplitudes are in cell widths.
+@export var shake_min_link: int
+@export var shake_amplitude: float
+@export var shake_amplitude_per_link: float
+@export var shake_max_amplitude: float
+@export var shake_duration: float
+
 @export_group("Turn")
 @export var step_pause: float
 ## Longer turns play faster, all steps scaled by the same factor, to fit in this duration.
@@ -70,3 +78,10 @@ func get_pop_scale(chain_link: int) -> float:
 
 func get_particle_count(chain_link: int) -> int:
 	return mini(particles_per_merge + particles_per_extra_link * (chain_link - 1), max_particles_per_burst)
+
+
+## Zero below shake_min_link.
+func get_shake_amplitude(chain_link: int) -> float:
+	if chain_link < shake_min_link:
+		return 0.0
+	return minf(shake_amplitude + shake_amplitude_per_link * (chain_link - shake_min_link), shake_max_amplitude)

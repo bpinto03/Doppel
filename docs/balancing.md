@@ -54,6 +54,11 @@ Durations in seconds, in `data/resolution_playback.tres` (a `ResolutionPlaybackC
 | `particle_min_speed`, `particle_max_speed` | 1.2, 2.2 | Launch speed, in cell widths per second **[TO TEST]** |
 | `particle_gravity` | 4.0 | Pull down, in cell widths per second squared |
 | `particle_start_radius` | 0.4 | Particles start on this circle around the result tile center, in cell widths, so they leave from its edge |
+| `shake_min_link` | 3 | First chain link that shakes the board **[TO TEST]** |
+| `shake_amplitude` | 0.04 | Shake amplitude on that link, in cell widths **[TO TEST]** |
+| `shake_amplitude_per_link` | 0.02 | Amplitude added per further link |
+| `shake_max_amplitude` | 0.11 | Largest shake amplitude |
+| `shake_duration` | 0.18 | Length of a shake; it runs beside the turn and never lengthens it **[TO TEST]** |
 | `step_pause` | 0.02 | Pause after each step |
 | `max_chain_duration` | 2.5 | Longest playback of a turn; longer turns are sped up uniformly |
 

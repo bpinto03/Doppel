@@ -52,7 +52,7 @@ Loaded in this order; each one may use the ones above it.
 | Autoload | Responsibility |
 |----------|----------------|
 | `SaveManager` | Versioned local save in `user://save.cfg` (see [0002](decisions/0002-save-format.md)). `get_value` / `set_value` by section and key; every change is written at once |
-| `Settings` | Sound, music, vibration, language and theme (`palette_name`: `paper` or `night`), stored in the `settings` section. Emits `changed`, and `palette_changed` for the theme |
+| `Settings` | Sound, music, vibration, screen shake, language and theme (`palette_name`: `paper` or `night`), stored in the `settings` section. Emits `changed`, and `palette_changed` for the theme |
 | `I18n` | Sets the locale: chosen language, else the device language if supported (en, fr), else English |
 | `AudioManager` | `play_sound()` and `play_music()`, silent when the matching setting is off |
 
@@ -109,7 +109,7 @@ While a finger is down on the board, or the mouse hovers it on PC, `BoardView` a
 
 ## Resolution playback
 
-- `ResolutionPlayback` builds one `Tween` for the whole turn: placed tiles drop from the top row, speeding up, and squash on landing, each chain link flashes its groups, slides them onto their result cells and pops the results, later links faster and with a larger pop (`ResolutionPlaybackConfig.get_chain_intensity()`); each result tile throws a particle burst in its palette color, larger on later links, fallen tiles slide down and squash the same way, with a short pause after each step. From link 2 on, a label shows the multiplier (`x2`, `x3` …).
+- `ResolutionPlayback` builds one `Tween` for the whole turn: placed tiles drop from the top row, speeding up, and squash on landing, each chain link flashes its groups, slides them onto their result cells and pops the results, later links faster and with a larger pop (`ResolutionPlaybackConfig.get_chain_intensity()`); each result tile throws a particle burst in its palette color, larger on later links, and from a configured link the board shakes (`BoardView.set_shake_offset()`, which moves the drawing and the effects layer, never the layout), unless `Settings.is_screen_shake_enabled` is off, fallen tiles slide down and squash the same way, with a short pause after each step. From link 2 on, a label shows the multiplier (`x2`, `x3` …).
 - The displayed board only changes through `ResolutionEvent.apply_to()`; the presentation never applies game rules.
 - A turn longer than `max_chain_duration` plays faster: the tween speed scale is raised so the whole turn fits.
 - While playing, the board ignores taps and the restart button is disabled. A press on the board skips: the tween stops, the remaining events are applied, and `playback_finished` fires. Outside the tutorial this unlocks the board at once, so the same press plays the next tile on release. It fires exactly once per turn, whether the playback ends or is skipped, any number of times.
