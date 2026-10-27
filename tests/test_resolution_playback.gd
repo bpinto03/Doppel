@@ -13,6 +13,7 @@ var _chain_label: Label
 func before_each() -> void:
 	_board_view = BoardView.new()
 	_board_view.size = BOARD_VIEW_SIZE
+	_board_view.tile_painter = TilePainter.new(preload("res://data/palette_paper.tres"), preload("res://data/tile_text.tres"))
 	add_child_autofree(_board_view)
 	_chain_label = Label.new()
 	_board_view.add_child(_chain_label)
@@ -78,6 +79,10 @@ func _create_playback() -> ResolutionPlayback:
 	config.chain_intensity_curve = Curve.new()
 	config.chain_intensity_max_link = 2
 	config.chain_max_speed_up = 1.0
+	config.particles_per_merge = 1
+	config.max_particles_per_burst = 1
+	config.max_live_particles = 1
+	config.particle_lifetime = SHORT_DURATION
 	config.step_pause = SHORT_DURATION
 	config.max_chain_duration = MAX_WAIT_SECONDS
 	return ResolutionPlayback.new(config, _board_view, _chain_label)

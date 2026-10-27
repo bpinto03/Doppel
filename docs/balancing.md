@@ -45,6 +45,15 @@ Durations in seconds, in `data/resolution_playback.tres` (a `ResolutionPlaybackC
 | `chain_intensity_curve` | Linear 0 to 1 | Chain intensity from link 1 to `chain_intensity_max_link` |
 | `chain_intensity_max_link` | 5 | First link played at full intensity |
 | `chain_max_speed_up` | 1.6 | Merge steps play this many times faster at full intensity |
+| `particles_per_merge` | 8 | Particles thrown by each merge result on the first chain link **[TO TEST]** |
+| `particles_per_extra_link` | 4 | Particles added per further chain link **[TO TEST]** |
+| `max_particles_per_burst` | 24 | Largest burst |
+| `max_live_particles` | 96 | Most particles on screen at once; bursts shrink or drop beyond it |
+| `particle_lifetime` | 0.45 | Life of a particle, in seconds **[TO TEST]** |
+| `particle_min_size`, `particle_max_size` | 0.07, 0.12 | Particle diameter, in cell widths **[TO TEST]** |
+| `particle_min_speed`, `particle_max_speed` | 1.2, 2.2 | Launch speed, in cell widths per second **[TO TEST]** |
+| `particle_gravity` | 4.0 | Pull down, in cell widths per second squared |
+| `particle_start_radius` | 0.4 | Particles start on this circle around the result tile center, in cell widths, so they leave from its edge |
 | `step_pause` | 0.02 | Pause after each step |
 | `max_chain_duration` | 2.5 | Longest playback of a turn; longer turns are sped up uniformly |
 

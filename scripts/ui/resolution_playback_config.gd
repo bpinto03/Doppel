@@ -30,6 +30,25 @@ extends Resource
 ## Merge steps of a chain link play this many times faster at full intensity.
 @export var chain_max_speed_up: float
 
+@export_group("Particles")
+## A burst leaves each merge result; later chain links add more particles.
+@export var particles_per_merge: int
+@export var particles_per_extra_link: int
+@export var max_particles_per_burst: int
+## Bursts never put more particles on screen at once than this.
+@export var max_live_particles: int
+@export var particle_lifetime: float
+## Sizes, speeds and gravity are relative to the cell width, so they follow the board size.
+@export var particle_min_size: float
+@export var particle_max_size: float
+## Cell widths per second.
+@export var particle_min_speed: float
+@export var particle_max_speed: float
+## Cell widths per second squared.
+@export var particle_gravity: float
+## Particles start on a circle of this radius around the result tile center, so they leave from its edge.
+@export var particle_start_radius: float
+
 @export_group("Turn")
 @export var step_pause: float
 ## Longer turns play faster, all steps scaled by the same factor, to fit in this duration.
@@ -47,3 +66,7 @@ func get_chain_speed(chain_link: int) -> float:
 
 func get_pop_scale(chain_link: int) -> float:
 	return lerpf(merge_pop_scale, merge_pop_max_scale, get_chain_intensity(chain_link))
+
+
+func get_particle_count(chain_link: int) -> int:
+	return mini(particles_per_merge + particles_per_extra_link * (chain_link - 1), max_particles_per_burst)

@@ -31,7 +31,8 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 | Script | Responsibility |
 |--------|----------------|
 | `game_screen.gd` | Owns the `GameSession`, forwards released columns, starts the playback of each turn, refreshes the HUD when it ends, emits `turn_playback_finished`, saves the best score through `SaveManager`, applies the active palette (colors and background image) and rebuilds it on `Settings.palette_changed`; in debug builds, shows a theme switch button and logs `DisplayServer.is_dark_mode()` |
-| `board_view.gd` | Draws the board frame (`StyleBoxFlat`, palette `panel` color), the displayed board, moving tiles, merge pulses and the placement ghost, dims unplayable columns, maps a touched column to the played left column (`find_played_column`), emits `column_released` and `pressed_while_locked`. The mirror axis is a child `ColorRect`, placed when the board or the view size changes |
+| `board_view.gd` | Draws the board frame (`StyleBoxFlat`, palette `panel` color), the displayed board, moving tiles, merge pulses and the placement ghost, dims unplayable columns, maps a touched column to the played left column (`find_played_column`), emits `column_released` and `pressed_while_locked`. The mirror axis (a `ColorRect`, placed when the board or the view size changes) and board effects such as particles sit in a child effects layer |
+| `merge_particles.gd` | `MergeParticles`: fixed pool of one-shot `CPUParticles2D` emitters with a generated disc texture; bursts never exceed the live particle cap |
 | `board_style.gd` | `BoardStyle`: frame padding and corner radius, cell gap, axis width, loaded from `data/board_style.tres` |
 | `tutorial_panel.gd` | Shows a step's instruction, then its explanation with Next / Play; Skip at any time. Emits `next_requested`, `skip_requested` |
 | `tutorial_hint_config.gd` | Tutorial highlight pulse period, loaded from `data/tutorial_hint.tres` |
@@ -108,7 +109,7 @@ While a finger is down on the board, or the mouse hovers it on PC, `BoardView` a
 
 ## Resolution playback
 
-- `ResolutionPlayback` builds one `Tween` for the whole turn: placed tiles drop from the top row, speeding up, and squash on landing, each chain link flashes its groups, slides them onto their result cells and pops the results, later links faster and with a larger pop (`ResolutionPlaybackConfig.get_chain_intensity()`), fallen tiles slide down and squash the same way, with a short pause after each step. From link 2 on, a label shows the multiplier (`x2`, `x3` …).
+- `ResolutionPlayback` builds one `Tween` for the whole turn: placed tiles drop from the top row, speeding up, and squash on landing, each chain link flashes its groups, slides them onto their result cells and pops the results, later links faster and with a larger pop (`ResolutionPlaybackConfig.get_chain_intensity()`); each result tile throws a particle burst in its palette color, larger on later links, fallen tiles slide down and squash the same way, with a short pause after each step. From link 2 on, a label shows the multiplier (`x2`, `x3` …).
 - The displayed board only changes through `ResolutionEvent.apply_to()`; the presentation never applies game rules.
 - A turn longer than `max_chain_duration` plays faster: the tween speed scale is raised so the whole turn fits.
 - While playing, the board ignores taps and the restart button is disabled. A press on the board skips: the tween stops, the remaining events are applied, and `playback_finished` fires. Outside the tutorial this unlocks the board at once, so the same press plays the next tile on release. It fires exactly once per turn, whether the playback ends or is skipped, any number of times.

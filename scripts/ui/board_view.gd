@@ -53,6 +53,8 @@ var _hint_step: TutorialStep
 var _hint_strength: float
 var _hint_tween: Tween
 var _frame_box := StyleBoxFlat.new()
+## Holds the axis and board effects, so they move with the drawn board.
+var _effects_layer := Node2D.new()
 var _axis := ColorRect.new()
 
 
@@ -60,8 +62,21 @@ func _ready() -> void:
 	_frame_box.set_corner_radius_all(BOARD_STYLE.frame_corner_radius)
 	_axis.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_axis.visible = false
-	add_child(_axis)
-	move_child(_axis, 0)
+	_effects_layer.add_child(_axis)
+	add_child(_effects_layer)
+	move_child(_effects_layer, 0)
+
+
+func add_board_effect(effect: Node2D) -> void:
+	_effects_layer.add_child(effect)
+
+
+func get_cell_center(cell: Vector2i) -> Vector2:
+	return _get_tile_rect(cell).get_center()
+
+
+func get_cell_width() -> float:
+	return _get_cell_size().x
 
 
 func show_session(session: GameSession) -> void:

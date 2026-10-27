@@ -19,3 +19,9 @@ func test_pop_and_speed_stay_within_their_limits() -> void:
 	assert_almost_eq(CONFIG.get_chain_speed(1), 1.0, 0.001)
 	assert_almost_eq(CONFIG.get_pop_scale(LONG_CHAIN_LINK), CONFIG.merge_pop_max_scale, 0.001)
 	assert_almost_eq(CONFIG.get_chain_speed(LONG_CHAIN_LINK), CONFIG.chain_max_speed_up, 0.001)
+
+
+func test_particle_count_rises_with_the_link_up_to_its_cap() -> void:
+	assert_eq(CONFIG.get_particle_count(1), CONFIG.particles_per_merge)
+	assert_gt(CONFIG.get_particle_count(2), CONFIG.get_particle_count(1))
+	assert_eq(CONFIG.get_particle_count(LONG_CHAIN_LINK), CONFIG.max_particles_per_burst)

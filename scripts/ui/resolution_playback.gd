@@ -11,6 +11,7 @@ var is_playing: bool
 var _config: ResolutionPlaybackConfig
 var _board_view: BoardView
 var _chain_label: Label
+var _particles: MergeParticles
 var _displayed_board: BoardState
 var _events: Array[ResolutionEvent]
 var _next_event_index: int
@@ -22,6 +23,8 @@ func _init(config: ResolutionPlaybackConfig, board_view: BoardView, chain_label:
 	_config = config
 	_board_view = board_view
 	_chain_label = chain_label
+	_particles = MergeParticles.new(config)
+	board_view.add_board_effect(_particles)
 
 
 func play(board_before: BoardState, events: Array[ResolutionEvent]) -> void:
@@ -103,8 +106,10 @@ func _queue_chain_link(link_start: int, link_end: int) -> void:
 	var converging_tiles: Array[BoardView.MovingTile] = []
 	var converging_cells: Array[Vector2i] = []
 	var result_cells: Array[Vector2i] = []
+	var merges: Array[GroupMergedEvent] = []
 	for index: int in range(link_start, link_end):
 		var merge := _events[index] as GroupMergedEvent
+		merges.append(merge)
 		group_cells.append_array(merge.group_cells)
 		result_cells.append(merge.result_cell)
 		for cell: Vector2i in merge.group_cells:
@@ -120,6 +125,7 @@ func _queue_chain_link(link_start: int, link_end: int) -> void:
 	_tween.tween_callback(_board_view.start_moving_tiles.bind(converging_tiles, converging_cells))
 	_tween.tween_method(_board_view.set_move_progress, 0.0, 1.0, converge_duration).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	_tween.tween_callback(_apply_events_until.bind(link_end))
+	_tween.tween_callback(_burst_particles.bind(merges))
 	_queue_pop(result_cells, _config.get_pop_scale(first_merge.chain_link), pop_duration)
 	_queue_pause(pulse_duration + converge_duration + pop_duration)
 
@@ -144,6 +150,14 @@ func _find_chain_link_end(link_start: int) -> int:
 	while index < _events.size() and _events[index] is GroupMergedEvent and (_events[index] as GroupMergedEvent).chain_link == chain_link:
 		index += 1
 	return index
+
+
+## Each burst takes the result tile color of the active palette, so it follows the theme.
+func _burst_particles(merges: Array[GroupMergedEvent]) -> void:
+	var cell_width: float = _board_view.get_cell_width()
+	for merge: GroupMergedEvent in merges:
+		var color: Color = _board_view.tile_painter.palette.get_tile_color(merge.result_level)
+		_particles.burst(_board_view.get_cell_center(merge.result_cell), color, _config.get_particle_count(merge.chain_link), cell_width)
 
 
 ## Wider and shorter, then back to the tile size.
