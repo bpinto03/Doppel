@@ -46,6 +46,12 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 | `ui_theme_builder.gd` | Builds the interface `Theme` (label color, panels, buttons) of a palette on top of `assets/themes/base_theme.tres` |
 | `safe_area_margin.gd` | `MarginContainer` whose scene margins are measured from the safe area (notch, system bars), on mobile only |
 
+### `scripts/debug/` — debug builds only
+
+| Script | Responsibility |
+|--------|----------------|
+| `frame_rate_probe.gd` | `FrameRateProbe`: logs the average and lowest frame rate of each playback (`Playback FPS: …`, read with `adb logcat -s godot`). Added by `game_screen.gd` in debug builds; removed in step 3.1 |
+
 ### `scripts/autoload/` — platform services
 
 Loaded in this order; each one may use the ones above it.
