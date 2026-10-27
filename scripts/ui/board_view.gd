@@ -4,12 +4,11 @@ extends Control
 signal column_released(column: int)
 signal pressed_while_locked
 
-const CELL_GAP_RATIO: float = 0.06
+const BOARD_STYLE: BoardStyle = preload("res://data/board_style.tres")
 ## Cells stretch up to this height/width ratio to fill the available height, so wider boards keep a similar size.
 const MAX_CELL_HEIGHT_RATIO: float = 1.3
 ## Width of the space around the mirror axis, in cells.
 const AXIS_GAP_IN_CELLS: float = 0.3
-const AXIS_WIDTH: float = 6.0
 ## Blocked columns fade into the background, on light and dark themes alike.
 const BLOCKED_COLUMN_OPACITY: float = 0.6
 const PULSE_COLOR := Color(1.0, 1.0, 1.0, 0.6)
@@ -34,6 +33,8 @@ var restricted_column: int = NO_COLUMN:
 var tile_painter: TilePainter:
 	set(value):
 		tile_painter = value
+		_frame_box.bg_color = tile_painter.palette.panel
+		_axis.color = tile_painter.palette.axis
 		queue_redraw()
 
 var _session: GameSession
@@ -48,6 +49,16 @@ var _pulse_strength: float
 var _hint_step: TutorialStep
 var _hint_strength: float
 var _hint_tween: Tween
+var _frame_box := StyleBoxFlat.new()
+var _axis := ColorRect.new()
+
+
+func _ready() -> void:
+	_frame_box.set_corner_radius_all(BOARD_STYLE.frame_corner_radius)
+	_axis.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_axis.visible = false
+	add_child(_axis)
+	move_child(_axis, 0)
 
 
 func show_session(session: GameSession) -> void:
@@ -59,6 +70,7 @@ func show_session(session: GameSession) -> void:
 func show_board(board: BoardState) -> void:
 	_displayed_board = board
 	clear_animation()
+	_place_axis()
 
 
 func get_displayed_board() -> BoardState:
@@ -121,12 +133,12 @@ static func find_played_column(touched_column: int, board: BoardState) -> int:
 	return board.get_mirror_column(touched_column)
 
 
-## Touch zones split the whole board width, axis gap included, into equal parts,
+## Touch zones split the whole frame width, axis gap included, into equal parts,
 ## so every column is as easy to hit and crossing the axis never leaves a zone.
 func find_touched_column(point: Vector2) -> int:
 	if _displayed_board == null:
 		return NO_COLUMN
-	var board_rect: Rect2 = _get_board_rect()
+	var board_rect: Rect2 = _get_frame_rect()
 	if not board_rect.has_point(point):
 		return NO_COLUMN
 	var zone_width: float = board_rect.size.x / _displayed_board.get_column_count()
@@ -154,6 +166,8 @@ func _gui_input(event: InputEvent) -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_MOUSE_EXIT and not _is_press_armed:
 		_set_hovered_column(NO_COLUMN)
+	elif what == NOTIFICATION_RESIZED:
+		_place_axis()
 
 
 func _on_pressed(press_position: Vector2) -> void:
@@ -193,6 +207,7 @@ func _set_hovered_column(column: int) -> void:
 func _draw() -> void:
 	if _displayed_board == null or tile_painter == null:
 		return
+	_frame_box.draw(get_canvas_item(), _get_frame_rect())
 	for column: int in _displayed_board.get_column_count():
 		for row: int in _displayed_board.row_count:
 			var cell := Vector2i(column, row)
@@ -201,7 +216,6 @@ func _draw() -> void:
 	_draw_blocked_columns()
 	_draw_moving_tiles()
 	_draw_pulse()
-	_draw_axis()
 	_draw_tutorial_hint()
 	_draw_ghost()
 
@@ -255,15 +269,23 @@ func _draw_ghost() -> void:
 	tile_painter.draw_tile(self, reflection_rect, preview.reflection_level, GHOST_OPACITY)
 
 
-func _draw_axis() -> void:
-	_draw_axis_line(tile_painter.palette.axis, AXIS_WIDTH)
-
-
 func _draw_axis_line(color: Color, width: float) -> void:
+	var axis_rect: Rect2 = _get_axis_rect(width)
+	draw_line(Vector2(axis_rect.get_center().x, axis_rect.position.y), Vector2(axis_rect.get_center().x, axis_rect.end.y), color, width)
+
+
+func _place_axis() -> void:
+	_axis.visible = _displayed_board != null
+	if _axis.visible:
+		var axis_rect: Rect2 = _get_axis_rect(BOARD_STYLE.axis_width)
+		_axis.position = axis_rect.position
+		_axis.size = axis_rect.size
+
+
+func _get_axis_rect(width: float) -> Rect2:
 	var axis_x: float = _get_column_x(_displayed_board.column_count_per_side) - _get_cell_size().x * AXIS_GAP_IN_CELLS / 2.0
-	var board_top: float = _get_board_origin().y
-	var board_bottom: float = board_top + _get_cell_size().y * _displayed_board.row_count
-	draw_line(Vector2(axis_x, board_top), Vector2(axis_x, board_bottom), color, width)
+	var board_rect: Rect2 = _get_board_rect()
+	return Rect2(axis_x - width / 2.0, board_rect.position.y, width, board_rect.size.y)
 
 
 ## Rises and falls back once per period.
@@ -281,9 +303,10 @@ func _stop_hint_pulse() -> void:
 
 
 func _get_cell_size() -> Vector2:
+	var cells_area: Vector2 = size - Vector2.ONE * BOARD_STYLE.frame_padding * 2.0
 	var width_in_cells: float = _displayed_board.get_column_count() + AXIS_GAP_IN_CELLS
-	var height_limited_size: float = size.y / _displayed_board.row_count
-	var cell_width: float = minf(size.x / width_in_cells, height_limited_size)
+	var height_limited_size: float = cells_area.y / _displayed_board.row_count
+	var cell_width: float = minf(cells_area.x / width_in_cells, height_limited_size)
 	var cell_height: float = minf(height_limited_size, cell_width * MAX_CELL_HEIGHT_RATIO)
 	return Vector2(cell_width, cell_height)
 
@@ -294,6 +317,10 @@ func _get_board_rect() -> Rect2:
 		(_displayed_board.get_column_count() + AXIS_GAP_IN_CELLS) * cell_size.x, _displayed_board.row_count * cell_size.y
 	)
 	return Rect2((size - board_size) / 2.0, board_size)
+
+
+func _get_frame_rect() -> Rect2:
+	return _get_board_rect().grow(BOARD_STYLE.frame_padding)
 
 
 func _get_board_origin() -> Vector2:
@@ -317,7 +344,7 @@ func _get_tile_rect(cell: Vector2i) -> Rect2:
 ## Row is fractional while a tile is moving.
 func _get_tile_rect_at(column: int, row: float) -> Rect2:
 	var cell_size: Vector2 = _get_cell_size()
-	var gap: float = cell_size.x * CELL_GAP_RATIO
+	var gap: float = cell_size.x * BOARD_STYLE.cell_gap_ratio
 	var row_from_top: float = _displayed_board.row_count - 1 - row
 	var top_left := Vector2(_get_column_x(column), _get_board_origin().y + row_from_top * cell_size.y)
 	return Rect2(top_left, cell_size).grow(-gap / 2.0)

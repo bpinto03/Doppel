@@ -1,9 +1,9 @@
 extends GutTest
 
-## With 6 columns, a 0.3 cell axis gap and 6 rows, this size gives 100 px cells and no margin.
-const BOARD_VIEW_SIZE := Vector2(630.0, 600.0)
-## The 630 px board width split into 6 equal touch zones.
-const TOUCH_ZONE_WIDTH: float = 105.0
+## With 6 columns, a 0.3 cell axis gap and 6 rows, these cells are 100 px wide; the frame padding
+## is added around them, so the frame fills the view.
+const CELLS_SIZE := Vector2(630.0, 600.0)
+const COLUMN_COUNT: int = 6
 const MIDDLE_Y: float = 300.0
 const LEFT_OUTER_COLUMN_POINT := Vector2(50.0, MIDDLE_Y)
 const LEFT_AXIS_COLUMN_POINT := Vector2(250.0, MIDDLE_Y)
@@ -15,11 +15,13 @@ const SLIDE_STEP: float = 5.0
 const SEED: int = 1234
 
 var _board_view: BoardView
+var _touch_zone_width: float
 
 
 func before_each() -> void:
 	_board_view = BoardView.new()
-	_board_view.size = BOARD_VIEW_SIZE
+	_board_view.size = CELLS_SIZE + Vector2.ONE * BoardView.BOARD_STYLE.frame_padding * 2.0
+	_touch_zone_width = _board_view.size.x / COLUMN_COUNT
 	add_child_autofree(_board_view)
 	_show_session_with_board(BoardState.new(3, 6))
 
@@ -45,9 +47,9 @@ func test_played_column_outside_the_board_is_none() -> void:
 
 func test_every_column_has_a_touch_zone_of_the_same_width() -> void:
 	for column: int in _board_view.get_displayed_board().get_column_count():
-		var zone_start: float = column * TOUCH_ZONE_WIDTH
+		var zone_start: float = column * _touch_zone_width
 		assert_eq(_board_view.find_touched_column(Vector2(zone_start + 1.0, MIDDLE_Y)), column)
-		assert_eq(_board_view.find_touched_column(Vector2(zone_start + TOUCH_ZONE_WIDTH - 1.0, MIDDLE_Y)), column)
+		assert_eq(_board_view.find_touched_column(Vector2(zone_start + _touch_zone_width - 1.0, MIDDLE_Y)), column)
 
 
 func test_touching_outside_the_board_hits_no_column() -> void:

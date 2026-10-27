@@ -31,13 +31,14 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 | Script | Responsibility |
 |--------|----------------|
 | `game_screen.gd` | Owns the `GameSession`, forwards released columns, starts the playback of each turn, refreshes the HUD when it ends, emits `turn_playback_finished`, saves the best score through `SaveManager`, applies the active palette and rebuilds it on `Settings.palette_changed`; in debug builds, shows a theme switch button and logs `DisplayServer.is_dark_mode()` |
-| `board_view.gd` | Draws the displayed board, moving tiles, merge pulses and the placement ghost, dims unplayable columns, maps a touched column to the played left column (`find_played_column`), emits `column_released` and `pressed_while_locked` |
+| `board_view.gd` | Draws the board frame (`StyleBoxFlat`, palette `panel` color), the displayed board, moving tiles, merge pulses and the placement ghost, dims unplayable columns, maps a touched column to the played left column (`find_played_column`), emits `column_released` and `pressed_while_locked`. The mirror axis is a child `ColorRect`, placed when the board or the view size changes |
+| `board_style.gd` | `BoardStyle`: frame padding and corner radius, cell gap, axis width, loaded from `data/board_style.tres` |
 | `tutorial_panel.gd` | Shows a step's instruction, then its explanation with Next / Play; Skip at any time. Emits `next_requested`, `skip_requested` |
 | `tutorial_hint_config.gd` | Tutorial highlight pulse period, loaded from `data/tutorial_hint.tres` |
 | `resolution_playback.gd` | Replays a turn's resolution events with simple tweens, emits `playback_finished` |
 | `resolution_playback_config.gd` | Playback durations, loaded from `data/resolution_playback.tres` |
 | `tile_swatch.gd` | Draws one tile (current, reflection, next previews) |
-| `tile_painter.gd` | Draws a tile with the active palette: a rounded `StyleBoxFlat` with a darker bottom relief, and its value sized with `TileTextConfig`. `draw_tile_shape()` draws the same rounded shape, filled or outlined, for empty cells, merge pulses and tutorial highlights |
+| `tile_painter.gd` | Draws a tile with the active palette: a rounded `StyleBoxFlat` with a darker bottom relief, and its value sized with `TileTextConfig`. Empty cells use the same shape, sunken (darker top border). `draw_tile_shape()` draws the same rounded shape, filled or outlined, for merge pulses and tutorial highlights |
 | `theme_palette.gd` | `ThemePalette`: colors of one theme, for the interface, board and tiles |
 | `tile_text_config.gd` | Font and size limits of tile values, loaded from `data/tile_text.tres` |
 | `ui_theme_builder.gd` | Builds the interface `Theme` (label color, panels, buttons) of a palette on top of `assets/themes/base_theme.tres` |
@@ -67,6 +68,7 @@ Loaded in this order; each one may use the ones above it.
 - `data/tutorial_hint.tres`: tutorial highlight pulse period.
 - `data/palette_paper.tres`, `data/palette_night.tres`: the two default themes (see [0003](decisions/0003-art-direction.md)).
 - `data/tile_text.tres`: tile value font and size limits.
+- `data/board_style.tres`: board frame, cell gap and axis sizes.
 - `assets/translations/ui.csv`: player-facing texts (en, fr).
 - `assets/themes/base_theme.tres`: interface font (Fredoka SemiBold) and default font size; colors come from the palette.
 - `assets/fonts/`: Fredoka SemiBold and Bold, with `OFL.txt`.
@@ -97,7 +99,7 @@ Loaded in this order; each one may use the ones above it.
 
 ## Board layout
 
-`BoardView` fits the board to its width. Cells stretch vertically up to `MAX_CELL_HEIGHT_RATIO` (1.3) to fill the free height, so a board with more columns stays about as tall. When the height is the limit, cells stay square. The board is centered in `BoardView`.
+`BoardView` fits the board, inside its frame padding, to its width. Cells stretch vertically up to `MAX_CELL_HEIGHT_RATIO` (1.3) to fill the free height, so a board with more columns stays about as tall. When the height is the limit, cells stay square. The board is centered in `BoardView`.
 
 ## Placement ghost
 

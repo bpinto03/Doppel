@@ -48,6 +48,17 @@ Durations in seconds, in `data/resolution_playback.tres` (a `ResolutionPlaybackC
 | `max_height_ratio` | 0.42 | Largest text height, relative to the tile height |
 | `max_width_ratio` | 0.78 | Largest text width, relative to the tile width; "4096" is width-limited |
 
+## Board style
+
+`data/board_style.tres` (a `BoardStyle`). Colors come from the palette: frame `panel`, empty cells `empty_cell`, axis `axis`.
+
+| Parameter | Default | Controls |
+|-----------|---------|----------|
+| `frame_padding` | 16 | Space between the frame edge and the cells, in pixels |
+| `frame_corner_radius` | 28 | Frame corner radius, in pixels |
+| `cell_gap_ratio` | 0.06 | Space between two cells, relative to the cell width |
+| `axis_width` | 6 | Mirror axis width, in pixels |
+
 ## Confusable tile colors
 
 Non-neighbor levels whose colors look alike with color vision deficiency (simulated, see [0003](decisions/0003-art-direction.md)). Only the value tells them apart. Kept for a possible high-contrast mode in phase 3.

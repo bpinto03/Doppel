@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="BoardStyle" format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/board_style.gd" id="1_style"]
+
+[resource]
+script = ExtResource("1_style")
+frame_padding = 16.0
+frame_corner_radius = 28
+cell_gap_ratio = 0.06
+axis_width = 6.0

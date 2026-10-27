@@ -7,6 +7,9 @@ const REFERENCE_FONT_SIZE: int = 100
 const CORNER_RADIUS_RATIO: float = 0.16
 const RELIEF_RATIO: float = 0.05
 const RELIEF_DARKENING: float = 0.3
+## Empty cells look sunken: a darker top border, the reverse of the tile relief.
+const HOLLOW_DEPTH_RATIO: float = 0.04
+const HOLLOW_DARKENING: float = 0.12
 
 var palette: ThemePalette
 var _text_config: TileTextConfig
@@ -20,7 +23,7 @@ func _init(theme_palette: ThemePalette, text_config: TileTextConfig) -> void:
 
 func draw_tile(canvas: CanvasItem, rect: Rect2, level: int, opacity: float = 1.0) -> void:
 	if level == BoardState.EMPTY_CELL:
-		draw_tile_shape(canvas, rect, Color(palette.empty_cell, opacity))
+		_draw_hollow(canvas, rect, Color(palette.empty_cell, opacity))
 		return
 	var tile_color := Color(palette.get_tile_color(level), opacity)
 	var relief: int = roundi(_get_shorter_side(rect) * RELIEF_RATIO)
@@ -32,7 +35,7 @@ func draw_tile(canvas: CanvasItem, rect: Rect2, level: int, opacity: float = 1.0
 	_draw_value(canvas, face, str(MergeScoring.calculate_tile_value(level)), opacity)
 
 
-## Fills or outlines the tile outline without relief, for empty cells and overlays.
+## Fills or outlines the tile shape without relief, for overlays.
 func draw_tile_shape(canvas: CanvasItem, rect: Rect2, color: Color, outline_width: int = 0) -> void:
 	_set_up_box(rect, color)
 	_tile_box.draw_center = outline_width == 0
@@ -46,6 +49,13 @@ func calculate_font_size(text: String, tile_size: Vector2) -> int:
 	var width_limited_size: float = REFERENCE_FONT_SIZE * tile_size.x * _text_config.max_width_ratio / reference_width
 	var height_limited_size: float = tile_size.y * _text_config.max_height_ratio
 	return floori(minf(width_limited_size, height_limited_size))
+
+
+func _draw_hollow(canvas: CanvasItem, rect: Rect2, color: Color) -> void:
+	_set_up_box(rect, color)
+	_tile_box.border_width_top = roundi(_get_shorter_side(rect) * HOLLOW_DEPTH_RATIO)
+	_tile_box.border_color = color.darkened(HOLLOW_DARKENING)
+	_tile_box.draw(canvas.get_canvas_item(), rect)
 
 
 ## One box is reused for every tile: StyleBoxFlat.draw() records its current values at once.
