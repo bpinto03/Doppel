@@ -30,14 +30,15 @@ var _tutorial_step_index: int = NO_TUTORIAL_STEP
 @onready var _game_over_label: Label = %GameOverLabel
 @onready var _restart_button: Button = %RestartButton
 @onready var _help_button: Button = %HelpButton
-@onready var _chain_label: Label = %ChainLabel
+@onready var _combo_label: Label = %ComboLabel
+@onready var _previews: Control = %Upcoming
 @onready var _tutorial_panel: TutorialPanel = %TutorialPanel
 @onready var _theme_debug_button: Button = %ThemeDebugButton
 
 
 func _ready() -> void:
 	_best_score = SaveManager.get_value(RECORD_SECTION, BEST_SCORE_KEY, 0)
-	_playback = ResolutionPlayback.new(PLAYBACK_CONFIG, _board_view, _chain_label)
+	_playback = ResolutionPlayback.new(PLAYBACK_CONFIG, _board_view, _combo_label, _previews)
 	_playback.playback_finished.connect(_on_playback_finished)
 	_board_view.pressed_while_locked.connect(_playback.skip)
 	_board_view.column_released.connect(_on_column_released)
@@ -150,7 +151,7 @@ func _apply_palette() -> void:
 	theme = UiThemeBuilder.build(palette, BASE_THEME)
 	_background.color = palette.background
 	_background_image.texture = palette.background_image
-	_chain_label.add_theme_color_override(&"font_outline_color", palette.background)
+	_combo_label.add_theme_color_override(&"font_outline_color", palette.background)
 	var tile_painter := TilePainter.new(palette, TILE_TEXT_CONFIG)
 	_board_view.tile_painter = tile_painter
 	for swatch: TileSwatch in [_current_swatch, _reflection_swatch, _next_swatch]:

@@ -38,6 +38,7 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 | `tutorial_hint_config.gd` | Tutorial highlight pulse period, loaded from `data/tutorial_hint.tres` |
 | `resolution_playback.gd` | Replays a turn's resolution events with simple tweens, emits `playback_finished` |
 | `resolution_playback_config.gd` | Playback durations, curves and chain intensity, loaded from `data/resolution_playback.tres` |
+| `combo_text.gd` | `ComboText`: combo message text, with the decimal separator of the current language |
 | `tile_swatch.gd` | Draws one tile (current, reflection, next previews) |
 | `tile_painter.gd` | Draws a tile with the active palette: a rounded `StyleBoxFlat` with a darker bottom relief, and its value sized with `TileTextConfig`. Empty cells use the same shape, sunken (darker top border). `draw_tile_shape()` draws the same rounded shape, filled or outlined, for merge pulses and tutorial highlights |
 | `theme_palette.gd` | `ThemePalette`: colors of one theme, for the interface, board and tiles |
@@ -59,7 +60,7 @@ Loaded in this order; each one may use the ones above it.
 ### Scenes
 
 - `scenes/main.tscn`: entry point, hosts the game screen.
-- `scenes/game/game_screen.tscn`: HUD with "?" button, previews, board, tutorial panel, restart button.
+- `scenes/game/game_screen.tscn`: HUD with "?" button, previews (`Upcoming`, overlaid by `ComboLabel` in a `MarginContainer`, so the message never shifts the layout), board, tutorial panel, restart button.
 - `scenes/game/tutorial_panel.tscn`: tutorial message and buttons.
 
 ### Data and assets
@@ -109,7 +110,7 @@ While a finger is down on the board, or the mouse hovers it on PC, `BoardView` a
 
 ## Resolution playback
 
-- `ResolutionPlayback` builds one `Tween` for the whole turn: placed tiles drop from the top row, speeding up, and squash on landing, each chain link flashes its groups, slides them onto their result cells and pops the results, later links faster and with a larger pop (`ResolutionPlaybackConfig.get_chain_intensity()`); each result tile throws a particle burst in its palette color, larger on later links, and from a configured link the board shakes (`BoardView.set_shake_offset()`, which moves the drawing and the effects layer, never the layout), unless `Settings.is_screen_shake_enabled` is off, fallen tiles slide down and squash the same way, with a short pause after each step. From link 2 on, a label shows the multiplier (`x2`, `x3` …).
+- `ResolutionPlayback` builds one `Tween` for the whole turn: placed tiles drop from the top row, speeding up, and squash on landing, each chain link flashes its groups, slides them onto their result cells and pops the results, later links faster and with a larger pop (`ResolutionPlaybackConfig.get_chain_intensity()`); each result tile throws a particle burst in its palette color, larger on later links, and from a configured link the board shakes (`BoardView.set_shake_offset()`, which moves the drawing and the effects layer, never the layout), unless `Settings.is_screen_shake_enabled` is off, fallen tiles slide down and squash the same way, with a short pause after each step. From link 2 on, one combo label over the previews shows the multiplier (`x2`, `x2,5` in French), with a word from configured links, and pops at each link; the previews are dimmed meanwhile and come back at once when the turn ends or is skipped.
 - The displayed board only changes through `ResolutionEvent.apply_to()`; the presentation never applies game rules.
 - A turn longer than `max_chain_duration` plays faster: the tween speed scale is raised so the whole turn fits.
 - While playing, the board ignores taps and the restart button is disabled. A press on the board skips: the tween stops, the remaining events are applied, and `playback_finished` fires. Outside the tutorial this unlocks the board at once, so the same press plays the next tile on release. It fires exactly once per turn, whether the playback ends or is skipped, any number of times.

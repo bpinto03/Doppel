@@ -10,7 +10,9 @@ var is_playing: bool
 
 var _config: ResolutionPlaybackConfig
 var _board_view: BoardView
-var _chain_label: Label
+var _combo_label: Label
+var _previews: Control
+var _combo_tween: Tween
 var _particles: MergeParticles
 var _displayed_board: BoardState
 var _events: Array[ResolutionEvent]
@@ -21,10 +23,12 @@ var _shake_tween: Tween
 var _shake_rng := RandomNumberGenerator.new()
 
 
-func _init(config: ResolutionPlaybackConfig, board_view: BoardView, chain_label: Label) -> void:
+## The combo label is shown over the previews, which are dimmed meanwhile but never hidden.
+func _init(config: ResolutionPlaybackConfig, board_view: BoardView, combo_label: Label, previews: Control) -> void:
 	_config = config
 	_board_view = board_view
-	_chain_label = chain_label
+	_combo_label = combo_label
+	_previews = previews
 	_particles = MergeParticles.new(config)
 	board_view.add_board_effect(_particles)
 
@@ -121,7 +125,7 @@ func _queue_chain_link(link_start: int, link_end: int) -> void:
 	var pulse_duration: float = _config.merge_pulse_duration / speed
 	var converge_duration: float = _config.merge_converge_duration / speed
 	var pop_duration: float = _config.merge_pop_duration / speed
-	_tween.tween_callback(_show_chain_multiplier.bind(first_merge))
+	_tween.tween_callback(_show_combo.bind(first_merge))
 	_tween.tween_callback(_board_view.start_pulse.bind(group_cells))
 	_tween.tween_method(_set_pulse_progress, 0.0, 1.0, pulse_duration)
 	_tween.tween_callback(_board_view.start_moving_tiles.bind(converging_tiles, converging_cells))
@@ -197,9 +201,30 @@ func _set_pulse_progress(progress: float) -> void:
 	_board_view.set_pulse_strength(sin(progress * PI))
 
 
-func _show_chain_multiplier(merge: GroupMergedEvent) -> void:
-	_chain_label.visible = merge.chain_link > 1
-	_chain_label.text = tr("UI_CHAIN_MULTIPLIER").format({"value": String.num(merge.chain_multiplier)})
+## One label, updated in place with a small pop at each link from link 2 on.
+func _show_combo(merge: GroupMergedEvent) -> void:
+	if merge.chain_link == 1:
+		return
+	_combo_label.text = ComboText.build(merge.chain_link, merge.chain_multiplier, _config)
+	_combo_label.visible = true
+	_previews.modulate.a = _config.preview_dimmed_opacity
+	_combo_label.pivot_offset = _combo_label.size / 2.0
+	if _combo_tween != null:
+		_combo_tween.kill()
+	var peak := Vector2.ONE * _config.combo_pop_scale
+	_combo_tween = _combo_label.create_tween()
+	_combo_tween.tween_property(_combo_label, "scale", peak, _config.combo_pop_duration / 2.0).from(Vector2.ONE).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	_combo_tween.tween_property(_combo_label, "scale", Vector2.ONE, _config.combo_pop_duration / 2.0).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+
+## Immediate, without fading, so a skip shows the previews at once.
+func _hide_combo() -> void:
+	if _combo_tween != null:
+		_combo_tween.kill()
+		_combo_tween = null
+	_combo_label.visible = false
+	_combo_label.scale = Vector2.ONE
+	_previews.modulate.a = 1.0
 
 
 func _apply_events_until(events_end: int) -> void:
@@ -214,6 +239,6 @@ func _finish() -> void:
 		return
 	is_playing = false
 	_stop_shake()
-	_chain_label.visible = false
+	_hide_combo()
 	_board_view.clear_animation()
 	playback_finished.emit()

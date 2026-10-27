@@ -38,5 +38,13 @@ shake_amplitude = 0.04
 shake_amplitude_per_link = 0.02
 shake_max_amplitude = 0.11
 shake_duration = 0.18
+combo_words = Dictionary[int, String]({
+3: "UI_COMBO_GOOD",
+5: "UI_COMBO_GREAT",
+7: "UI_COMBO_AMAZING"
+})
+combo_pop_scale = 1.2
+combo_pop_duration = 0.15
+preview_dimmed_opacity = 0.35
 step_pause = 0.02
 max_chain_duration = 2.5

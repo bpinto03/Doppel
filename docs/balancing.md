@@ -59,6 +59,10 @@ Durations in seconds, in `data/resolution_playback.tres` (a `ResolutionPlaybackC
 | `shake_amplitude_per_link` | 0.02 | Amplitude added per further link |
 | `shake_max_amplitude` | 0.11 | Largest shake amplitude |
 | `shake_duration` | 0.18 | Length of a shake; it runs beside the turn and never lengthens it **[TO TEST]** |
+| `combo_words` | 3: Nice!, 5: Great!, 7: Amazing! | Word shown before the multiplier from each chain link (translation keys) **[TO TEST]** |
+| `combo_pop_scale` | 1.2 | Peak scale of the combo message pop at each link |
+| `combo_pop_duration` | 0.15 | Length of that pop |
+| `preview_dimmed_opacity` | 0.35 | Opacity of the tile previews while the combo message covers them |
 | `step_pause` | 0.02 | Pause after each step |
 | `max_chain_duration` | 2.5 | Longest playback of a turn; longer turns are sped up uniformly |
 

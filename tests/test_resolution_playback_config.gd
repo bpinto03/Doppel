@@ -32,3 +32,12 @@ func test_shake_starts_at_its_link_then_grows_up_to_its_cap() -> void:
 	assert_eq(CONFIG.get_shake_amplitude(CONFIG.shake_min_link), CONFIG.shake_amplitude)
 	assert_gt(CONFIG.get_shake_amplitude(CONFIG.shake_min_link + 1), CONFIG.shake_amplitude)
 	assert_eq(CONFIG.get_shake_amplitude(LONG_CHAIN_LINK), CONFIG.shake_max_amplitude)
+
+
+func test_combo_word_is_the_highest_one_reached() -> void:
+	var word_links: Array[int] = CONFIG.combo_words.keys()
+	word_links.sort()
+
+	assert_eq(CONFIG.get_combo_word_key(word_links[0] - 1), "")
+	assert_eq(CONFIG.get_combo_word_key(word_links[0]), CONFIG.combo_words[word_links[0]])
+	assert_eq(CONFIG.get_combo_word_key(LONG_CHAIN_LINK), CONFIG.combo_words[word_links[-1]])

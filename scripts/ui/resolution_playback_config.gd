@@ -57,6 +57,15 @@ extends Resource
 @export var shake_max_amplitude: float
 @export var shake_duration: float
 
+@export_group("Combo")
+## Chain link from which each word is shown, with its translation key; the highest reached wins.
+@export var combo_words: Dictionary[int, String]
+## The combo message pops at each new link.
+@export var combo_pop_scale: float
+@export var combo_pop_duration: float
+## Opacity of the tile previews while a combo message is shown over them.
+@export var preview_dimmed_opacity: float
+
 @export_group("Turn")
 @export var step_pause: float
 ## Longer turns play faster, all steps scaled by the same factor, to fit in this duration.
@@ -85,3 +94,14 @@ func get_shake_amplitude(chain_link: int) -> float:
 	if chain_link < shake_min_link:
 		return 0.0
 	return minf(shake_amplitude + shake_amplitude_per_link * (chain_link - shake_min_link), shake_max_amplitude)
+
+
+## Empty below the first word link.
+func get_combo_word_key(chain_link: int) -> String:
+	var word_key: String = ""
+	var word_link: int = 0
+	for min_link: int in combo_words:
+		if min_link <= chain_link and min_link > word_link:
+			word_link = min_link
+			word_key = combo_words[min_link]
+	return word_key
