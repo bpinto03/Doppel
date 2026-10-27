@@ -12,6 +12,7 @@
 Decision records:
 - [0001 — Test framework and pinned Godot version](decisions/0001-test-framework-and-godot-version.md)
 - [0002 — Save format](decisions/0002-save-format.md)
+- [0003 — Art direction](decisions/0003-art-direction.md)
 
 Product spec and roadmap (French): [`../CAHIER_DES_CHARGES.md`](../CAHIER_DES_CHARGES.md), [`../STEPS.md`](../STEPS.md).
 

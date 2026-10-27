@@ -5,7 +5,12 @@ var level: int:
 	set(value):
 		level = value
 		queue_redraw()
+var tile_painter: TilePainter:
+	set(value):
+		tile_painter = value
+		queue_redraw()
 
 
 func _draw() -> void:
-	TilePainter.draw_tile(self, Rect2(Vector2.ZERO, size), level)
+	if tile_painter != null:
+		tile_painter.draw_tile(self, Rect2(Vector2.ZERO, size), level)

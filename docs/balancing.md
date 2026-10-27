@@ -38,6 +38,16 @@ Durations in seconds, in `data/resolution_playback.tres` (a `ResolutionPlaybackC
 | `step_pause` | 0.08 | Pause after each step **[TO TEST]** |
 | `max_chain_duration` | 2.5 | Longest playback of a turn; longer turns are sped up uniformly **[TO TEST]** |
 
+## Tile text
+
+`data/tile_text.tres` (a `TileTextConfig`): the value is drawn as large as fits both limits.
+
+| Parameter | Default | Controls |
+|-----------|---------|----------|
+| `font` | Fredoka Bold | Font of tile values |
+| `max_height_ratio` | 0.42 | Largest text height, relative to the tile height |
+| `max_width_ratio` | 0.78 | Largest text width, relative to the tile width; "4096" is width-limited |
+
 ## Tutorial highlight
 
 | Parameter | File | Default | Controls |

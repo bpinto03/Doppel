@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ThemePalette" format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/theme_palette.gd" id="1_palette"]
+
+[resource]
+script = ExtResource("1_palette")
+background = Color(0.07059, 0.07843, 0.1098, 1)
+text = Color(0.9137, 0.9255, 0.9608, 1)
+panel = Color(0.1176, 0.1333, 0.1882, 1)
+button = Color(0.9137, 0.9255, 0.9608, 1)
+button_text = Color(0.07059, 0.07843, 0.1098, 1)
+empty_cell = Color(0.149, 0.1686, 0.2275, 1)
+axis = Color(0.7882, 0.8118, 0.8745, 1)
+highlight = Color(1, 0.8235, 0.302, 1)
+tile_text = Color(0.07843, 0.08627, 0.1216, 1)
+tile_colors = Array[Color]([Color(0.1686, 0.8706, 0.7686, 1), Color(0.7608, 0.4431, 0.7333, 1), Color(0.949, 0.9255, 1, 1), Color(0.8941, 0.7373, 0.2745, 1), Color(0.8353, 0.4157, 0.5608, 1), Color(0.9961, 0.9294, 0.549, 1), Color(0, 0.8314, 0.9333, 1), Color(0.4471, 0.5529, 0.9137, 1), Color(0.7843, 1, 0.8235, 1), Color(0.9961, 0.6314, 0.5725, 1), Color(0.8039, 0.4745, 0.1412, 1), Color(0.902, 1, 0.5922, 1)])

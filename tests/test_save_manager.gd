@@ -1,6 +1,7 @@
 extends GutTest
 
 const SAVE_MANAGER_SCRIPT: GDScript = preload("res://scripts/autoload/save_manager.gd")
+const SETTINGS_SCRIPT: GDScript = preload("res://scripts/autoload/settings.gd")
 const TEST_SAVE_PATH: String = "user://test_save.cfg"
 
 
@@ -51,6 +52,19 @@ func test_unreadable_save_starts_empty() -> void:
 
 	assert_engine_error("ConfigFile parse error")
 	assert_eq(save_manager.get_value("record", "best_score", 0), 0)
+
+
+func test_first_version_save_is_migrated_with_the_default_palette() -> void:
+	var first_version_file := ConfigFile.new()
+	first_version_file.set_value(SAVE_MANAGER_SCRIPT.META_SECTION, SAVE_MANAGER_SCRIPT.VERSION_KEY, SAVE_MANAGER_SCRIPT.FIRST_SAVE_VERSION)
+	first_version_file.set_value("record", "best_score", 512)
+	first_version_file.save(TEST_SAVE_PATH)
+
+	var save_manager: Node = _create_save_manager()
+
+	assert_eq(save_manager.get_value(SETTINGS_SCRIPT.SECTION, SETTINGS_SCRIPT.PALETTE_NAME_KEY, ""), SETTINGS_SCRIPT.DEFAULT_PALETTE_NAME)
+	assert_eq(save_manager.get_value(SAVE_MANAGER_SCRIPT.META_SECTION, SAVE_MANAGER_SCRIPT.VERSION_KEY, 0), SAVE_MANAGER_SCRIPT.SAVE_VERSION)
+	assert_eq(save_manager.get_value("record", "best_score", 0), 512)
 
 
 func _create_save_manager() -> Node:

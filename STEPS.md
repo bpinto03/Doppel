@@ -135,12 +135,12 @@ Objectif : **savoir si le jeu est fun**, rien d'autre.
 - [ ] Écran d'accueil (Jouer, Défi du jour, Boutique, Réglages)
 - [ ] Écran de fin de partie (score, record, pièces gagnées, rejouer)
 - [ ] Écran de pause
-- [ ] Écran de réglages (son, musique, vibration, langue, daltonisme)
+- [ ] Écran de réglages (son, musique, vibration, langue, daltonisme, thème Papier / Nuit) ; retirer le bouton de debug « Thème » du HUD
 - [ ] **Tutoriel** : version finale (mémoriser qu'il a été vu, visuels soignés ; version simple faite en phase 1)
 
 ### 3.2 Pièces et boutique
 - [ ] Définir la formule des pièces gagnées par partie
-- [ ] Créer 4 à 6 thèmes de tuiles
+- [ ] Créer 4 à 6 thèmes de tuiles de boutique, en plus des deux thèmes gratuits Papier et Nuit (mettre à jour les exemples de thèmes du cahier des charges)
 - [ ] Coder la boutique (achat avec pièces, thème équipé, sauvegarde)
 
 ### 3.3 Défis

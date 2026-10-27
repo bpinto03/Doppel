@@ -30,14 +30,17 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 
 | Script | Responsibility |
 |--------|----------------|
-| `game_screen.gd` | Owns the `GameSession`, forwards released columns, starts the playback of each turn, refreshes the HUD when it ends, emits `turn_playback_finished`, saves the best score through `SaveManager` |
+| `game_screen.gd` | Owns the `GameSession`, forwards released columns, starts the playback of each turn, refreshes the HUD when it ends, emits `turn_playback_finished`, saves the best score through `SaveManager`, applies the active palette and rebuilds it on `Settings.palette_changed`; in debug builds, shows a theme switch button and logs `DisplayServer.is_dark_mode()` |
 | `board_view.gd` | Draws the displayed board, moving tiles, merge pulses and the placement ghost, dims unplayable columns, maps a touched column to the played left column (`find_played_column`), emits `column_released` and `pressed_while_locked` |
 | `tutorial_panel.gd` | Shows a step's instruction, then its explanation with Next / Play; Skip at any time. Emits `next_requested`, `skip_requested` |
 | `tutorial_hint_config.gd` | Tutorial highlight pulse period, loaded from `data/tutorial_hint.tres` |
 | `resolution_playback.gd` | Replays a turn's resolution events with simple tweens, emits `playback_finished` |
 | `resolution_playback_config.gd` | Playback durations, loaded from `data/resolution_playback.tres` |
 | `tile_swatch.gd` | Draws one tile (current, reflection, next previews) |
-| `tile_painter.gd` | Shared tile drawing and level colors |
+| `tile_painter.gd` | Draws a tile with the active palette; sizes its value with `TileTextConfig` |
+| `theme_palette.gd` | `ThemePalette`: colors of one theme, for the interface, board and tiles |
+| `tile_text_config.gd` | Font and size limits of tile values, loaded from `data/tile_text.tres` |
+| `ui_theme_builder.gd` | Builds the interface `Theme` (label color, panels, buttons) of a palette on top of `assets/themes/base_theme.tres` |
 | `safe_area_margin.gd` | `MarginContainer` whose scene margins are measured from the safe area (notch, system bars), on mobile only |
 
 ### `scripts/autoload/` — platform services
@@ -47,7 +50,7 @@ Loaded in this order; each one may use the ones above it.
 | Autoload | Responsibility |
 |----------|----------------|
 | `SaveManager` | Versioned local save in `user://save.cfg` (see [0002](decisions/0002-save-format.md)). `get_value` / `set_value` by section and key; every change is written at once |
-| `Settings` | Sound, music, vibration and language, stored in the `settings` section. Emits `changed` |
+| `Settings` | Sound, music, vibration, language and theme (`palette_name`: `paper` or `night`), stored in the `settings` section. Emits `changed`, and `palette_changed` for the theme |
 | `I18n` | Sets the locale: chosen language, else the device language if supported (en, fr), else English |
 | `AudioManager` | `play_sound()` and `play_music()`, silent when the matching setting is off |
 
@@ -62,8 +65,11 @@ Loaded in this order; each one may use the ones above it.
 - `data/balancing.tres`: every gameplay value (see [balancing.md](balancing.md)).
 - `data/resolution_playback.tres`: playback durations (see [balancing.md](balancing.md)).
 - `data/tutorial_hint.tres`: tutorial highlight pulse period.
+- `data/palette_paper.tres`, `data/palette_night.tres`: the two default themes (see [0003](decisions/0003-art-direction.md)).
+- `data/tile_text.tres`: tile value font and size limits.
 - `assets/translations/ui.csv`: player-facing texts (en, fr).
-- `assets/themes/prototype_theme.tres`: font size for the prototype.
+- `assets/themes/base_theme.tres`: interface font (Fredoka SemiBold) and default font size; colors come from the palette.
+- `assets/fonts/`: Fredoka SemiBold and Bold, with `OFL.txt`.
 
 ## Data flow of a turn
 

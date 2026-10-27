@@ -9,14 +9,13 @@ const CELL_GAP_RATIO: float = 0.06
 const MAX_CELL_HEIGHT_RATIO: float = 1.3
 ## Width of the space around the mirror axis, in cells.
 const AXIS_GAP_IN_CELLS: float = 0.3
-const AXIS_COLOR := Color("#e0e4ee")
 const AXIS_WIDTH: float = 6.0
-const BLOCKED_COLUMN_COLOR := Color(0.0, 0.0, 0.0, 0.45)
+## Blocked columns fade into the background, on light and dark themes alike.
+const BLOCKED_COLUMN_OPACITY: float = 0.6
 const PULSE_COLOR := Color(1.0, 1.0, 1.0, 0.6)
 const GHOST_OPACITY: float = 0.4
-const GHOST_LINK_COLOR := Color(1.0, 1.0, 1.0, 0.3)
+const GHOST_LINK_OPACITY: float = 0.3
 const GHOST_LINK_WIDTH: float = 3.0
-const HINT_COLOR := Color("#ffd24d")
 const HINT_COLUMN_OPACITY: float = 0.25
 const HINT_CELL_OUTLINE_WIDTH: float = 6.0
 const HINT_AXIS_WIDTH: float = 14.0
@@ -30,6 +29,11 @@ var is_input_enabled: bool = true:
 var restricted_column: int = NO_COLUMN:
 	set(value):
 		restricted_column = value
+		queue_redraw()
+
+var tile_painter: TilePainter:
+	set(value):
+		tile_painter = value
 		queue_redraw()
 
 var _session: GameSession
@@ -187,13 +191,13 @@ func _set_hovered_column(column: int) -> void:
 
 
 func _draw() -> void:
-	if _displayed_board == null:
+	if _displayed_board == null or tile_painter == null:
 		return
 	for column: int in _displayed_board.get_column_count():
 		for row: int in _displayed_board.row_count:
 			var cell := Vector2i(column, row)
 			var level: int = BoardState.EMPTY_CELL if _hidden_cells.has(cell) else _displayed_board.get_level(cell)
-			TilePainter.draw_tile(self, _get_tile_rect(cell), level)
+			tile_painter.draw_tile(self, _get_tile_rect(cell), level)
 	_draw_blocked_columns()
 	_draw_moving_tiles()
 	_draw_pulse()
@@ -206,19 +210,20 @@ func _draw() -> void:
 func _draw_blocked_columns() -> void:
 	if not is_input_enabled or _session == null:
 		return
+	var blocked_color := Color(tile_painter.palette.background, BLOCKED_COLUMN_OPACITY)
 	for column: int in _displayed_board.column_count_per_side:
 		if not _is_column_selectable(column):
-			draw_rect(_get_column_rect(column), BLOCKED_COLUMN_COLOR)
-			draw_rect(_get_column_rect(_displayed_board.get_mirror_column(column)), BLOCKED_COLUMN_COLOR)
+			draw_rect(_get_column_rect(column), blocked_color)
+			draw_rect(_get_column_rect(_displayed_board.get_mirror_column(column)), blocked_color)
 
 
 func _draw_tutorial_hint() -> void:
 	if _hint_step == null:
 		return
-	var column_color := Color(HINT_COLOR, HINT_COLUMN_OPACITY * _hint_strength)
+	var column_color := Color(tile_painter.palette.highlight, HINT_COLUMN_OPACITY * _hint_strength)
 	draw_rect(_get_column_rect(_hint_step.target_column), column_color)
 	draw_rect(_get_column_rect(_displayed_board.get_mirror_column(_hint_step.target_column)), column_color)
-	var outline_color := Color(HINT_COLOR, _hint_strength)
+	var outline_color := Color(tile_painter.palette.highlight, _hint_strength)
 	for cell: Vector2i in _hint_step.highlighted_cells:
 		draw_rect(_get_tile_rect(cell), outline_color, false, HINT_CELL_OUTLINE_WIDTH)
 	if _hint_step.is_axis_highlighted:
@@ -228,7 +233,7 @@ func _draw_tutorial_hint() -> void:
 func _draw_moving_tiles() -> void:
 	for moving_tile: MovingTile in _moving_tiles:
 		var row: float = lerpf(moving_tile.from_row, moving_tile.to_row, _move_progress)
-		TilePainter.draw_tile(self, _get_tile_rect_at(moving_tile.column, row), moving_tile.level)
+		tile_painter.draw_tile(self, _get_tile_rect_at(moving_tile.column, row), moving_tile.level)
 
 
 func _draw_pulse() -> void:
@@ -245,13 +250,13 @@ func _draw_ghost() -> void:
 	var reflection_rect: Rect2 = _get_tile_rect(preview.reflection_cell)
 	var link_start := Vector2(tile_rect.end.x, tile_rect.get_center().y)
 	var link_end := Vector2(reflection_rect.position.x, reflection_rect.get_center().y)
-	draw_line(link_start, link_end, GHOST_LINK_COLOR, GHOST_LINK_WIDTH)
-	TilePainter.draw_tile(self, tile_rect, preview.tile_level, GHOST_OPACITY)
-	TilePainter.draw_tile(self, reflection_rect, preview.reflection_level, GHOST_OPACITY)
+	draw_line(link_start, link_end, Color(tile_painter.palette.text, GHOST_LINK_OPACITY), GHOST_LINK_WIDTH)
+	tile_painter.draw_tile(self, tile_rect, preview.tile_level, GHOST_OPACITY)
+	tile_painter.draw_tile(self, reflection_rect, preview.reflection_level, GHOST_OPACITY)
 
 
 func _draw_axis() -> void:
-	_draw_axis_line(AXIS_COLOR, AXIS_WIDTH)
+	_draw_axis_line(tile_painter.palette.axis, AXIS_WIDTH)
 
 
 func _draw_axis_line(color: Color, width: float) -> void:
