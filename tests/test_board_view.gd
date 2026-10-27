@@ -136,7 +136,17 @@ func test_sliding_across_the_axis_keeps_the_ghost_visible() -> void:
 	assert_signal_emitted_with_parameters(_board_view, "column_released", [2])
 
 
-func test_press_while_locked_requests_skip_and_its_release_never_plays() -> void:
+func test_press_that_unlocks_the_board_plays_on_release() -> void:
+	_board_view.is_input_enabled = false
+	_board_view.pressed_while_locked.connect(func() -> void: _board_view.is_input_enabled = true)
+	_press_at(LEFT_OUTER_COLUMN_POINT)
+	_release_at(LEFT_OUTER_COLUMN_POINT)
+
+	assert_signal_emit_count(_board_view, "pressed_while_locked", 1)
+	assert_signal_emitted_with_parameters(_board_view, "column_released", [0])
+
+
+func test_press_on_a_board_that_stays_locked_never_plays() -> void:
 	_board_view.is_input_enabled = false
 	_press_at(LEFT_OUTER_COLUMN_POINT)
 	_board_view.is_input_enabled = true

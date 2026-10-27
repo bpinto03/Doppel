@@ -170,15 +170,17 @@ func _notification(what: int) -> void:
 		_place_axis()
 
 
+## A skipped playback unlocks the board at once, so the same press can play; in the tutorial it stays locked.
 func _on_pressed(press_position: Vector2) -> void:
 	if not is_input_enabled:
 		pressed_while_locked.emit()
+	if not is_input_enabled:
 		return
 	_is_press_armed = true
 	_set_hovered_column(_find_played_column_at(press_position))
 
 
-## A press made while locked never plays on release, so skipping a playback cannot place a tile.
+## Only a press made on an unlocked board plays on release.
 func _on_released(release_position: Vector2) -> void:
 	if not _is_press_armed:
 		return

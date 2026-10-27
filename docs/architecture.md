@@ -111,7 +111,7 @@ While a finger is down on the board, or the mouse hovers it on PC, `BoardView` a
 - `ResolutionPlayback` builds one `Tween` for the whole turn: placed tiles drop from the top row, each chain link pulses its groups then merges them together, fallen tiles slide down, with a short pause after each step. From link 2 on, a label shows the multiplier (`x2`, `x3` …).
 - The displayed board only changes through `ResolutionEvent.apply_to()`; the presentation never applies game rules.
 - A turn longer than `max_chain_duration` plays faster: the tween speed scale is raised so the whole turn fits.
-- While playing, the board ignores taps and the restart button is disabled. A press on the board skips: the tween stops, the remaining events are applied, and `playback_finished` fires. It fires exactly once per turn, whether the playback ends or is skipped, any number of times.
+- While playing, the board ignores taps and the restart button is disabled. A press on the board skips: the tween stops, the remaining events are applied, and `playback_finished` fires. Outside the tutorial this unlocks the board at once, so the same press plays the next tile on release. It fires exactly once per turn, whether the playback ends or is skipped, any number of times.
 - At the end, the board view shows the session board again, which matches the replayed board.
 
 ## Tutorial flow

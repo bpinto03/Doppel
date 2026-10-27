@@ -22,7 +22,7 @@ This file is the source of truth for the rules once coded. Values in *italics* a
 3. Merges and chains are resolved.
 4. Game over is checked, then the next tile becomes current.
 
-The turn is computed at once, then shown step by step (drop, merges, falls). Input is locked during the playback; a press on the board skips to the end. The outcome is the same whether it is skipped or not.
+The turn is computed at once, then shown step by step (drop, merges, falls). Input is locked during the playback; a press on the board skips to the end, and its release plays the next tile. The outcome is the same whether it is skipped or not.
 
 ## Merges
 

@@ -76,6 +76,17 @@ func test_help_button_restarts_the_tutorial_and_abandons_the_game() -> void:
 	assert_eq(BoardFixture.describe_board(_board_view.get_displayed_board())[5], ". . . | . . .")
 
 
+func test_press_during_a_playback_unlocks_the_board_at_once() -> void:
+	_tutorial_panel.skip_requested.emit()
+	_board_view.column_released.emit(TutorialScenarios.OUTER_LEFT_COLUMN)
+	assert_false(_board_view.is_input_enabled)
+
+	_board_view.pressed_while_locked.emit()
+
+	assert_signal_emit_count(_screen, "turn_playback_finished", 1)
+	assert_true(_board_view.is_input_enabled)
+
+
 func _assert_real_game_started() -> void:
 	assert_false(_screen.is_tutorial_running())
 	assert_false(_tutorial_panel.visible)
