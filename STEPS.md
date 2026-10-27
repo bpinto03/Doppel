@@ -108,9 +108,9 @@ Objectif : **savoir si le jeu est fun**, rien d'autre.
 - [x] Concevoir l'arrière-plan, la grille, l'axe central
 
 ### 2.3 Gameplay animé
-- [ ] Animer la chute des tuiles (`Tween`)
-- [ ] Animer la fusion ("pop", léger rebond)
-- [ ] Animer les chaînes avec intensité croissante
+- [x] Animer la chute des tuiles (`Tween`)
+- [x] Animer la fusion ("pop", léger rebond)
+- [x] Animer les chaînes avec intensité croissante
 - [ ] Ajouter particules (`CPUParticles2D`) et petit tremblement d'écran sur gros combos
 - [ ] Animer et soigner l'**aperçu du reflet** (version simple faite en phase 1)
 - [ ] Afficher les messages de combo, sobres

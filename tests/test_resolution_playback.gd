@@ -69,7 +69,15 @@ func _create_playback() -> ResolutionPlayback:
 	var config := ResolutionPlaybackConfig.new()
 	config.drop_duration = SHORT_DURATION
 	config.fall_duration = SHORT_DURATION
+	config.landing_squash_duration = SHORT_DURATION
 	config.merge_pulse_duration = SHORT_DURATION
+	config.merge_converge_duration = SHORT_DURATION
+	config.merge_pop_duration = SHORT_DURATION
+	config.merge_pop_scale = 1.0
+	config.merge_pop_max_scale = 1.0
+	config.chain_intensity_curve = Curve.new()
+	config.chain_intensity_max_link = 2
+	config.chain_max_speed_up = 1.0
 	config.step_pause = SHORT_DURATION
 	config.max_chain_duration = MAX_WAIT_SECONDS
 	return ResolutionPlayback.new(config, _board_view, _chain_label)

@@ -44,6 +44,9 @@ var _is_press_armed: bool
 var _moving_tiles: Array[MovingTile] = []
 var _move_progress: float
 var _hidden_cells: Array[Vector2i] = []
+var _scaled_cells: Array[Vector2i] = []
+var _tile_scale := Vector2.ONE
+var _is_scale_anchored_at_bottom: bool
 var _pulsing_cells: Array[Vector2i] = []
 var _pulse_strength: float
 var _hint_step: TutorialStep
@@ -84,9 +87,35 @@ func start_moving_tiles(moving_tiles: Array[MovingTile], hidden_cells: Array[Vec
 	set_move_progress(0.0)
 
 
+## Interpolated in pixels, so a tile can also move sideways or across the axis.
+func get_moving_tile_rect(moving_tile: MovingTile) -> Rect2:
+	var from_rect: Rect2 = _get_tile_rect(moving_tile.from_cell)
+	return Rect2(from_rect.position.lerp(_get_tile_rect(moving_tile.to_cell).position, _move_progress), from_rect.size)
+
+
 func set_move_progress(progress: float) -> void:
 	_move_progress = progress
 	queue_redraw()
+
+
+## Bottom-anchored scaling keeps a landing tile on the floor; centered scaling makes it pop in place.
+func start_tile_scale(cells: Array[Vector2i], is_anchored_at_bottom: bool) -> void:
+	_scaled_cells = cells
+	_is_scale_anchored_at_bottom = is_anchored_at_bottom
+	set_tile_scale(Vector2.ONE)
+
+
+func set_tile_scale(tile_scale: Vector2) -> void:
+	_tile_scale = tile_scale
+	queue_redraw()
+
+
+func get_scaled_tile_rect(cell: Vector2i) -> Rect2:
+	var rect: Rect2 = _get_tile_rect(cell)
+	var scaled_size: Vector2 = rect.size * _tile_scale
+	var anchor_y: float = rect.end.y if _is_scale_anchored_at_bottom else rect.get_center().y
+	var anchor_height: float = scaled_size.y if _is_scale_anchored_at_bottom else scaled_size.y / 2.0
+	return Rect2(Vector2(rect.get_center().x - scaled_size.x / 2.0, anchor_y - anchor_height), scaled_size)
 
 
 func start_pulse(cells: Array[Vector2i]) -> void:
@@ -102,6 +131,7 @@ func set_pulse_strength(strength: float) -> void:
 func clear_animation() -> void:
 	_moving_tiles = []
 	_hidden_cells = []
+	_scaled_cells = []
 	_pulsing_cells = []
 	queue_redraw()
 
@@ -213,8 +243,10 @@ func _draw() -> void:
 	for column: int in _displayed_board.get_column_count():
 		for row: int in _displayed_board.row_count:
 			var cell := Vector2i(column, row)
-			var level: int = BoardState.EMPTY_CELL if _hidden_cells.has(cell) else _displayed_board.get_level(cell)
+			var is_drawn_elsewhere: bool = _hidden_cells.has(cell) or _scaled_cells.has(cell)
+			var level: int = BoardState.EMPTY_CELL if is_drawn_elsewhere else _displayed_board.get_level(cell)
 			tile_painter.draw_tile(self, _get_tile_rect(cell), level)
+	_draw_scaled_tiles()
 	_draw_blocked_columns()
 	_draw_moving_tiles()
 	_draw_pulse()
@@ -246,10 +278,15 @@ func _draw_tutorial_hint() -> void:
 		_draw_axis_line(outline_color, HINT_AXIS_WIDTH)
 
 
+## Drawn after the grid, so a growing tile overlaps its neighbors.
+func _draw_scaled_tiles() -> void:
+	for cell: Vector2i in _scaled_cells:
+		tile_painter.draw_tile(self, get_scaled_tile_rect(cell), _displayed_board.get_level(cell))
+
+
 func _draw_moving_tiles() -> void:
 	for moving_tile: MovingTile in _moving_tiles:
-		var row: float = lerpf(moving_tile.from_row, moving_tile.to_row, _move_progress)
-		tile_painter.draw_tile(self, _get_tile_rect_at(moving_tile.column, row), moving_tile.level)
+		tile_painter.draw_tile(self, get_moving_tile_rect(moving_tile), moving_tile.level)
 
 
 func _draw_pulse() -> void:
@@ -340,26 +377,19 @@ func _get_column_rect(column: int) -> Rect2:
 
 
 func _get_tile_rect(cell: Vector2i) -> Rect2:
-	return _get_tile_rect_at(cell.x, cell.y)
-
-
-## Row is fractional while a tile is moving.
-func _get_tile_rect_at(column: int, row: float) -> Rect2:
 	var cell_size: Vector2 = _get_cell_size()
 	var gap: float = cell_size.x * BOARD_STYLE.cell_gap_ratio
-	var row_from_top: float = _displayed_board.row_count - 1 - row
-	var top_left := Vector2(_get_column_x(column), _get_board_origin().y + row_from_top * cell_size.y)
+	var row_from_top: int = _displayed_board.row_count - 1 - cell.y
+	var top_left := Vector2(_get_column_x(cell.x), _get_board_origin().y + row_from_top * cell_size.y)
 	return Rect2(top_left, cell_size).grow(-gap / 2.0)
 
 
 class MovingTile:
-	var column: int
 	var level: int
-	var from_row: float
-	var to_row: int
+	var from_cell: Vector2i
+	var to_cell: Vector2i
 
-	func _init(tile_column: int, tile_level: int, origin_row: float, landing_row: int) -> void:
-		column = tile_column
+	func _init(tile_level: int, origin_cell: Vector2i, destination_cell: Vector2i) -> void:
 		level = tile_level
-		from_row = origin_row
-		to_row = landing_row
+		from_cell = origin_cell
+		to_cell = destination_cell

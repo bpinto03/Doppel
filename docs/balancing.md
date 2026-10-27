@@ -32,11 +32,23 @@ Durations in seconds, in `data/resolution_playback.tres` (a `ResolutionPlaybackC
 
 | Parameter | Default | Controls |
 |-----------|---------|----------|
-| `drop_duration` | 0.15 | Drop of the placed tile and its reflection from the top row **[TO TEST]** |
-| `fall_duration` | 0.15 | Slide of tiles falling after a merge **[TO TEST]** |
-| `merge_pulse_duration` | 0.3 | Pulse on the groups of a chain link before they merge **[TO TEST]** |
-| `step_pause` | 0.08 | Pause after each step **[TO TEST]** |
-| `max_chain_duration` | 2.5 | Longest playback of a turn; longer turns are sped up uniformly **[TO TEST]** |
+| `drop_duration` | 0.12 | Drop of the placed tile and its reflection from the top row |
+| `fall_duration` | 0.07 | Slide of tiles falling after a merge |
+| `fall_transition`, `fall_ease` | Quad, In | Curve of drops and falls: tiles speed up as they fall |
+| `landing_squash` | 0.1 | Landed tiles get this much wider and shorter, anchored at the bottom, then spring back |
+| `landing_squash_duration` | 0.06 | Length of the landing squash |
+| `merge_pulse_duration` | 0.05 | Flash on the groups of a chain link before they merge |
+| `merge_converge_duration` | 0.08 | Slide of merged tiles onto the result cell |
+| `merge_pop_duration` | 0.11 | Pop of the result tile: grows, then comes back with a small rebound |
+| `merge_pop_scale` | 1.12 | Peak scale of the pop on the first chain link |
+| `merge_pop_max_scale` | 1.3 | Peak scale of the pop at full chain intensity |
+| `chain_intensity_curve` | Linear 0 to 1 | Chain intensity from link 1 to `chain_intensity_max_link` |
+| `chain_intensity_max_link` | 5 | First link played at full intensity |
+| `chain_max_speed_up` | 1.6 | Merge steps play this many times faster at full intensity |
+| `step_pause` | 0.02 | Pause after each step |
+| `max_chain_duration` | 2.5 | Longest playback of a turn; longer turns are sped up uniformly |
+
+Measured on PC with these values: a drop alone 0.19 s; a single merge, drop and fall included, 0.60 s; a chain of 4 links 1.67 s. Validated on a phone (2026-10-27).
 
 ## Tile text
 

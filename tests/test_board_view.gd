@@ -156,6 +156,33 @@ func test_press_on_a_board_that_stays_locked_never_plays() -> void:
 	assert_signal_not_emitted(_board_view, "column_released")
 
 
+func test_moving_tile_is_drawn_between_its_two_cells() -> void:
+	var moving_tile := BoardView.MovingTile.new(1, Vector2i(2, 0), Vector2i(3, 1))
+	_board_view.start_moving_tiles([moving_tile], [])
+	var from_rect: Rect2 = _board_view.get_moving_tile_rect(moving_tile)
+	_board_view.set_move_progress(1.0)
+	var to_rect: Rect2 = _board_view.get_moving_tile_rect(moving_tile)
+
+	_board_view.set_move_progress(0.5)
+
+	assert_eq(_board_view.get_moving_tile_rect(moving_tile).position, from_rect.position.lerp(to_rect.position, 0.5))
+	assert_gt(to_rect.position.x, from_rect.position.x)
+	assert_lt(to_rect.position.y, from_rect.position.y)
+
+
+func test_squashed_tile_stays_on_the_floor_of_its_cell() -> void:
+	var cell := Vector2i(0, 0)
+	_board_view.start_tile_scale([cell], true)
+	var tile_rect: Rect2 = _board_view.get_scaled_tile_rect(cell)
+
+	_board_view.set_tile_scale(Vector2(1.2, 0.8))
+	var squashed_rect: Rect2 = _board_view.get_scaled_tile_rect(cell)
+
+	assert_almost_eq(squashed_rect.end.y, tile_rect.end.y, 0.001)
+	assert_almost_eq(squashed_rect.get_center().x, tile_rect.get_center().x, 0.001)
+	assert_gt(squashed_rect.size.x, tile_rect.size.x)
+
+
 func test_restricted_column_accepts_only_itself_or_its_mirror() -> void:
 	_board_view.restricted_column = 2
 
