@@ -48,6 +48,15 @@ Durations in seconds, in `data/resolution_playback.tres` (a `ResolutionPlaybackC
 | `max_height_ratio` | 0.42 | Largest text height, relative to the tile height |
 | `max_width_ratio` | 0.78 | Largest text width, relative to the tile width; "4096" is width-limited |
 
+## Confusable tile colors
+
+Non-neighbor levels whose colors look alike with color vision deficiency (simulated, see [0003](decisions/0003-art-direction.md)). Only the value tells them apart. Kept for a possible high-contrast mode in phase 3.
+
+| Theme | Several deficiency types | Protanopia | Deuteranopia | Tritanopia |
+|-------|------------------|------------|--------------|------------|
+| Paper | 4/32, 8/512, 128/1024 | 4/4096, 8/2048, 32/4096 | — | — |
+| Night | — | 64/4096, 4/256 | 64/4096 | 2/128, 4/32, 16/1024, 32/2048 |
+
 ## Tutorial highlight
 
 | Parameter | File | Default | Controls |

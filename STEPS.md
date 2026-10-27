@@ -104,7 +104,7 @@ Objectif : **savoir si le jeu est fun**, rien d'autre.
 
 ### 2.2 Direction artistique
 - [x] Choisir une palette de couleurs lisible et une police
-- [ ] Concevoir les visuels de tuiles (niveaux 1 à 12) avec symboles ou motifs en plus des couleurs (daltonisme)
+- [ ] Concevoir les visuels de tuiles (niveaux 1 à 12), la distinction repose sur la couleur et le chiffre
 - [ ] Concevoir l'arrière-plan, la grille, l'axe central
 
 ### 2.3 Gameplay animé
@@ -135,7 +135,7 @@ Objectif : **savoir si le jeu est fun**, rien d'autre.
 - [ ] Écran d'accueil (Jouer, Défi du jour, Boutique, Réglages)
 - [ ] Écran de fin de partie (score, record, pièces gagnées, rejouer)
 - [ ] Écran de pause
-- [ ] Écran de réglages (son, musique, vibration, langue, daltonisme, thème Papier / Nuit) ; retirer le bouton de debug « Thème » du HUD
+- [ ] Écran de réglages (son, musique, vibration, langue, thème Papier / Nuit) ; retirer le bouton de debug « Thème » du HUD. Mode daltonisme à reconsidérer en phase 3 (par exemple palette alternative à contraste renforcé), à décider avec le développeur
 - [ ] **Tutoriel** : version finale (mémoriser qu'il a été vu, visuels soignés ; version simple faite en phase 1)
 
 ### 3.2 Pièces et boutique
@@ -195,7 +195,7 @@ Objectif : **savoir si le jeu est fun**, rien d'autre.
 - [ ] Vérifier la consommation batterie en menu et en pause
 - [ ] Tester les cas limites : rotation bloquée, retour d'app, appel, mode avion, stockage plein, application tuée en cours de partie
 - [ ] Tester sans réseau et avec réseau instable
-- [ ] Vérifier le **mode daltonien** et la lisibilité en plein soleil
+- [ ] Vérifier la lisibilité en plein soleil (et le mode daltonisme s'il a été retenu en phase 3)
 - [ ] Vérifier les zones sûres sur écrans à encoche
 - [ ] Corriger les bugs, geler les fonctionnalités (**feature freeze**)
 - [ ] Faire une passe d'équilibrage finale (difficulté, pondérations, pièces, fréquence des pubs)
