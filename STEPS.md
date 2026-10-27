@@ -104,8 +104,8 @@ Objectif : **savoir si le jeu est fun**, rien d'autre.
 
 ### 2.2 Direction artistique
 - [x] Choisir une palette de couleurs lisible et une police
-- [ ] Concevoir les visuels de tuiles (niveaux 1 à 12), la distinction repose sur la couleur et le chiffre
-- [ ] Concevoir l'arrière-plan, la grille, l'axe central
+- [x] Concevoir les visuels de tuiles (niveaux 1 à 12), la distinction repose sur la couleur et le chiffre
+- [x] Concevoir l'arrière-plan, la grille, l'axe central
 
 ### 2.3 Gameplay animé
 - [ ] Animer la chute des tuiles (`Tween`)

@@ -19,6 +19,7 @@ var _tutorial_steps: Array[TutorialStep] = []
 var _tutorial_step_index: int = NO_TUTORIAL_STEP
 
 @onready var _background: ColorRect = %Background
+@onready var _background_image: TextureRect = %BackgroundImage
 @onready var _board_view: BoardView = %BoardView
 @onready var _score_label: Label = %ScoreLabel
 @onready var _best_label: Label = %BestLabel
@@ -148,6 +149,7 @@ func _apply_palette() -> void:
 	var palette: ThemePalette = Settings.get_palette()
 	theme = UiThemeBuilder.build(palette, BASE_THEME)
 	_background.color = palette.background
+	_background_image.texture = palette.background_image
 	_chain_label.add_theme_color_override(&"font_outline_color", palette.background)
 	var tile_painter := TilePainter.new(palette, TILE_TEXT_CONFIG)
 	_board_view.tile_painter = tile_painter

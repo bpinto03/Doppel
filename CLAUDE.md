@@ -138,4 +138,4 @@ Rules:
 
 Tracked in `STEPS.md` (tick the boxes). Keep this section to a single line naming the current phase.
 
-**Current phase:** Phase 1 prototype done and Phase 2.1 foundations in place; Gate 1 playtest pending.
+**Current phase:** Phase 2.2 art direction done (Paper and Night themes); Gate 1 playtest pending.
