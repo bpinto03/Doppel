@@ -4,6 +4,7 @@ signal turn_playback_finished
 
 const BALANCING_CONFIG: BalancingConfig = preload("res://data/balancing.tres")
 const PLAYBACK_CONFIG: ResolutionPlaybackConfig = preload("res://data/resolution_playback.tres")
+const AUDIO_CONFIG: AudioConfig = preload("res://data/audio_config.tres")
 const TUTORIAL_HINT_CONFIG: TutorialHintConfig = preload("res://data/tutorial_hint.tres")
 const TILE_TEXT_CONFIG: TileTextConfig = preload("res://data/tile_text.tres")
 const BASE_THEME: Theme = preload("res://assets/themes/base_theme.tres")
@@ -15,6 +16,7 @@ const BEST_SCORE_KEY: String = "best_score"
 var _session: GameSession
 var _best_score: int
 var _playback: ResolutionPlayback
+var _feedback: GameFeedback
 var _tutorial_steps: Array[TutorialStep] = []
 var _tutorial_step_index: int = NO_TUTORIAL_STEP
 
@@ -39,12 +41,17 @@ func _ready() -> void:
 	_best_score = SaveManager.get_value(RECORD_SECTION, BEST_SCORE_KEY, 0)
 	_playback = ResolutionPlayback.new(PLAYBACK_CONFIG, _board_view, _combo_label)
 	_playback.playback_finished.connect(_on_playback_finished)
+	_feedback = GameFeedback.new(AUDIO_CONFIG, _playback, _board_view)
 	_board_view.pressed_while_locked.connect(_playback.skip)
 	_board_view.column_released.connect(_on_column_released)
 	_restart_button.pressed.connect(start_new_game)
 	_help_button.pressed.connect(start_tutorial)
 	_tutorial_panel.next_requested.connect(_on_tutorial_next_requested)
 	_tutorial_panel.skip_requested.connect(start_new_game)
+	_restart_button.pressed.connect(_feedback.play_ui_click)
+	_help_button.pressed.connect(_feedback.play_ui_click)
+	_tutorial_panel.next_requested.connect(_feedback.play_ui_click)
+	_tutorial_panel.skip_requested.connect(_feedback.play_ui_click)
 	Settings.palette_changed.connect(_apply_palette)
 	_apply_palette()
 	_set_up_debug_tools()
@@ -52,10 +59,15 @@ func _ready() -> void:
 
 
 func start_new_game() -> void:
-	_stop_tutorial()
 	var rng := RandomNumberGenerator.new()
 	rng.randomize()
-	_session = GameSession.new(BALANCING_CONFIG, rng)
+	start_game(GameSession.new(BALANCING_CONFIG, rng))
+
+
+## Plays the given game outside the tutorial.
+func start_game(session: GameSession) -> void:
+	_stop_tutorial()
+	_session = session
 	_set_input_enabled(true)
 	_refresh()
 
@@ -115,6 +127,8 @@ func _on_column_released(column: int) -> void:
 ## In the tutorial, the board stays locked until the player moves to the next step.
 func _on_playback_finished() -> void:
 	_refresh()
+	if _session.is_game_over:
+		_feedback.play_game_over()
 	if is_tutorial_running():
 		_restart_button.disabled = false
 		_help_button.disabled = false

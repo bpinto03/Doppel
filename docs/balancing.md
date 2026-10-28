@@ -77,6 +77,29 @@ Durations in seconds, in `data/resolution_playback.tres` (a `ResolutionPlaybackC
 
 Measured on PC with these values: a drop alone 0.19 s; a single merge, drop and fall included, 0.60 s; a chain of 4 links 1.67 s. Validated on a phone (2026-10-27). Particles, shake and combo messages validated on a phone (2026-10-28): steady 120 FPS during playbacks up to 1.35 s.
 
+## Audio
+
+`data/audio_config.tres` (an `AudioConfig`). Each event has a `SoundEffect`: its `stream`, a `volume_offset_db`, and a random spread per play in percent (`pitch_variation_percent`, `volume_variation_percent`; 0 turns it off).
+
+| Event | Pitch / volume spread (%) | Plays when |
+|-------|---------------------------|------------|
+| `placement` | 4 / 10 | The placed tile and its reflection land |
+| `merge` | 0 / 0 | Chain link 1 merges |
+| `chain` | 0 / 0 | Chain link 2 and later merge, climbing the scale |
+| `game_over` | 0 / 0 | The game ends |
+| `ui_click` | 5 / 10 | A HUD or tutorial button is pressed; −6 dB offset |
+| `unplayable_column` | 0 / 0 | The finger is released on a column that cannot take the tile and its reflection |
+
+`merge` and `chain` never vary in pitch: the chain would go out of tune.
+
+| Parameter | Default | Controls |
+|-----------|---------|----------|
+| `chain_base_pitch_scale` | 1.0 | Pitch scale of link 1, tuning the merge and chain sounds onto C, the root of the scale |
+| `chain_scale_intervals` | [2, 2, 3, 2, 3] | Semitones climbed at each new link: C major pentatonic (C, D, E, G, A, C...), repeated per octave |
+| `chain_max_pitch_link` | 11 | Later links keep the pitch of this one (two octaves up) |
+| `chain_max_semitones` | 24 | The pitch never climbs more than this above link 1. A higher pitch also shortens the sound: at 24 semitones it plays 4 times faster |
+| `player_pool_size` | 8 | Effect players created once and reused; when all are busy, the oldest sound is cut |
+
 ## Tile text
 
 `data/tile_text.tres` (a `TileTextConfig`): the value is drawn as large as fits both limits.

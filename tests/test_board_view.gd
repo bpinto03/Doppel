@@ -106,6 +106,7 @@ func test_releasing_outside_the_board_cancels() -> void:
 	_release_at(BELOW_BOARD_POINT)
 
 	assert_signal_not_emitted(_board_view, "column_released")
+	assert_signal_not_emitted(_board_view, "unplayable_column_released")
 
 
 func test_right_column_whose_mirror_is_full_shows_no_ghost_and_does_not_play() -> void:
@@ -124,6 +125,7 @@ func test_right_column_whose_mirror_is_full_shows_no_ghost_and_does_not_play() -
 
 	assert_false(is_ghost_shown)
 	assert_signal_not_emitted(_board_view, "column_released")
+	assert_signal_emit_count(_board_view, "unplayable_column_released", 1)
 
 
 func test_sliding_across_the_axis_keeps_the_ghost_visible() -> void:

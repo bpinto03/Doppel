@@ -5,6 +5,9 @@ extends RefCounted
 ## The session already holds the final state: skipping only fast-forwards the display.
 
 signal playback_finished
+## Emitted from the turn tween, as the matching step shows, so a skip never plays them late.
+signal tiles_landed
+signal chain_link_merged(chain_link: int)
 
 var is_playing: bool
 
@@ -76,7 +79,7 @@ func _queue_drop(event: TilesPlacedEvent, events_end: int) -> void:
 		BoardView.MovingTile.new(event.tile_level, Vector2i(event.tile_cell.x, top_row), event.tile_cell),
 		BoardView.MovingTile.new(event.reflection_level, Vector2i(event.reflection_cell.x, top_row), event.reflection_cell),
 	]
-	_queue_movement(moving_tiles, [], events_end, _config.drop_duration)
+	_queue_movement(moving_tiles, [], events_end, _config.drop_duration, tiles_landed.emit)
 
 
 func _queue_fall(event: TilesFellEvent, events_end: int) -> void:
@@ -85,14 +88,18 @@ func _queue_fall(event: TilesFellEvent, events_end: int) -> void:
 	for fall: TileFall in event.falls:
 		moving_tiles.append(BoardView.MovingTile.new(fall.level, fall.from_cell, fall.to_cell))
 		origin_cells.append(fall.from_cell)
-	_queue_movement(moving_tiles, origin_cells, events_end, _config.fall_duration)
+	_queue_movement(moving_tiles, origin_cells, events_end, _config.fall_duration, Callable())
 
 
 ## Tiles speed up as they fall, then squash on landing.
-func _queue_movement(moving_tiles: Array[BoardView.MovingTile], hidden_cells: Array[Vector2i], events_end: int, duration: float) -> void:
+func _queue_movement(
+	moving_tiles: Array[BoardView.MovingTile], hidden_cells: Array[Vector2i], events_end: int, duration: float, on_landed: Callable
+) -> void:
 	_tween.tween_callback(_board_view.start_moving_tiles.bind(moving_tiles, hidden_cells))
 	_tween.tween_method(_board_view.set_move_progress, 0.0, 1.0, duration).set_trans(_config.fall_transition).set_ease(_config.fall_ease)
 	_tween.tween_callback(_apply_events_until.bind(events_end))
+	if on_landed.is_valid():
+		_tween.tween_callback(on_landed)
 	var landing_cells: Array[Vector2i] = []
 	for moving_tile: BoardView.MovingTile in moving_tiles:
 		landing_cells.append(moving_tile.to_cell)
@@ -130,6 +137,7 @@ func _queue_chain_link(link_start: int, link_end: int) -> void:
 	_tween.tween_method(_board_view.set_move_progress, 0.0, 1.0, converge_duration).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	_tween.tween_callback(_apply_events_until.bind(link_end))
 	_tween.tween_callback(_burst_particles.bind(merges))
+	_tween.tween_callback(chain_link_merged.emit.bind(first_merge.chain_link))
 	_tween.tween_callback(_start_shake.bind(_config.get_shake_amplitude(first_merge.chain_link)))
 	_queue_pop(result_cells, _config.get_pop_scale(first_merge.chain_link), pop_duration)
 	_queue_pause(pulse_duration + converge_duration + pop_duration)

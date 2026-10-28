@@ -2,18 +2,46 @@ extends Node
 
 ## Plays sound effects and music on their own buses, following the sound, music and volume settings.
 
+signal effect_played(effect: SoundEffect)
+
 const MASTER_BUS: StringName = &"Master"
 const SFX_BUS: StringName = &"SFX"
 const MUSIC_BUS: StringName = &"Music"
+const CONFIG: AudioConfig = preload("res://data/audio_config.tres")
 
 var _music_player := AudioStreamPlayer.new()
+var _effect_players: Array[AudioStreamPlayer] = []
+var _next_taken_player_index: int
+var _variation_rng := RandomNumberGenerator.new()
 
 
 func _ready() -> void:
 	_music_player.bus = MUSIC_BUS
 	add_child(_music_player)
+	for index: int in CONFIG.player_pool_size:
+		var player := AudioStreamPlayer.new()
+		player.bus = SFX_BUS
+		add_child(player)
+		_effect_players.append(player)
 	Settings.changed.connect(apply_settings)
 	apply_settings()
+
+
+## Returns the player used, or null when the effect has no sound yet: a missing sound is never an error.
+func play_effect(effect: SoundEffect, pitch_scale: float = 1.0) -> AudioStreamPlayer:
+	if effect == null or effect.stream == null:
+		return null
+	var player: AudioStreamPlayer = _take_effect_player()
+	player.stream = effect.stream
+	player.pitch_scale = pitch_scale * _vary(effect.pitch_variation_percent)
+	player.volume_db = effect.volume_offset_db + linear_to_db(_vary(effect.volume_variation_percent))
+	player.play()
+	effect_played.emit(effect)
+	return player
+
+
+func get_effect_player_count() -> int:
+	return _effect_players.size()
 
 
 func play_music(stream: AudioStream) -> void:
@@ -36,6 +64,22 @@ func _apply_bus(bus_name: StringName, is_enabled: bool) -> void:
 	AudioServer.set_bus_mute(bus_index, not is_enabled or volume <= 0.0)
 	if volume > 0.0:
 		AudioServer.set_bus_volume_db(bus_index, linear_to_db(volume))
+
+
+## A free player if there is one, else the players are taken in turn, so the oldest sound is cut first.
+func _take_effect_player() -> AudioStreamPlayer:
+	for player: AudioStreamPlayer in _effect_players:
+		if not player.playing:
+			return player
+	var player: AudioStreamPlayer = _effect_players[_next_taken_player_index]
+	_next_taken_player_index = (_next_taken_player_index + 1) % _effect_players.size()
+	return player
+
+
+## A factor around 1, spread by the given percentage either way.
+func _vary(variation_percent: float) -> float:
+	var spread: float = variation_percent / 100.0
+	return 1.0 + _variation_rng.randf_range(-spread, spread)
 
 
 func _apply_music_setting() -> void:

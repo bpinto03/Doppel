@@ -30,13 +30,14 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 
 | Script | Responsibility |
 |--------|----------------|
-| `game_screen.gd` | Owns the `GameSession`, forwards released columns, starts the playback of each turn, refreshes the HUD when it ends, emits `turn_playback_finished`, saves the best score through `SaveManager`, applies the active palette (colors and background image) and rebuilds it on `Settings.palette_changed`; in debug builds, shows a theme switch button and logs `DisplayServer.is_dark_mode()` |
-| `board_view.gd` | Draws the board frame (`StyleBoxFlat`, palette `panel` color), the displayed board, moving tiles, merge pulses and the placement ghost, dims unplayable columns, maps a touched column to the played left column (`find_played_column`), emits `column_released` and `pressed_while_locked`. The mirror axis (a `ColorRect`, placed when the board or the view size changes) and board effects such as particles sit in a child effects layer |
+| `game_screen.gd` | Owns the `GameSession` (`start_new_game()`, or `start_game()` with a given session), forwards released columns, starts the playback of each turn, refreshes the HUD when it ends, emits `turn_playback_finished`, saves the best score through `SaveManager`, applies the active palette (colors and background image) and rebuilds it on `Settings.palette_changed`; in debug builds, shows a theme switch button and logs `DisplayServer.is_dark_mode()` |
+| `board_view.gd` | Draws the board frame (`StyleBoxFlat`, palette `panel` color), the displayed board, moving tiles, merge pulses and the placement ghost, dims unplayable columns, maps a touched column to the played left column (`find_played_column`), emits `column_released`, `pressed_while_locked`, and `unplayable_column_released` on a release over a column that cannot take the pair. The mirror axis (a `ColorRect`, placed when the board or the view size changes) and board effects such as particles sit in a child effects layer |
 | `merge_particles.gd` | `MergeParticles`: fixed pool of one-shot `CPUParticles2D` emitters with a generated disc texture; bursts never exceed the live particle cap |
 | `board_style.gd` | `BoardStyle`: frame padding and corner radius, cell gap, axis width, loaded from `data/board_style.tres` |
 | `tutorial_panel.gd` | Shows a step's instruction, then its explanation with Next / Play; Skip at any time. Emits `next_requested`, `skip_requested` |
 | `tutorial_hint_config.gd` | Tutorial highlight pulse period, loaded from `data/tutorial_hint.tres` |
-| `resolution_playback.gd` | Replays a turn's resolution events with simple tweens, emits `playback_finished` |
+| `resolution_playback.gd` | Replays a turn's resolution events with simple tweens, emits `tiles_landed`, `chain_link_merged` and `playback_finished` |
+| `game_feedback.gd` | `GameFeedback`: plays the sound of each game event (see Audio feedback) |
 | `resolution_playback_config.gd` | Playback durations, curves and chain intensity, loaded from `data/resolution_playback.tres` |
 | `combo_text.gd` | `ComboText`: combo message text, with the decimal separator of the current language |
 | `tile_swatch.gd` | Draws one tile (current, reflection, next previews) |
@@ -61,9 +62,18 @@ Loaded in this order; each one may use the ones above it.
 | `SaveManager` | Versioned local save in `user://save.cfg` (see [0002](decisions/0002-save-format.md)). `get_value` / `set_value` by section and key; every change is written at once |
 | `Settings` | Sound, music, vibration, screen shake, language, theme (`palette_name`: `paper` or `night`) and linear volume per audio bus (`get_bus_volume` / `set_bus_volume`, 0 to 1), stored in the `settings` section. Emits `changed`, and `palette_changed` for the theme |
 | `I18n` | Sets the locale: chosen language, else the device language if supported (en, fr), else English |
-| `AudioManager` | Applies the saved sound, music and volume settings to the buses at startup and on every change: a disabled sound or a volume of zero mutes its bus. `play_music()` plays on the `Music` bus |
+| `AudioManager` | Applies the saved sound, music and volume settings to the buses at startup and on every change: a disabled sound or a volume of zero mutes its bus. `play_effect()` plays a `SoundEffect` on the `SFX` bus with a pool of reused players; a missing sound plays nothing. `play_music()` plays on the `Music` bus |
 
 Audio buses (`default_bus_layout.tres`): `SFX` and `Music`, both sent to `Master`.
+
+### `scripts/audio/` — sound data
+
+| File | Responsibility |
+|------|----------------|
+| `sound_effect.gd` | `SoundEffect`: a stream, its volume offset and its random pitch and volume spread |
+| `audio_config.gd` | `AudioConfig` (`data/audio_config.tres`): one `SoundEffect` per event, the chain scale (`get_chain_semitones()`, `get_chain_pitch_scale()`) and the player pool size |
+
+Sound files live in `assets/audio/sfx/`, as short WAV files: `placement.wav`, `merge.wav`, `chain.wav`, `game_over.wav`, `ui_click.wav`, `unplayable_column.wav`. A replacement with the same name needs no other change; another name or format (OGG) is set in `data/audio_config.tres`. Every file is listed in `CREDITS.md`.
 
 ### Scenes
 
@@ -123,6 +133,17 @@ While a finger is down on the board, or the mouse hovers it on PC, `BoardView` a
 - A turn longer than `max_chain_duration` plays faster: the tween speed scale is raised so the whole turn fits.
 - While playing, the board ignores taps and the restart button is disabled. A press on the board skips: the tween stops, the remaining events are applied, and `playback_finished` fires. Outside the tutorial this unlocks the board at once, so the same press plays the next tile on release. It fires exactly once per turn, whether the playback ends or is skipped, any number of times.
 - At the end, the board view shows the session board again, which matches the replayed board.
+
+## Audio feedback
+
+`GameFeedback` observes the playback and the board, like the animations, and never touches the core:
+
+- `ResolutionPlayback.tiles_landed` (the placed pair lands): `placement`.
+- `ResolutionPlayback.chain_link_merged(chain_link)`: one sound per link however many groups merge, `merge` on link 1, `chain` after, at `AudioConfig.get_chain_pitch_scale(chain_link)`.
+- `BoardView.unplayable_column_released`: `unplayable_column`.
+- `game_screen` calls `play_game_over()` when a turn ends the game, played or skipped, and `play_ui_click()` on its buttons and the tutorial buttons.
+
+Both playback signals are tween callbacks: a skip kills the tween, so the remaining steps never play their sounds late, and the next turn plays normally. `AudioManager.effect_played` reports every sound played.
 
 ## Tutorial flow
 

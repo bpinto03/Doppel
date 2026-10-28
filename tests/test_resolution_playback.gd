@@ -98,6 +98,49 @@ func test_combo_stays_a_moment_after_a_turn_played_to_the_end() -> void:
 	assert_false(_combo_label.visible)
 
 
+func test_turn_played_to_the_end_lands_once_then_announces_each_chain_link() -> void:
+	var session: GameSession = _create_chain_session()
+	var playback: ResolutionPlayback = _create_playback()
+	watch_signals(playback)
+
+	_play_turn(session, playback)
+	await wait_for_signal(playback.playback_finished, MAX_WAIT_SECONDS)
+
+	assert_signal_emit_count(playback, "tiles_landed", 1)
+	assert_signal_emit_count(playback, "chain_link_merged", 3)
+	for chain_link: int in [1, 2, 3]:
+		assert_eq(get_signal_parameters(playback, "chain_link_merged", chain_link - 1), [chain_link])
+
+
+func test_skip_never_announces_the_remaining_steps_late() -> void:
+	var session: GameSession = _create_chain_session()
+	var config: ResolutionPlaybackConfig = _create_config()
+	config.step_pause = SETTLE_SECONDS
+	var playback: ResolutionPlayback = _create_playback(config)
+	watch_signals(playback)
+
+	_play_turn(session, playback)
+	await wait_for_signal(playback.chain_link_merged, MAX_WAIT_SECONDS)
+	playback.skip()
+	await wait_seconds(SETTLE_SECONDS * 3.0)
+
+	assert_signal_emit_count(playback, "tiles_landed", 1)
+	assert_signal_emit_count(playback, "chain_link_merged", 1)
+
+
+func test_next_turn_lands_normally_after_a_skip() -> void:
+	var session: GameSession = _create_chain_session()
+	var playback: ResolutionPlayback = _create_playback()
+	_play_turn(session, playback)
+	playback.skip()
+	watch_signals(playback)
+
+	_play_turn(session, playback)
+	await wait_for_signal(playback.playback_finished, MAX_WAIT_SECONDS)
+
+	assert_signal_emit_count(playback, "tiles_landed", 1)
+
+
 func test_displayed_board_starts_from_the_board_before_the_turn() -> void:
 	var session: GameSession = _create_chain_session()
 	var board_before: Array[String] = BoardFixture.describe_board(session.board)

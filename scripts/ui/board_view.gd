@@ -3,6 +3,7 @@ extends Control
 
 signal column_released(column: int)
 signal pressed_while_locked
+signal unplayable_column_released
 
 const BOARD_STYLE: BoardStyle = preload("res://data/board_style.tres")
 const PLAYBACK_CONFIG: ResolutionPlaybackConfig = preload("res://data/resolution_playback.tres")
@@ -270,8 +271,12 @@ func _on_released(release_position: Vector2) -> void:
 	_is_press_armed = false
 	_set_hovered_column(NO_COLUMN)
 	var column: int = _find_played_column_at(release_position)
-	if is_input_enabled and _is_column_selectable(column):
+	if not is_input_enabled or column == NO_COLUMN:
+		return
+	if _is_column_selectable(column):
 		column_released.emit(column)
+	else:
+		unplayable_column_released.emit()
 
 
 func _is_column_selectable(column: int) -> bool:
