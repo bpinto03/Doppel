@@ -4,6 +4,10 @@ const AUDIO_CONFIG: AudioConfig = preload("res://data/audio_config.tres")
 const MAJOR_PENTATONIC: Array[int] = [2, 2, 3, 2, 3]
 const SEMITONES_PER_OCTAVE: float = 12.0
 const PITCH_TOLERANCE: float = 0.0001
+const C_ROOT: int = 0
+## merge.wav measures 737.69 Hz (F#5); C5 is 523.25 Hz.
+const MERGE_SOUND_SEMITONES_ABOVE_C: float = 5.946
+const MERGE_SOUND_PITCH_SCALE_IN_C: float = 0.7093
 
 
 func test_first_link_plays_the_root_of_the_scale() -> void:
@@ -42,13 +46,23 @@ func test_pitch_never_climbs_above_the_semitone_cap() -> void:
 	assert_eq(config.get_chain_semitones(15), 10)
 
 
-func test_pitch_scale_starts_from_the_base_and_doubles_per_octave() -> void:
+func test_key_of_c_tunes_the_merge_sound_down_to_c() -> void:
 	var config: AudioConfig = _create_config(20, 48)
-	config.chain_base_pitch_scale = 1.5
 
-	assert_almost_eq(config.get_chain_pitch_scale(1), 1.5, PITCH_TOLERANCE)
-	assert_almost_eq(config.get_chain_pitch_scale(6), 3.0, PITCH_TOLERANCE)
-	assert_almost_eq(config.get_chain_pitch_scale(2), 1.5 * pow(2.0, 2.0 / SEMITONES_PER_OCTAVE), PITCH_TOLERANCE)
+	assert_almost_eq(config.get_chain_pitch_scale(1), MERGE_SOUND_PITCH_SCALE_IN_C, PITCH_TOLERANCE)
+	assert_almost_eq(config.get_chain_pitch_scale(6), MERGE_SOUND_PITCH_SCALE_IN_C * 2.0, PITCH_TOLERANCE)
+	assert_almost_eq(config.get_chain_pitch_scale(2), MERGE_SOUND_PITCH_SCALE_IN_C * pow(2.0, 2.0 / SEMITONES_PER_OCTAVE), PITCH_TOLERANCE)
+
+
+func test_game_over_plays_as_recorded_in_c() -> void:
+	assert_eq(_create_config(20, 48).get_game_over_pitch_scale(), 1.0)
+
+
+func test_game_over_goes_down_to_the_root_below_c() -> void:
+	var config: AudioConfig = _create_config(20, 48)
+	config.scale_root_semitones = 2
+
+	assert_almost_eq(config.get_game_over_pitch_scale(), pow(2.0, -10.0 / SEMITONES_PER_OCTAVE), PITCH_TOLERANCE)
 
 
 func test_first_link_plays_the_merge_sound_and_later_links_the_chain_sound() -> void:
@@ -69,7 +83,8 @@ func test_game_config_climbs_the_major_pentatonic_scale_up_to_two_octaves() -> v
 
 func _create_config(max_pitch_link: int, max_semitones: int) -> AudioConfig:
 	var config := AudioConfig.new()
-	config.chain_base_pitch_scale = 1.0
+	config.scale_root_semitones = C_ROOT
+	config.merge_sound_semitones_above_c = MERGE_SOUND_SEMITONES_ABOVE_C
 	config.chain_scale_intervals = MAJOR_PENTATONIC
 	config.chain_max_pitch_link = max_pitch_link
 	config.chain_max_semitones = max_semitones

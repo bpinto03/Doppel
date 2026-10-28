@@ -92,14 +92,26 @@ Measured on PC with these values: a drop alone 0.19 s; a single merge, drop and 
 
 `merge` and `chain` never vary in pitch: the chain would go out of tune. Both play `merge.wav`.
 
+Key: C major pentatonic (see [0004](decisions/0004-audio-key.md)). A higher note also plays shorter:
+
+| Chain link | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 and later (cap) |
+|------------|---|---|---|---|---|---|---|---|---|----|--------------------|
+| Note | C5 | D5 | E5 | G5 | A5 | C6 | D6 | E6 | G6 | A6 | C7 |
+| Merge sound length (s) | 0.269 | 0.240 | 0.214 | 0.180 | 0.160 | 0.135 | 0.120 | 0.107 | 0.090 | 0.080 | 0.067 |
+
+Game over: E4 D4 C4 (329.6 to 261.6 Hz), as recorded, 0.703 s.
+
+Sound effects validated on a phone (2026-10-29).
+
 Sound files are normalized to the same perceived loudness: −20 dB K-weighted RMS (ITU-R BS.1770 filters) over the part within 30 dB of the peak, peaks under −1 dBFS. `volume_offset_db` then adjusts each event by ear.
 
 | Parameter | Default | Controls |
 |-----------|---------|----------|
-| `chain_base_pitch_scale` | 0.7093 | Pitch scale of link 1, tuning the merge and chain sounds onto C, the root of the scale: `merge.wav` measures 737.7 Hz (F#5), played at 523.25 Hz (C5) |
+| `scale_root_semitones` | 0 | Key of the game sounds, in semitones above C (0: C). Link 1 plays the merge sound on this root, in the octave of the file (C5: pitch scale 0.709); in another key, the game over sound, written in C, moves down to the root below C |
+| `merge_sound_semitones_above_c` | 5.946 | Measured pitch of `merge.wav`: 737.7 Hz (F#5), 5.946 semitones above C5. Measure again when the file changes |
 | `chain_scale_intervals` | [2, 2, 3, 2, 3] | Semitones climbed at each new link: C major pentatonic (C, D, E, G, A, C...), repeated per octave |
 | `chain_max_pitch_link` | 11 | Later links keep the pitch of this one (two octaves up) |
-| `chain_max_semitones` | 24 | The pitch never climbs more than this above link 1 (C7). A higher pitch also shortens the sound: `merge.wav` lasts 0.19 s, 0.27 s at C5 and 0.07 s at C7 |
+| `chain_max_semitones` | 24 | The pitch never climbs more than this above link 1 (C7) |
 | `player_pool_size` | 8 | Effect players created once and reused; when all are busy, the oldest sound is cut |
 
 ## Haptics

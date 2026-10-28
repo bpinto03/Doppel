@@ -18,7 +18,7 @@ func _init(config: AudioConfig, haptics_config: HapticsConfig, playback: Resolut
 
 
 func play_game_over() -> void:
-	AudioManager.play_effect(_config.game_over)
+	AudioManager.play_effect(_config.game_over, _config.get_game_over_pitch_scale())
 
 
 func play_ui_click() -> void:

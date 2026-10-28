@@ -1,12 +1,24 @@
-[gd_resource type="Resource" script_class="AudioConfig" format=3]
+[gd_resource type="Resource" script_class="AudioConfig" format=3 uid="uid://dlvmuvkjey3ek"]
 
-[ext_resource type="Script" path="res://scripts/audio/audio_config.gd" id="1_config"]
-[ext_resource type="Script" path="res://scripts/audio/sound_effect.gd" id="2_effect"]
-[ext_resource type="AudioStream" path="res://assets/audio/sfx/placement.wav" id="3_placement"]
-[ext_resource type="AudioStream" path="res://assets/audio/sfx/merge.wav" id="4_merge"]
-[ext_resource type="AudioStream" path="res://assets/audio/sfx/game_over.wav" id="6_game_over"]
-[ext_resource type="AudioStream" path="res://assets/audio/sfx/ui_click.wav" id="7_ui_click"]
-[ext_resource type="AudioStream" path="res://assets/audio/sfx/unplayable_column.wav" id="8_unplayable"]
+[ext_resource type="Script" uid="uid://bqql0k84aap3g" path="res://scripts/audio/audio_config.gd" id="1_config"]
+[ext_resource type="Script" uid="uid://btcw8jdtlqkg6" path="res://scripts/audio/sound_effect.gd" id="2_effect"]
+[ext_resource type="AudioStream" uid="uid://derqbatk4am88" path="res://assets/audio/sfx/placement.wav" id="3_placement"]
+[ext_resource type="AudioStream" uid="uid://ckk3chla6h3i1" path="res://assets/audio/sfx/merge.wav" id="4_merge"]
+[ext_resource type="AudioStream" uid="uid://bexerpqemughv" path="res://assets/audio/sfx/game_over.wav" id="6_game_over"]
+[ext_resource type="AudioStream" uid="uid://d0nbd36btqw0b" path="res://assets/audio/sfx/ui_click.wav" id="7_ui_click"]
+[ext_resource type="AudioStream" uid="uid://d0dont87un4gh" path="res://assets/audio/sfx/unplayable_column.wav" id="8_unplayable"]
+
+[sub_resource type="Resource" id="Effect_chain"]
+script = ExtResource("2_effect")
+stream = ExtResource("4_merge")
+
+[sub_resource type="Resource" id="Effect_game_over"]
+script = ExtResource("2_effect")
+stream = ExtResource("6_game_over")
+
+[sub_resource type="Resource" id="Effect_merge"]
+script = ExtResource("2_effect")
+stream = ExtResource("4_merge")
 
 [sub_resource type="Resource" id="Effect_placement"]
 script = ExtResource("2_effect")
@@ -14,27 +26,6 @@ stream = ExtResource("3_placement")
 volume_offset_db = -6.0
 pitch_variation_percent = 4.0
 volume_variation_percent = 10.0
-
-[sub_resource type="Resource" id="Effect_merge"]
-script = ExtResource("2_effect")
-stream = ExtResource("4_merge")
-volume_offset_db = 0.0
-pitch_variation_percent = 0.0
-volume_variation_percent = 0.0
-
-[sub_resource type="Resource" id="Effect_chain"]
-script = ExtResource("2_effect")
-stream = ExtResource("4_merge")
-volume_offset_db = 0.0
-pitch_variation_percent = 0.0
-volume_variation_percent = 0.0
-
-[sub_resource type="Resource" id="Effect_game_over"]
-script = ExtResource("2_effect")
-stream = ExtResource("6_game_over")
-volume_offset_db = 0.0
-pitch_variation_percent = 0.0
-volume_variation_percent = 0.0
 
 [sub_resource type="Resource" id="Effect_ui_click"]
 script = ExtResource("2_effect")
@@ -46,9 +37,6 @@ volume_variation_percent = 10.0
 [sub_resource type="Resource" id="Effect_unplayable"]
 script = ExtResource("2_effect")
 stream = ExtResource("8_unplayable")
-volume_offset_db = 0.0
-pitch_variation_percent = 0.0
-volume_variation_percent = 0.0
 
 [resource]
 script = ExtResource("1_config")
@@ -58,7 +46,7 @@ chain = SubResource("Effect_chain")
 game_over = SubResource("Effect_game_over")
 ui_click = SubResource("Effect_ui_click")
 unplayable_column = SubResource("Effect_unplayable")
-chain_base_pitch_scale = 0.7093
+merge_sound_semitones_above_c = 5.946
 chain_scale_intervals = Array[int]([2, 2, 3, 2, 3])
 chain_max_pitch_link = 11
 chain_max_semitones = 24

@@ -74,7 +74,7 @@ Audio buses (`default_bus_layout.tres`): `SFX` and `Music`, both sent to `Master
 | File | Responsibility |
 |------|----------------|
 | `sound_effect.gd` | `SoundEffect`: a stream, its volume offset and its random pitch and volume spread |
-| `audio_config.gd` | `AudioConfig` (`data/audio_config.tres`): one `SoundEffect` per event, the chain scale (`get_chain_semitones()`, `get_chain_pitch_scale()`) and the player pool size |
+| `audio_config.gd` | `AudioConfig` (`data/audio_config.tres`): one `SoundEffect` per event, the key and chain scale (`get_chain_semitones()`, `get_chain_pitch_scale()`, `get_game_over_pitch_scale()`, see [0004](decisions/0004-audio-key.md)) and the player pool size |
 
 Sound files live in `assets/audio/sfx/`, as short mono WAV files imported uncompressed (`compress/mode=0`: no decoding artifact, about 60 KB more in the APK for all of them; music will stay compressed): `placement.wav`, `merge.wav` (also played by `chain`), `game_over.wav`, `ui_click.wav`, `unplayable_column.wav`. A replacement with the same name needs no other change; another name or format (OGG) is set in `data/audio_config.tres`. Every file is listed in `CREDITS.md`.
 

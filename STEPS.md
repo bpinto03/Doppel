@@ -116,7 +116,7 @@ Objectif : **savoir si le jeu est fun**, rien d'autre.
 - [x] Afficher les messages de combo, sobres
 
 ### 2.4 Audio et haptique
-- [ ] Ajouter les effets sonores (pose, fusion, chaîne avec hauteur croissante, fin de partie)
+- [x] Ajouter les effets sonores (pose, fusion, chaîne avec hauteur croissante, fin de partie)
 - [ ] Ajouter une musique d'ambiance en boucle
 - [ ] Ajouter une vibration légère (désactivable)
 - [ ] Noter les **licences** de chaque asset audio et visuel (fichier `CREDITS.md`)
