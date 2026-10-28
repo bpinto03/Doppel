@@ -31,14 +31,13 @@ var _tutorial_step_index: int = NO_TUTORIAL_STEP
 @onready var _restart_button: Button = %RestartButton
 @onready var _help_button: Button = %HelpButton
 @onready var _combo_label: Label = %ComboLabel
-@onready var _previews: Control = %Upcoming
 @onready var _tutorial_panel: TutorialPanel = %TutorialPanel
 @onready var _theme_debug_button: Button = %ThemeDebugButton
 
 
 func _ready() -> void:
 	_best_score = SaveManager.get_value(RECORD_SECTION, BEST_SCORE_KEY, 0)
-	_playback = ResolutionPlayback.new(PLAYBACK_CONFIG, _board_view, _combo_label, _previews)
+	_playback = ResolutionPlayback.new(PLAYBACK_CONFIG, _board_view, _combo_label)
 	_playback.playback_finished.connect(_on_playback_finished)
 	_board_view.pressed_while_locked.connect(_playback.skip)
 	_board_view.column_released.connect(_on_column_released)

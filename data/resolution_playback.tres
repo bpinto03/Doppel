@@ -1,6 +1,6 @@
-[gd_resource type="Resource" script_class="ResolutionPlaybackConfig" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="ResolutionPlaybackConfig" format=3 uid="uid://dbeeh61q71gko"]
 
-[ext_resource type="Script" path="res://scripts/ui/resolution_playback_config.gd" id="1_config"]
+[ext_resource type="Script" uid="uid://ev0eo1lqdkke" path="res://scripts/ui/resolution_playback_config.gd" id="1_config"]
 
 [sub_resource type="Curve" id="Curve_chain_intensity"]
 _data = [Vector2(0, 0), 0.0, 1.0, 0, 1, Vector2(1, 1), 1.0, 0.0, 1, 0]
@@ -11,7 +11,6 @@ script = ExtResource("1_config")
 drop_duration = 0.12
 fall_duration = 0.07
 fall_transition = 1
-fall_ease = 0
 landing_squash = 0.1
 landing_squash_duration = 0.06
 merge_pulse_duration = 0.05
@@ -45,6 +44,6 @@ combo_words = Dictionary[int, String]({
 })
 combo_pop_scale = 1.2
 combo_pop_duration = 0.15
-preview_dimmed_opacity = 0.35
+combo_hold_duration = 1.0
 step_pause = 0.02
 max_chain_duration = 2.5

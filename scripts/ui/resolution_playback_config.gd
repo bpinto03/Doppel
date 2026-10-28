@@ -63,8 +63,8 @@ extends Resource
 ## The combo message pops at each new link.
 @export var combo_pop_scale: float
 @export var combo_pop_duration: float
-## Opacity of the tile previews while a combo message is shown over them.
-@export var preview_dimmed_opacity: float
+## The message stays this long after a turn played to the end; a skip or the next turn hides it.
+@export var combo_hold_duration: float
 
 @export_group("Turn")
 @export var step_pause: float

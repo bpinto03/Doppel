@@ -111,9 +111,9 @@ Objectif : **savoir si le jeu est fun**, rien d'autre.
 - [x] Animer la chute des tuiles (`Tween`)
 - [x] Animer la fusion ("pop", léger rebond)
 - [x] Animer les chaînes avec intensité croissante
-- [ ] Ajouter particules (`CPUParticles2D`) et petit tremblement d'écran sur gros combos
+- [x] Ajouter particules (`CPUParticles2D`) et petit tremblement d'écran sur gros combos
 - [ ] Animer et soigner l'**aperçu du reflet** (version simple faite en phase 1)
-- [ ] Afficher les messages de combo, sobres
+- [x] Afficher les messages de combo, sobres
 
 ### 2.4 Audio et haptique
 - [ ] Ajouter les effets sonores (pose, fusion, chaîne avec hauteur croissante, fin de partie)

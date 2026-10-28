@@ -11,7 +11,6 @@ var is_playing: bool
 var _config: ResolutionPlaybackConfig
 var _board_view: BoardView
 var _combo_label: Label
-var _previews: Control
 var _combo_tween: Tween
 var _particles: MergeParticles
 var _displayed_board: BoardState
@@ -23,12 +22,10 @@ var _shake_tween: Tween
 var _shake_rng := RandomNumberGenerator.new()
 
 
-## The combo label is shown over the previews, which are dimmed meanwhile but never hidden.
-func _init(config: ResolutionPlaybackConfig, board_view: BoardView, combo_label: Label, previews: Control) -> void:
+func _init(config: ResolutionPlaybackConfig, board_view: BoardView, combo_label: Label) -> void:
 	_config = config
 	_board_view = board_view
 	_combo_label = combo_label
-	_previews = previews
 	_particles = MergeParticles.new(config)
 	board_view.add_board_effect(_particles)
 
@@ -40,10 +37,11 @@ func play(board_before: BoardState, events: Array[ResolutionEvent]) -> void:
 	_events = events
 	_next_event_index = 0
 	_planned_duration = 0.0
+	_hide_combo()
 	_board_view.show_board(_displayed_board)
 	_tween = _board_view.create_tween()
 	_queue_steps()
-	_tween.tween_callback(_finish)
+	_tween.tween_callback(_finish.bind(true))
 	_tween.set_speed_scale(maxf(1.0, _planned_duration / _config.max_chain_duration))
 
 
@@ -52,7 +50,7 @@ func skip() -> void:
 		return
 	_tween.kill()
 	_apply_events_until(_events.size())
-	_finish()
+	_finish(false)
 
 
 func _queue_steps() -> void:
@@ -207,7 +205,6 @@ func _show_combo(merge: GroupMergedEvent) -> void:
 		return
 	_combo_label.text = ComboText.build(merge.chain_link, merge.chain_multiplier, _config)
 	_combo_label.visible = true
-	_previews.modulate.a = _config.preview_dimmed_opacity
 	_combo_label.pivot_offset = _combo_label.size / 2.0
 	if _combo_tween != null:
 		_combo_tween.kill()
@@ -217,14 +214,24 @@ func _show_combo(merge: GroupMergedEvent) -> void:
 	_combo_tween.tween_property(_combo_label, "scale", Vector2.ONE, _config.combo_pop_duration / 2.0).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
-## Immediate, without fading, so a skip shows the previews at once.
+## Leaves the message on screen after the turn without delaying the next one, which hides it.
+func _hold_combo() -> void:
+	if not _combo_label.visible:
+		return
+	if _combo_tween != null:
+		_combo_tween.kill()
+	_combo_label.scale = Vector2.ONE
+	_combo_tween = _combo_label.create_tween()
+	_combo_tween.tween_interval(_config.combo_hold_duration)
+	_combo_tween.tween_callback(_hide_combo)
+
+
 func _hide_combo() -> void:
 	if _combo_tween != null:
 		_combo_tween.kill()
 		_combo_tween = null
 	_combo_label.visible = false
 	_combo_label.scale = Vector2.ONE
-	_previews.modulate.a = 1.0
 
 
 func _apply_events_until(events_end: int) -> void:
@@ -234,11 +241,15 @@ func _apply_events_until(events_end: int) -> void:
 	_board_view.clear_animation()
 
 
-func _finish() -> void:
+## A skip hides the combo message at once; a turn played to the end holds it a moment.
+func _finish(is_combo_held: bool) -> void:
 	if not is_playing:
 		return
 	is_playing = false
 	_stop_shake()
-	_hide_combo()
+	if is_combo_held:
+		_hold_combo()
+	else:
+		_hide_combo()
 	_board_view.clear_animation()
 	playback_finished.emit()

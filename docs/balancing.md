@@ -45,28 +45,28 @@ Durations in seconds, in `data/resolution_playback.tres` (a `ResolutionPlaybackC
 | `chain_intensity_curve` | Linear 0 to 1 | Chain intensity from link 1 to `chain_intensity_max_link` |
 | `chain_intensity_max_link` | 5 | First link played at full intensity |
 | `chain_max_speed_up` | 1.6 | Merge steps play this many times faster at full intensity |
-| `particles_per_merge` | 8 | Particles thrown by each merge result on the first chain link **[TO TEST]** |
-| `particles_per_extra_link` | 4 | Particles added per further chain link **[TO TEST]** |
+| `particles_per_merge` | 8 | Particles thrown by each merge result on the first chain link |
+| `particles_per_extra_link` | 4 | Particles added per further chain link |
 | `max_particles_per_burst` | 24 | Largest burst |
 | `max_live_particles` | 96 | Most particles on screen at once; bursts shrink or drop beyond it |
-| `particle_lifetime` | 0.45 | Life of a particle, in seconds **[TO TEST]** |
-| `particle_min_size`, `particle_max_size` | 0.07, 0.12 | Particle diameter, in cell widths **[TO TEST]** |
-| `particle_min_speed`, `particle_max_speed` | 1.2, 2.2 | Launch speed, in cell widths per second **[TO TEST]** |
+| `particle_lifetime` | 0.45 | Life of a particle, in seconds |
+| `particle_min_size`, `particle_max_size` | 0.07, 0.12 | Particle diameter, in cell widths |
+| `particle_min_speed`, `particle_max_speed` | 1.2, 2.2 | Launch speed, in cell widths per second |
 | `particle_gravity` | 4.0 | Pull down, in cell widths per second squared |
 | `particle_start_radius` | 0.4 | Particles start on this circle around the result tile center, in cell widths, so they leave from its edge |
-| `shake_min_link` | 3 | First chain link that shakes the board **[TO TEST]** |
-| `shake_amplitude` | 0.04 | Shake amplitude on that link, in cell widths **[TO TEST]** |
+| `shake_min_link` | 3 | First chain link that shakes the board |
+| `shake_amplitude` | 0.04 | Shake amplitude on that link, in cell widths |
 | `shake_amplitude_per_link` | 0.02 | Amplitude added per further link |
 | `shake_max_amplitude` | 0.11 | Largest shake amplitude |
-| `shake_duration` | 0.18 | Length of a shake; it runs beside the turn and never lengthens it **[TO TEST]** |
-| `combo_words` | 3: Nice!, 5: Great!, 7: Amazing! | Word shown before the multiplier from each chain link (translation keys) **[TO TEST]** |
+| `shake_duration` | 0.18 | Length of a shake; it runs beside the turn and never lengthens it |
+| `combo_words` | 3: Nice!, 5: Great!, 7: Amazing! | Word shown before the multiplier from each chain link (translation keys) |
 | `combo_pop_scale` | 1.2 | Peak scale of the combo message pop at each link |
 | `combo_pop_duration` | 0.15 | Length of that pop |
-| `preview_dimmed_opacity` | 0.35 | Opacity of the tile previews while the combo message covers them |
+| `combo_hold_duration` | 1.0 | Time the message stays after a turn played to the end; a skip or the next turn hides it at once |
 | `step_pause` | 0.02 | Pause after each step |
 | `max_chain_duration` | 2.5 | Longest playback of a turn; longer turns are sped up uniformly |
 
-Measured on PC with these values: a drop alone 0.19 s; a single merge, drop and fall included, 0.60 s; a chain of 4 links 1.67 s. Validated on a phone (2026-10-27).
+Measured on PC with these values: a drop alone 0.19 s; a single merge, drop and fall included, 0.60 s; a chain of 4 links 1.67 s. Validated on a phone (2026-10-27). Particles, shake and combo messages validated on a phone (2026-10-28): steady 120 FPS during playbacks up to 1.35 s.
 
 ## Tile text
 
