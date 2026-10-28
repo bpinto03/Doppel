@@ -63,6 +63,15 @@ Durations in seconds, in `data/resolution_playback.tres` (a `ResolutionPlaybackC
 | `combo_pop_scale` | 1.2 | Peak scale of the combo message pop at each link |
 | `combo_pop_duration` | 0.15 | Length of that pop |
 | `combo_hold_duration` | 1.0 | Time the message stays after a turn played to the end; a skip or the next turn hides it at once |
+| `ghost_fill_opacity` | 0.25 | Fill opacity of the placement ghost: the tile and its reflection before release |
+| `ghost_outline_opacity` | 0.9 | Opacity of the ghost outline and value, in the tile color; much higher than the fill, so a ghost never looks like a placed tile |
+| `ghost_outline_width` | 0.05 | Width of that outline, relative to the tile's shorter side (7 px with 3 columns per side, 5 px with 4, at 1080 px wide) |
+| `ghost_link_opacity` | 0.3 | Opacity of the line linking the ghost tile to its reflection |
+| `ghost_link_width` | 0.02 | Width of that line, in cell widths |
+| `ghost_fade_in_duration` | 0.06 | Fade-in of the ghost when it appears; it disappears at once |
+| `ghost_pulse_depth` | 0.3 | The ghost opacity dips by this ratio once per period while it is shown |
+| `ghost_pulse_period` | 1.2 | Length of one ghost pulse |
+| `ghost_slide_duration` | 0.08 | Slide of the ghost and its reflection to their new cells when the finger changes column |
 | `step_pause` | 0.02 | Pause after each step |
 | `max_chain_duration` | 2.5 | Longest playback of a turn; longer turns are sped up uniformly |
 

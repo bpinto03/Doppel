@@ -32,7 +32,21 @@ func draw_tile(canvas: CanvasItem, rect: Rect2, level: int, opacity: float = 1.0
 	_tile_box.border_color = tile_color.darkened(RELIEF_DARKENING)
 	_tile_box.draw(canvas.get_canvas_item(), rect)
 	var face := Rect2(rect.position, rect.size - Vector2(0.0, relief))
-	_draw_value(canvas, face, str(MergeScoring.calculate_tile_value(level)), opacity)
+	_draw_value(canvas, face, str(MergeScoring.calculate_tile_value(level)), Color(palette.tile_text, opacity))
+
+
+## A faint fill, a solid outline and the value in the tile color, without relief, so a ghost never looks placed.
+func draw_ghost_tile(canvas: CanvasItem, rect: Rect2, level: int, fill_opacity: float, outline_opacity: float, outline_width_ratio: float) -> void:
+	var tile_color: Color = palette.get_tile_color(level)
+	var outline_color := Color(tile_color, outline_opacity)
+	draw_tile_shape(canvas, rect, Color(tile_color, fill_opacity))
+	draw_tile_shape(canvas, rect, outline_color, calculate_ghost_outline_width(rect, outline_width_ratio))
+	_draw_value(canvas, rect, str(MergeScoring.calculate_tile_value(level)), outline_color)
+
+
+## Relative to the tile's shorter side, never thinner than a pixel.
+func calculate_ghost_outline_width(rect: Rect2, outline_width_ratio: float) -> int:
+	return maxi(1, roundi(_get_shorter_side(rect) * outline_width_ratio))
 
 
 ## Fills or outlines the tile shape without relief, for overlays.
@@ -67,12 +81,12 @@ func _set_up_box(rect: Rect2, color: Color) -> void:
 	_tile_box.set_corner_radius_all(roundi(_get_shorter_side(rect) * CORNER_RADIUS_RATIO))
 
 
-func _draw_value(canvas: CanvasItem, rect: Rect2, text: String, opacity: float) -> void:
+func _draw_value(canvas: CanvasItem, rect: Rect2, text: String, color: Color) -> void:
 	var font: Font = _text_config.font
 	var font_size: int = calculate_font_size(text, rect.size)
 	var baseline_y: float = rect.get_center().y + (font.get_ascent(font_size) - font.get_descent(font_size)) / 2.0
 	var baseline := Vector2(rect.position.x, baseline_y)
-	canvas.draw_string(font, baseline, text, HORIZONTAL_ALIGNMENT_CENTER, rect.size.x, font_size, Color(palette.tile_text, opacity))
+	canvas.draw_string(font, baseline, text, HORIZONTAL_ALIGNMENT_CENTER, rect.size.x, font_size, color)
 
 
 func _get_shorter_side(rect: Rect2) -> float:

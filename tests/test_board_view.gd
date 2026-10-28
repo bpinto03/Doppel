@@ -12,6 +12,9 @@ const RIGHT_MIDDLE_COLUMN_POINT := Vector2(480.0, MIDDLE_Y)
 const RIGHT_OUTER_COLUMN_POINT := Vector2(580.0, MIDDLE_Y)
 const BELOW_BOARD_POINT := Vector2(50.0, 650.0)
 const SLIDE_STEP: float = 5.0
+const GHOST_SLIDE_DURATION: float = BoardView.PLAYBACK_CONFIG.ghost_slide_duration
+const POSITION_TOLERANCE: float = 0.01
+const SLIDE_SAMPLED_FRAMES: int = 10
 const SEED: int = 1234
 
 var _board_view: BoardView
@@ -134,6 +137,87 @@ func test_sliding_across_the_axis_keeps_the_ghost_visible() -> void:
 	_release_at(RIGHT_AXIS_COLUMN_POINT)
 
 	assert_signal_emitted_with_parameters(_board_view, "column_released", [2])
+
+
+func test_ghost_reflection_mirrors_the_tile_across_the_axis_while_sliding() -> void:
+	# The board is centered in the view, and the axis is the middle of the board.
+	var axis_x: float = _board_view.size.x / 2.0
+	_move_to(LEFT_OUTER_COLUMN_POINT)
+	_move_to(LEFT_AXIS_COLUMN_POINT)
+
+	for frame: int in SLIDE_SAMPLED_FRAMES:
+		var tile_rect: Rect2 = _board_view.get_ghost_tile_rect()
+		var reflection_rect: Rect2 = _board_view.get_ghost_reflection_rect()
+		assert_almost_eq(tile_rect.position.x + reflection_rect.end.x, 2.0 * axis_x, POSITION_TOLERANCE)
+		assert_almost_eq(tile_rect.position.y, reflection_rect.position.y, POSITION_TOLERANCE)
+		await wait_process_frames(1)
+
+
+func test_ghost_slide_ends_on_the_cell_of_the_new_column() -> void:
+	_move_to(LEFT_OUTER_COLUMN_POINT)
+	_move_to(RIGHT_MIDDLE_COLUMN_POINT)
+	await wait_seconds(GHOST_SLIDE_DURATION * 2.0)
+
+	assert_eq(_board_view.get_ghost_tile_rect().get_center(), _board_view.get_cell_center(Vector2i(1, 0)))
+	assert_eq(_board_view.get_ghost_reflection_rect().get_center(), _board_view.get_cell_center(Vector2i(4, 0)))
+
+
+func test_new_slide_starts_from_the_drawn_ghost() -> void:
+	_move_to(LEFT_OUTER_COLUMN_POINT)
+	_move_to(LEFT_AXIS_COLUMN_POINT)
+	await wait_process_frames(1)
+	var drawn_rect: Rect2 = _board_view.get_ghost_tile_rect()
+
+	_move_to(RIGHT_MIDDLE_COLUMN_POINT)
+
+	assert_eq(_board_view.get_ghost_tile_rect(), drawn_rect)
+
+
+func test_release_plays_the_column_under_the_finger_while_the_ghost_slides() -> void:
+	_press_at(LEFT_OUTER_COLUMN_POINT)
+	_move_to(LEFT_AXIS_COLUMN_POINT)
+	var is_ghost_on_its_cell: bool = _board_view.get_ghost_tile_rect().get_center() == _board_view.get_cell_center(Vector2i(2, 0))
+
+	_release_at(LEFT_AXIS_COLUMN_POINT)
+
+	assert_false(is_ghost_on_its_cell)
+	assert_signal_emitted_with_parameters(_board_view, "column_released", [2])
+
+
+func test_ghost_stops_animating_on_release() -> void:
+	_press_at(LEFT_OUTER_COLUMN_POINT)
+	_move_to(LEFT_AXIS_COLUMN_POINT)
+	var was_animating: bool = _board_view.is_ghost_animating()
+
+	_release_at(LEFT_AXIS_COLUMN_POINT)
+
+	assert_true(was_animating)
+	assert_false(_board_view.is_ghost_animating())
+
+
+func test_ghost_stops_animating_when_input_is_locked() -> void:
+	_move_to(LEFT_OUTER_COLUMN_POINT)
+
+	_board_view.is_input_enabled = false
+
+	assert_false(_board_view.is_ghost_animating())
+
+
+func test_ghost_disappears_on_a_column_that_cannot_take_the_pair() -> void:
+	_show_session_with_board(BoardFixture.create_board([
+		". . 2 | . . .",
+		". . 1 | . . .",
+		". . 2 | . . .",
+		". . 1 | . . .",
+		". . 2 | . . .",
+		". . 1 | . . .",
+	]))
+	_move_to(LEFT_OUTER_COLUMN_POINT)
+
+	_move_to(RIGHT_AXIS_COLUMN_POINT)
+
+	assert_false(_board_view.is_ghost_visible())
+	assert_false(_board_view.is_ghost_animating())
 
 
 func test_press_that_unlocks_the_board_plays_on_release() -> void:

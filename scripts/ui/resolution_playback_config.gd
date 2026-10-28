@@ -66,6 +66,23 @@ extends Resource
 ## The message stays this long after a turn played to the end; a skip or the next turn hides it.
 @export var combo_hold_duration: float
 
+@export_group("Ghost")
+## The placement preview: the tile and its reflection, translucent, linked across the axis.
+## The outline and value stay more opaque than the fill, so a ghost reads as a preview in both themes.
+@export var ghost_fill_opacity: float
+@export var ghost_outline_opacity: float
+## Relative to the tile's shorter side.
+@export var ghost_outline_width: float
+@export var ghost_link_opacity: float
+## Relative to the cell width.
+@export var ghost_link_width: float
+@export var ghost_fade_in_duration: float
+## The ghost opacity dips by this ratio and comes back once per period, while it is shown.
+@export var ghost_pulse_depth: float
+@export var ghost_pulse_period: float
+## When the finger changes column, the ghost and its reflection slide to their new cells, as mirror images.
+@export var ghost_slide_duration: float
+
 @export_group("Turn")
 @export var step_pause: float
 ## Longer turns play faster, all steps scaled by the same factor, to fit in this duration.

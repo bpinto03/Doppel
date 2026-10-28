@@ -112,7 +112,7 @@ Loaded in this order; each one may use the ones above it.
 
 ## Placement ghost
 
-While a finger is down on the board, or the mouse hovers it on PC, `BoardView` asks `GameSession.preview_placement()` for the played left column under the pointer (either half) and draws the tile and its reflection, translucent, where they will land, linked by a thin line across the axis. The ghost is hidden while input is locked (`BoardView.is_ghost_visible()`).
+While a finger is down on the board, or the mouse hovers it on PC, `BoardView` asks `GameSession.preview_placement()` for the played left column under the pointer (either half) and draws the tile and its reflection where they will land, linked by a thin line across the axis. `TilePainter.draw_ghost_tile()` gives a ghost a faint fill, a solid outline and the value in the tile color, without the relief of a placed tile. The ghost fades in, pulses gently, and slides with its reflection as mirror images when the finger changes column; a new slide starts from the drawn position. The slide is visual only: a release always plays the column under the finger. Its tweens run only while the ghost is shown, and are killed when it disappears (release, locked board, unplayable column). The ghost is hidden while input is locked or on a column that cannot take the tile and its reflection (`BoardView.is_ghost_visible()`).
 
 ## Resolution playback
 

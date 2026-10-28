@@ -5,6 +5,7 @@ signal column_released(column: int)
 signal pressed_while_locked
 
 const BOARD_STYLE: BoardStyle = preload("res://data/board_style.tres")
+const PLAYBACK_CONFIG: ResolutionPlaybackConfig = preload("res://data/resolution_playback.tres")
 ## Cells stretch up to this height/width ratio to fill the available height, so wider boards keep a similar size.
 const MAX_CELL_HEIGHT_RATIO: float = 1.3
 ## Width of the space around the mirror axis, in cells.
@@ -12,9 +13,6 @@ const AXIS_GAP_IN_CELLS: float = 0.3
 ## Blocked columns fade into the background, on light and dark themes alike.
 const BLOCKED_COLUMN_OPACITY: float = 0.6
 const PULSE_COLOR := Color(1.0, 1.0, 1.0, 0.6)
-const GHOST_OPACITY: float = 0.4
-const GHOST_LINK_OPACITY: float = 0.3
-const GHOST_LINK_WIDTH: float = 3.0
 const HINT_COLUMN_OPACITY: float = 0.25
 const HINT_CELL_OUTLINE_WIDTH: int = 6
 const HINT_AXIS_WIDTH: float = 14.0
@@ -23,11 +21,13 @@ const NO_COLUMN: int = -1
 var is_input_enabled: bool = true:
 	set(value):
 		is_input_enabled = value
+		_update_ghost()
 		queue_redraw()
 ## When set, only this left column (or a touch on its mirror) can be played.
 var restricted_column: int = NO_COLUMN:
 	set(value):
 		restricted_column = value
+		_update_ghost()
 		queue_redraw()
 
 var tile_painter: TilePainter:
@@ -40,6 +40,16 @@ var tile_painter: TilePainter:
 var _session: GameSession
 var _displayed_board: BoardState
 var _hovered_column: int = NO_COLUMN
+## The played column whose ghost is drawn; it lags the hovered column only by the slide.
+var _ghost_column: int = NO_COLUMN
+var _ghost_tile_from := Vector2.ZERO
+var _ghost_reflection_from := Vector2.ZERO
+var _ghost_slide_progress: float
+var _ghost_fade: float
+var _ghost_pulse: float
+var _ghost_slide_tween: Tween
+var _ghost_fade_tween: Tween
+var _ghost_pulse_tween: Tween
 var _is_press_armed: bool
 var _moving_tiles: Array[MovingTile] = []
 var _move_progress: float
@@ -94,6 +104,7 @@ func get_cell_width() -> float:
 func show_session(session: GameSession) -> void:
 	_session = session
 	show_board(session.board)
+	_update_ghost()
 
 
 ## During playback the displayed board is a copy that only changes through ResolutionEvent.apply_to().
@@ -203,7 +214,22 @@ func find_touched_column(point: Vector2) -> int:
 
 
 func is_ghost_visible() -> bool:
-	return is_input_enabled and _is_column_selectable(_hovered_column)
+	return _ghost_column != NO_COLUMN
+
+
+func is_ghost_animating() -> bool:
+	for tween: Tween in [_ghost_slide_tween, _ghost_fade_tween, _ghost_pulse_tween]:
+		if tween != null and tween.is_valid():
+			return true
+	return false
+
+
+func get_ghost_tile_rect() -> Rect2:
+	return _get_ghost_rect(_session.preview_placement(_ghost_column).tile_cell, _ghost_tile_from)
+
+
+func get_ghost_reflection_rect() -> Rect2:
+	return _get_ghost_rect(_session.preview_placement(_ghost_column).reflection_cell, _ghost_reflection_from)
 
 
 func _gui_input(event: InputEvent) -> void:
@@ -258,9 +284,78 @@ func _find_played_column_at(point: Vector2) -> int:
 
 
 func _set_hovered_column(column: int) -> void:
-	if column != _hovered_column:
-		_hovered_column = column
-		queue_redraw()
+	_hovered_column = column
+	_update_ghost()
+
+
+## The ghost follows the hovered column only while that column can be played.
+func _update_ghost() -> void:
+	var column: int = _hovered_column if is_input_enabled and _is_column_selectable(_hovered_column) else NO_COLUMN
+	if column == _ghost_column:
+		return
+	if column == NO_COLUMN:
+		_hide_ghost()
+	elif _ghost_column == NO_COLUMN:
+		_show_ghost(column)
+	else:
+		_slide_ghost(column)
+	queue_redraw()
+
+
+func _show_ghost(column: int) -> void:
+	_ghost_column = column
+	_ghost_slide_progress = 1.0
+	_ghost_fade_tween = create_tween()
+	_ghost_fade_tween.tween_method(_set_ghost_fade, 0.0, 1.0, PLAYBACK_CONFIG.ghost_fade_in_duration)
+	_ghost_pulse_tween = create_tween().set_loops()
+	_ghost_pulse_tween.tween_method(_set_ghost_pulse_progress, 0.0, 1.0, PLAYBACK_CONFIG.ghost_pulse_period)
+
+
+## Starts from where the ghost is drawn, so a slide interrupted by another column change never jumps.
+func _slide_ghost(column: int) -> void:
+	_ghost_tile_from = get_ghost_tile_rect().position
+	_ghost_reflection_from = get_ghost_reflection_rect().position
+	_ghost_column = column
+	_kill_tween(_ghost_slide_tween)
+	_ghost_slide_progress = 0.0
+	_ghost_slide_tween = create_tween()
+	_ghost_slide_tween.tween_method(_set_ghost_slide_progress, 0.0, 1.0, PLAYBACK_CONFIG.ghost_slide_duration).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
+
+func _hide_ghost() -> void:
+	_ghost_column = NO_COLUMN
+	for tween: Tween in [_ghost_slide_tween, _ghost_fade_tween, _ghost_pulse_tween]:
+		_kill_tween(tween)
+	_ghost_slide_tween = null
+	_ghost_fade_tween = null
+	_ghost_pulse_tween = null
+
+
+func _kill_tween(tween: Tween) -> void:
+	if tween != null:
+		tween.kill()
+
+
+## Both rects slide with the same progress from mirrored positions, so they stay mirror images.
+func _get_ghost_rect(cell: Vector2i, from_position: Vector2) -> Rect2:
+	var cell_rect: Rect2 = _get_tile_rect(cell)
+	return Rect2(from_position.lerp(cell_rect.position, _ghost_slide_progress), cell_rect.size)
+
+
+func _set_ghost_slide_progress(progress: float) -> void:
+	_ghost_slide_progress = progress
+	queue_redraw()
+
+
+func _set_ghost_fade(fade: float) -> void:
+	_ghost_fade = fade
+	queue_redraw()
+
+
+## Full opacity at the start of each period, dipping smoothly in between.
+func _set_ghost_pulse_progress(progress: float) -> void:
+	_ghost_pulse = 1.0 - PLAYBACK_CONFIG.ghost_pulse_depth * (1.0 - cos(progress * TAU)) / 2.0
+	queue_redraw()
 
 
 func _draw() -> void:
@@ -326,14 +421,22 @@ func _draw_pulse() -> void:
 func _draw_ghost() -> void:
 	if not is_ghost_visible():
 		return
-	var preview: TilesPlacedEvent = _session.preview_placement(_hovered_column)
-	var tile_rect: Rect2 = _get_tile_rect(preview.tile_cell)
-	var reflection_rect: Rect2 = _get_tile_rect(preview.reflection_cell)
+	var preview: TilesPlacedEvent = _session.preview_placement(_ghost_column)
+	var tile_rect: Rect2 = _get_ghost_rect(preview.tile_cell, _ghost_tile_from)
+	var reflection_rect: Rect2 = _get_ghost_rect(preview.reflection_cell, _ghost_reflection_from)
+	var opacity: float = _ghost_fade * _ghost_pulse
 	var link_start := Vector2(tile_rect.end.x, tile_rect.get_center().y)
 	var link_end := Vector2(reflection_rect.position.x, reflection_rect.get_center().y)
-	draw_line(link_start, link_end, Color(tile_painter.palette.text, GHOST_LINK_OPACITY), GHOST_LINK_WIDTH)
-	tile_painter.draw_tile(self, tile_rect, preview.tile_level, GHOST_OPACITY)
-	tile_painter.draw_tile(self, reflection_rect, preview.reflection_level, GHOST_OPACITY)
+	var link_color := Color(tile_painter.palette.text, PLAYBACK_CONFIG.ghost_link_opacity * opacity)
+	draw_line(link_start, link_end, link_color, PLAYBACK_CONFIG.ghost_link_width * get_cell_width())
+	_draw_ghost_tile(tile_rect, preview.tile_level, opacity)
+	_draw_ghost_tile(reflection_rect, preview.reflection_level, opacity)
+
+
+func _draw_ghost_tile(rect: Rect2, level: int, opacity: float) -> void:
+	var fill_opacity: float = PLAYBACK_CONFIG.ghost_fill_opacity * opacity
+	var outline_opacity: float = PLAYBACK_CONFIG.ghost_outline_opacity * opacity
+	tile_painter.draw_ghost_tile(self, rect, level, fill_opacity, outline_opacity, PLAYBACK_CONFIG.ghost_outline_width)
 
 
 func _draw_axis_line(color: Color, width: float) -> void:

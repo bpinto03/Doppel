@@ -2,6 +2,7 @@ extends GutTest
 
 const TILE_TEXT_CONFIG: TileTextConfig = preload("res://data/tile_text.tres")
 const TILE_SIZE := Vector2(150.0, 150.0)
+const GHOST_OUTLINE_WIDTH_RATIO: float = 0.05
 
 var _painter: TilePainter
 
@@ -22,3 +23,15 @@ func test_longest_value_shrinks_to_fit_the_tile_width() -> void:
 
 	assert_lt(font_size, _painter.calculate_font_size("2", TILE_SIZE))
 	assert_lte(text_width, TILE_SIZE.x * TILE_TEXT_CONFIG.max_width_ratio)
+
+
+func test_ghost_outline_follows_the_tile_size() -> void:
+	var large_width: int = _painter.calculate_ghost_outline_width(Rect2(Vector2.ZERO, TILE_SIZE), GHOST_OUTLINE_WIDTH_RATIO)
+	var small_width: int = _painter.calculate_ghost_outline_width(Rect2(Vector2.ZERO, TILE_SIZE / 2.0), GHOST_OUTLINE_WIDTH_RATIO)
+
+	assert_eq(large_width, roundi(TILE_SIZE.x * GHOST_OUTLINE_WIDTH_RATIO))
+	assert_lt(small_width, large_width)
+
+
+func test_ghost_outline_is_never_thinner_than_a_pixel() -> void:
+	assert_eq(_painter.calculate_ghost_outline_width(Rect2(Vector2.ZERO, Vector2.ONE), GHOST_OUTLINE_WIDTH_RATIO), 1)
