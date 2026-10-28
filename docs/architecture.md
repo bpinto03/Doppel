@@ -54,6 +54,7 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 | Script | Responsibility |
 |--------|----------------|
 | `frame_rate_probe.gd` | `FrameRateProbe`: logs the average and lowest frame rate of each playback (`Playback FPS: …`, read with `adb logcat -s godot`). Added by `game_screen.gd` in debug builds; removed in step 3.1 |
+| `audio_latency_probe.gd` | `AudioLatencyProbe`: logs the audio driver, mix rate and output latency at startup, then `Audio latency: output=… next_mix=… frame=…` for every sound played. Added by `game_screen.gd` in debug builds; removed in step 3.1 |
 
 ### `scripts/autoload/` — platform services
 

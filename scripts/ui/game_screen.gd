@@ -172,12 +172,13 @@ func _apply_palette() -> void:
 		swatch.tile_painter = tile_painter
 
 
-## Debug builds only, to compare themes and measure playback frame rate on a phone until the settings screen exists (step 3.1).
+## Debug builds only, to compare themes and measure playback frame rate and audio latency on a phone until the settings screen exists (step 3.1).
 func _set_up_debug_tools() -> void:
 	if not OS.is_debug_build():
 		return
 	print("System dark mode: %s" % DisplayServer.is_dark_mode())
 	add_child(FrameRateProbe.new(_playback))
+	add_child(AudioLatencyProbe.new())
 	_theme_debug_button.visible = true
 	_theme_debug_button.pressed.connect(_switch_to_next_palette)
 
