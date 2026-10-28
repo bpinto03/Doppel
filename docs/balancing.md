@@ -83,21 +83,23 @@ Measured on PC with these values: a drop alone 0.19 s; a single merge, drop and 
 
 | Event | Pitch / volume spread (%) | Plays when |
 |-------|---------------------------|------------|
-| `placement` | 4 / 10 | The placed tile and its reflection land |
+| `placement` | 4 / 10 | The placed tile and its reflection land; −6 dB offset |
 | `merge` | 0 / 0 | Chain link 1 merges |
 | `chain` | 0 / 0 | Chain link 2 and later merge, climbing the scale |
 | `game_over` | 0 / 0 | The game ends |
 | `ui_click` | 5 / 10 | A HUD or tutorial button is pressed; −6 dB offset |
 | `unplayable_column` | 0 / 0 | The finger is released on a column that cannot take the tile and its reflection |
 
-`merge` and `chain` never vary in pitch: the chain would go out of tune.
+`merge` and `chain` never vary in pitch: the chain would go out of tune. Both play `merge.wav`.
+
+Sound files are normalized to the same perceived loudness: −20 dB K-weighted RMS (ITU-R BS.1770 filters) over the part within 30 dB of the peak, peaks under −1 dBFS. `volume_offset_db` then adjusts each event by ear.
 
 | Parameter | Default | Controls |
 |-----------|---------|----------|
-| `chain_base_pitch_scale` | 1.0 | Pitch scale of link 1, tuning the merge and chain sounds onto C, the root of the scale |
+| `chain_base_pitch_scale` | 0.7093 | Pitch scale of link 1, tuning the merge and chain sounds onto C, the root of the scale: `merge.wav` measures 737.7 Hz (F#5), played at 523.25 Hz (C5) |
 | `chain_scale_intervals` | [2, 2, 3, 2, 3] | Semitones climbed at each new link: C major pentatonic (C, D, E, G, A, C...), repeated per octave |
 | `chain_max_pitch_link` | 11 | Later links keep the pitch of this one (two octaves up) |
-| `chain_max_semitones` | 24 | The pitch never climbs more than this above link 1. A higher pitch also shortens the sound: at 24 semitones it plays 4 times faster |
+| `chain_max_semitones` | 24 | The pitch never climbs more than this above link 1 (C7). A higher pitch also shortens the sound: `merge.wav` lasts 0.19 s, 0.27 s at C5 and 0.07 s at C7 |
 | `player_pool_size` | 8 | Effect players created once and reused; when all are busy, the oldest sound is cut |
 
 ## Haptics
