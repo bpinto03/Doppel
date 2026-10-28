@@ -37,7 +37,9 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 | `tutorial_panel.gd` | Shows a step's instruction, then its explanation with Next / Play; Skip at any time. Emits `next_requested`, `skip_requested` |
 | `tutorial_hint_config.gd` | Tutorial highlight pulse period, loaded from `data/tutorial_hint.tres` |
 | `resolution_playback.gd` | Replays a turn's resolution events with simple tweens, emits `tiles_landed`, `chain_link_merged` and `playback_finished` |
-| `game_feedback.gd` | `GameFeedback`: plays the sound of each game event (see Audio feedback) |
+| `game_feedback.gd` | `GameFeedback`: plays the sound and vibration of each game event (see Audio feedback) |
+| `haptics.gd` | `Haptics`: `Input.vibrate_handheld()`, off with `Settings.is_vibration_enabled`, dropping vibrations closer than `min_interval_ms` |
+| `haptics_config.gd` | `HapticsConfig`: vibration lengths and interval, loaded from `data/haptics_config.tres` |
 | `resolution_playback_config.gd` | Playback durations, curves and chain intensity, loaded from `data/resolution_playback.tres` |
 | `combo_text.gd` | `ComboText`: combo message text, with the decimal separator of the current language |
 | `tile_swatch.gd` | Draws one tile (current, reflection, next previews) |
@@ -138,8 +140,8 @@ While a finger is down on the board, or the mouse hovers it on PC, `BoardView` a
 
 `GameFeedback` observes the playback and the board, like the animations, and never touches the core:
 
-- `ResolutionPlayback.tiles_landed` (the placed pair lands): `placement`.
-- `ResolutionPlayback.chain_link_merged(chain_link)`: one sound per link however many groups merge, `merge` on link 1, `chain` after, at `AudioConfig.get_chain_pitch_scale(chain_link)`.
+- `ResolutionPlayback.tiles_landed` (the placed pair lands): `placement`, and a short vibration.
+- `ResolutionPlayback.chain_link_merged(chain_link)`: one sound per link however many groups merge, `merge` on link 1, `chain` after, at `AudioConfig.get_chain_pitch_scale(chain_link)`; a vibration, longer from `big_chain_min_link`.
 - `BoardView.unplayable_column_released`: `unplayable_column`.
 - `game_screen` calls `play_game_over()` when a turn ends the game, played or skipped, and `play_ui_click()` on its buttons and the tutorial buttons.
 

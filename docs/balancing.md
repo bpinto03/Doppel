@@ -100,6 +100,18 @@ Measured on PC with these values: a drop alone 0.19 s; a single merge, drop and 
 | `chain_max_semitones` | 24 | The pitch never climbs more than this above link 1. A higher pitch also shortens the sound: at 24 semitones it plays 4 times faster |
 | `player_pool_size` | 8 | Effect players created once and reused; when all are busy, the oldest sound is cut |
 
+## Haptics
+
+`data/haptics_config.tres` (a `HapticsConfig`), in milliseconds. Starting values, to tune on a phone. Off with `Settings.is_vibration_enabled`.
+
+| Parameter | Default | Controls |
+|-----------|---------|----------|
+| `placement_duration_ms` | 15 | Vibration when the placed pair lands |
+| `merge_duration_ms` | 25 | Vibration of a chain link before `big_chain_min_link` |
+| `big_chain_min_link` | 3 | From this chain link on, merges vibrate `big_chain_duration_ms` |
+| `big_chain_duration_ms` | 60 | Vibration of a long chain link |
+| `min_interval_ms` | 80 | A vibration closer than this to the previous one is dropped |
+
 ## Tile text
 
 `data/tile_text.tres` (a `TileTextConfig`): the value is drawn as large as fits both limits.

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="HapticsConfig" format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/haptics_config.gd" id="1_config"]
+
+[resource]
+script = ExtResource("1_config")
+placement_duration_ms = 15
+merge_duration_ms = 25
+big_chain_min_link = 3
+big_chain_duration_ms = 60
+min_interval_ms = 80
