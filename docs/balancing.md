@@ -106,4 +106,6 @@ Non-neighbor levels whose colors look alike with color vision deficiency (simula
 
 ## Playtest results
 
-None yet. Record Gate 1 findings and the values changed here.
+Record Gate 1 findings and the values changed here.
+
+- 2026-10-28: `column_count_per_side` set to 3 (was 4) after the developer's own play sessions. Gate 1: 1 tester of 5 so far.

@@ -23,7 +23,7 @@ level_weights = Dictionary[int, float]({
 
 [resource]
 script = ExtResource("1_config")
-column_count_per_side = 4
+column_count_per_side = 3
 row_count = 6
 max_tile_level = 12
 spawn_weight_tiers = Array[ExtResource("2_tier")]([SubResource("Resource_start_tier"), SubResource("Resource_advanced_tier")])
