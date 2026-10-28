@@ -59,9 +59,11 @@ Loaded in this order; each one may use the ones above it.
 | Autoload | Responsibility |
 |----------|----------------|
 | `SaveManager` | Versioned local save in `user://save.cfg` (see [0002](decisions/0002-save-format.md)). `get_value` / `set_value` by section and key; every change is written at once |
-| `Settings` | Sound, music, vibration, screen shake, language and theme (`palette_name`: `paper` or `night`), stored in the `settings` section. Emits `changed`, and `palette_changed` for the theme |
+| `Settings` | Sound, music, vibration, screen shake, language, theme (`palette_name`: `paper` or `night`) and linear volume per audio bus (`get_bus_volume` / `set_bus_volume`, 0 to 1), stored in the `settings` section. Emits `changed`, and `palette_changed` for the theme |
 | `I18n` | Sets the locale: chosen language, else the device language if supported (en, fr), else English |
-| `AudioManager` | `play_sound()` and `play_music()`, silent when the matching setting is off |
+| `AudioManager` | Applies the saved sound, music and volume settings to the buses at startup and on every change: a disabled sound or a volume of zero mutes its bus. `play_music()` plays on the `Music` bus |
+
+Audio buses (`default_bus_layout.tres`): `SFX` and `Music`, both sent to `Master`.
 
 ### Scenes
 

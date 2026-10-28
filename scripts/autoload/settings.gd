@@ -13,6 +13,7 @@ const PALETTES: Dictionary[String, ThemePalette] = {
 }
 const DEFAULT_PALETTE_NAME: String = "paper"
 const PALETTE_NAME_KEY: String = "palette_name"
+const DEFAULT_BUS_VOLUME: float = 1.0
 
 var is_sound_enabled: bool:
 	get:
@@ -55,8 +56,21 @@ var palette_name: String:
 		palette_changed.emit()
 
 
+## Linear volume of an audio bus, from 0 (muted) to 1.
+func get_bus_volume(bus_name: StringName) -> float:
+	return SaveManager.get_value(SECTION, _get_bus_volume_key(bus_name), DEFAULT_BUS_VOLUME)
+
+
+func set_bus_volume(bus_name: StringName, volume: float) -> void:
+	_store(_get_bus_volume_key(bus_name), clampf(volume, 0.0, 1.0))
+
+
 func get_palette() -> ThemePalette:
 	return PALETTES.get(palette_name, PALETTES[DEFAULT_PALETTE_NAME])
+
+
+func _get_bus_volume_key(bus_name: StringName) -> String:
+	return "volume_%s" % String(bus_name).to_lower()
 
 
 func _store(key: String, value: Variant) -> void:
