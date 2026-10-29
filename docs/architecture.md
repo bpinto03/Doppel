@@ -38,8 +38,6 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 | `tutorial_hint_config.gd` | Tutorial highlight pulse period, loaded from `data/tutorial_hint.tres` |
 | `resolution_playback.gd` | Replays a turn's resolution events with simple tweens, emits `tiles_landed`, `chain_link_merged` and `playback_finished` |
 | `game_feedback.gd` | `GameFeedback`: plays the sound and vibration of each game event (see Audio feedback) |
-| `haptics.gd` | `Haptics`: `Input.vibrate_handheld()`, off with `Settings.is_vibration_enabled`, dropping vibrations closer than `min_interval_ms` |
-| `haptics_config.gd` | `HapticsConfig`: vibration lengths and interval, loaded from `data/haptics_config.tres` |
 | `resolution_playback_config.gd` | Playback durations, curves and chain intensity, loaded from `data/resolution_playback.tres` |
 | `combo_text.gd` | `ComboText`: combo message text, with the decimal separator of the current language |
 | `tile_swatch.gd` | Draws one tile (current, reflection, next previews) |
@@ -66,8 +64,16 @@ Loaded in this order; each one may use the ones above it.
 | `Settings` | Sound, music, vibration, screen shake, language, theme (`palette_name`: `paper` or `night`) and linear volume per audio bus (`get_bus_volume` / `set_bus_volume`, 0 to 1), stored in the `settings` section. Emits `changed`, and `palette_changed` for the theme |
 | `I18n` | Sets the locale: chosen language, else the device language if supported (en, fr), else English |
 | `AudioManager` | Applies the saved sound, music and volume settings to the buses at startup and on every change: a disabled sound or a volume of zero mutes its bus. `play_effect()` plays a `SoundEffect` on the `SFX` bus with a pool of reused players; a missing sound plays nothing. `play_music()` plays on the `Music` bus |
+| `HapticsManager` | The only caller of `Input.vibrate_handheld()`. `request()` keeps the strongest `HapticPulse` of the frame and sends it on the next `_process`; nothing is sent while `Settings.is_vibration_enabled` is off. A pulse closer than `min_interval_ms` to the last one sent is dropped unless it is stronger. `take_pending_pulse()` makes the decision without the device call, for tests. `pulse_sent` reports every pulse sent. Until the settings screen (step 3.1), debug builds switch vibration with the temporary "Vib" HUD button. On desktop, or on a phone without a vibrator, the call does nothing |
 
 Audio buses (`default_bus_layout.tres`): `SFX` and `Music`, both sent to `Master`.
+
+### `scripts/haptics/` — vibration data
+
+| File | Responsibility |
+|------|----------------|
+| `haptic_pulse.gd` | `HapticPulse`: duration and amplitude of one vibration. `is_stronger_than()` compares the duration, felt on every phone, then the amplitude, ignored by phones that cannot set it |
+| `haptics_config.gd` | `HapticsConfig` (`data/haptics_config.tres`): one pulse per event, `get_chain_link_pulse()` (climbs from `merge` on link 1 to `big_combo` at `big_combo_min_link`, then stays there) and the minimum interval |
 
 ### `scripts/audio/` — sound data
 
@@ -141,10 +147,10 @@ While a finger is down on the board, or the mouse hovers it on PC, `BoardView` a
 
 `GameFeedback` observes the playback and the board, like the animations, and never touches the core:
 
-- `ResolutionPlayback.tiles_landed` (the placed pair lands): `placement`, and a short vibration.
-- `ResolutionPlayback.chain_link_merged(chain_link)`: one sound per link however many groups merge, `merge` on link 1, `chain` after, at `AudioConfig.get_chain_pitch_scale(chain_link)`; a vibration, longer from `big_chain_min_link`.
+- `ResolutionPlayback.tiles_landed` (the placed pair lands): `placement`, and the `placement` pulse.
+- `ResolutionPlayback.chain_link_merged(chain_link)`: one sound per link however many groups merge, `merge` on link 1, `chain` after, at `AudioConfig.get_chain_pitch_scale(chain_link)`; the `HapticsConfig.get_chain_link_pulse(chain_link)` pulse.
 - `BoardView.unplayable_column_released`: `unplayable_column`.
-- `game_screen` calls `play_game_over()` when a turn ends the game, played or skipped, and `play_ui_click()` on its buttons and the tutorial buttons.
+- `game_screen` calls `play_game_over()` when a turn ends the game, played or skipped (sound and `game_over` pulse), and `play_ui_click()` on its buttons and the tutorial buttons.
 
 Both playback signals are tween callbacks: a skip kills the tween, so the remaining steps never play their sounds late, and the next turn plays normally. `AudioManager.effect_played` reports every sound played.
 

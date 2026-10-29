@@ -21,6 +21,7 @@ SaveManager="*res://scripts/autoload/save_manager.gd"
 Settings="*res://scripts/autoload/settings.gd"
 I18n="*res://scripts/autoload/i18n.gd"
 AudioManager="*res://scripts/autoload/audio_manager.gd"
+HapticsManager="*res://scripts/autoload/haptics_manager.gd"
 
 [display]
 

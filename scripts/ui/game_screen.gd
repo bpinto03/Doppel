@@ -36,6 +36,7 @@ var _tutorial_step_index: int = NO_TUTORIAL_STEP
 @onready var _combo_label: Label = %ComboLabel
 @onready var _tutorial_panel: TutorialPanel = %TutorialPanel
 @onready var _theme_debug_button: Button = %ThemeDebugButton
+@onready var _vibration_debug_button: Button = %VibrationDebugButton
 
 
 func _ready() -> void:
@@ -172,7 +173,7 @@ func _apply_palette() -> void:
 		swatch.tile_painter = tile_painter
 
 
-## Debug builds only, to compare themes and measure playback frame rate and audio latency on a phone until the settings screen exists (step 3.1).
+## Debug builds only, to compare themes, switch vibration and measure playback frame rate and audio latency on a phone until the settings screen exists (step 3.1).
 func _set_up_debug_tools() -> void:
 	if not OS.is_debug_build():
 		return
@@ -181,6 +182,9 @@ func _set_up_debug_tools() -> void:
 	add_child(AudioLatencyProbe.new())
 	_theme_debug_button.visible = true
 	_theme_debug_button.pressed.connect(_switch_to_next_palette)
+	_vibration_debug_button.visible = true
+	_vibration_debug_button.pressed.connect(_switch_vibration)
+	_show_vibration_setting()
 
 
 func _switch_to_next_palette() -> void:
@@ -188,6 +192,15 @@ func _switch_to_next_palette() -> void:
 	palette_names.assign(Settings.PALETTES.keys())
 	var next_index: int = (palette_names.find(Settings.palette_name) + 1) % palette_names.size()
 	Settings.palette_name = palette_names[next_index]
+
+
+func _switch_vibration() -> void:
+	Settings.is_vibration_enabled = not Settings.is_vibration_enabled
+	_show_vibration_setting()
+
+
+func _show_vibration_setting() -> void:
+	_vibration_debug_button.text = "DEBUG_VIBRATION_ON" if Settings.is_vibration_enabled else "DEBUG_VIBRATION_OFF"
 
 
 func _format_highest_tile() -> String:

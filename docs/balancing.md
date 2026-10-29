@@ -116,15 +116,16 @@ Sound files are normalized to the same perceived loudness: −20 dB K-weighted R
 
 ## Haptics
 
-`data/haptics_config.tres` (a `HapticsConfig`), in milliseconds. Starting values, to tune on a phone. Off with `Settings.is_vibration_enabled`.
+`data/haptics_config.tres` (a `HapticsConfig`). Each pulse is a duration in milliseconds and an amplitude from 0 to 1; phones that cannot set the amplitude only feel the duration, so a stronger pulse must also last longer. Checked on a phone with amplitude control (2026-10-30): values kept. Off with `Settings.is_vibration_enabled`.
 
 | Parameter | Default | Controls |
 |-----------|---------|----------|
-| `placement_duration_ms` | 15 | Vibration when the placed pair lands |
-| `merge_duration_ms` | 25 | Vibration of a chain link before `big_chain_min_link` |
-| `big_chain_min_link` | 3 | From this chain link on, merges vibrate `big_chain_duration_ms` |
-| `big_chain_duration_ms` | 60 | Vibration of a long chain link |
-| `min_interval_ms` | 80 | A vibration closer than this to the previous one is dropped |
+| `placement` | 20 ms, 0.35 | When the placed pair lands |
+| `merge` | 30 ms, 0.5 | Chain link 1; each later link climbs evenly towards `big_combo` |
+| `big_combo` | 55 ms, 0.8 | Cap of the chain climb |
+| `big_combo_min_link` | 4 | Chain link that reaches `big_combo`; later links stay there |
+| `game_over` | 70 ms, 0.6 | When a turn ends the game; longer than `big_combo`, so the interval never drops it |
+| `min_interval_ms` | 80 | A pulse closer than this to the last one sent is dropped, unless it is stronger |
 
 ## Tile text
 

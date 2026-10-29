@@ -118,7 +118,7 @@ Objectif : **savoir si le jeu est fun**, rien d'autre.
 ### 2.4 Audio et haptique
 - [x] Ajouter les effets sonores (pose, fusion, chaîne avec hauteur croissante, fin de partie)
 - [ ] Ajouter une musique d'ambiance en boucle
-- [ ] Ajouter une vibration légère (désactivable)
+- [x] Ajouter une vibration légère (désactivable)
 - [ ] Noter les **licences** de chaque asset audio et visuel (fichier `CREDITS.md`)
 
 ### 2.5 Persistance
@@ -135,7 +135,7 @@ Objectif : **savoir si le jeu est fun**, rien d'autre.
 - [ ] Écran d'accueil (Jouer, Défi du jour, Boutique, Réglages)
 - [ ] Écran de fin de partie (score, record, pièces gagnées, rejouer)
 - [ ] Écran de pause
-- [ ] Écran de réglages (son, musique, vibration, langue, thème Papier / Nuit) ; retirer le bouton de debug « Thème » du HUD et les logs de debug FPS (`FrameRateProbe`) et latence audio (`AudioLatencyProbe`). Mode daltonisme à reconsidérer en phase 3 (par exemple palette alternative à contraste renforcé), à décider avec le développeur
+- [ ] Écran de réglages (son, musique, vibration, langue, thème Papier / Nuit) ; retirer les boutons de debug « Thème » et « Vib » du HUD et les logs de debug FPS (`FrameRateProbe`) et latence audio (`AudioLatencyProbe`). Mode daltonisme à reconsidérer en phase 3 (par exemple palette alternative à contraste renforcé), à décider avec le développeur
 - [ ] **Tutoriel** : version finale (mémoriser qu'il a été vu, visuels soignés ; version simple faite en phase 1)
 
 ### 3.2 Pièces et boutique

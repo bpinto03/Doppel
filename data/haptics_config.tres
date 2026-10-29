@@ -1,11 +1,33 @@
 [gd_resource type="Resource" script_class="HapticsConfig" format=3]
 
-[ext_resource type="Script" path="res://scripts/ui/haptics_config.gd" id="1_config"]
+[ext_resource type="Script" path="res://scripts/haptics/haptics_config.gd" id="1_config"]
+[ext_resource type="Script" path="res://scripts/haptics/haptic_pulse.gd" id="2_pulse"]
+
+[sub_resource type="Resource" id="Pulse_placement"]
+script = ExtResource("2_pulse")
+duration_ms = 20
+amplitude = 0.35
+
+[sub_resource type="Resource" id="Pulse_merge"]
+script = ExtResource("2_pulse")
+duration_ms = 30
+amplitude = 0.5
+
+[sub_resource type="Resource" id="Pulse_big_combo"]
+script = ExtResource("2_pulse")
+duration_ms = 55
+amplitude = 0.8
+
+[sub_resource type="Resource" id="Pulse_game_over"]
+script = ExtResource("2_pulse")
+duration_ms = 70
+amplitude = 0.6
 
 [resource]
 script = ExtResource("1_config")
-placement_duration_ms = 15
-merge_duration_ms = 25
-big_chain_min_link = 3
-big_chain_duration_ms = 60
+placement = SubResource("Pulse_placement")
+merge = SubResource("Pulse_merge")
+big_combo = SubResource("Pulse_big_combo")
+big_combo_min_link = 4
+game_over = SubResource("Pulse_game_over")
 min_interval_ms = 80
