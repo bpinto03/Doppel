@@ -12,7 +12,7 @@ All gameplay values live in `data/balancing.tres` (a `BalancingConfig` resource,
 | `is_cross_axis_merge_enabled` | true | Lets G3 and D1 tiles merge across the axis **[TO TEST]**. Not written in the `.tres` while it equals the script default (true) |
 | `large_group_bonus_per_extra_tile` | 1 | Points per tile beyond a pair in a merge group, before the chain multiplier |
 | `is_distorted_reflection_enabled` | true | Turns the distorted reflection lever on or off |
-| `distorted_reflection_period` | 6 | Every Nth placement has a distorted reflection **[TO TEST]** |
+| `distorted_reflection_period` | 3 | Every Nth placement has a distorted reflection **[TO TEST]** |
 | `distorted_reflection_level_bonus` | 1 | Levels added to a distorted reflection |
 | `rules_version` | 1 | Saved games made under another value are discarded on load (record and settings are kept) |
 

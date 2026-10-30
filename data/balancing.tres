@@ -54,5 +54,5 @@ spawn_weight_tiers = Array[ExtResource("2_tier")]([SubResource("Resource_start_t
 chain_multiplier_step = 1.0
 large_group_bonus_per_extra_tile = 1
 is_distorted_reflection_enabled = true
-distorted_reflection_period = 6
+distorted_reflection_period = 3
 distorted_reflection_level_bonus = 1
