@@ -30,7 +30,7 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 
 | Script | Responsibility |
 |--------|----------------|
-| `game_screen.gd` | Owns the `GameSession` (`start_new_game()`, or `start_game()` with a given session), forwards released columns, starts the playback of each turn, refreshes the HUD when it ends, emits `turn_playback_finished`, saves the best score through `SaveManager`, applies the active palette (colors and background image) and rebuilds it on `Settings.palette_changed`; in debug builds, shows a theme switch button and logs `DisplayServer.is_dark_mode()` |
+| `game_screen.gd` | Owns the `GameSession` (`start_new_game()`, or `start_game()` with a given session), forwards released columns, starts the playback of each turn, refreshes the HUD when it ends, emits `turn_playback_finished`, saves the best score through `SaveManager`, applies the active palette (colors and background image) and rebuilds it on `Settings.palette_changed`; in debug builds, shows the debug row (theme, vibration and music switches) and logs `DisplayServer.is_dark_mode()` |
 | `board_view.gd` | Draws the board frame (`StyleBoxFlat`, palette `panel` color), the displayed board, moving tiles, merge pulses and the placement ghost, dims unplayable columns, maps a touched column to the played left column (`find_played_column`), emits `column_released`, `pressed_while_locked`, and `unplayable_column_released` on a release over a column that cannot take the pair. The mirror axis (a `ColorRect`, placed when the board or the view size changes) and board effects such as particles sit in a child effects layer |
 | `merge_particles.gd` | `MergeParticles`: fixed pool of one-shot `CPUParticles2D` emitters with a generated disc texture; bursts never exceed the live particle cap |
 | `board_style.gd` | `BoardStyle`: frame padding and corner radius, cell gap, axis width, loaded from `data/board_style.tres` |
@@ -90,7 +90,7 @@ The ambient music is `assets/audio/music/musical_ambiance.ogg`, one track for ev
 ### Scenes
 
 - `scenes/main.tscn`: entry point, hosts the game screen.
-- `scenes/game/game_screen.tscn`: HUD with "?" button, previews, board with the centered combo label, tutorial panel, restart button.
+- `scenes/game/game_screen.tscn`: HUD with "?" button, a `DebugTools` row under it (hidden outside debug builds, so the debug buttons never widen the HUD), previews, board with the centered combo label, tutorial panel, restart button.
 - `scenes/game/tutorial_panel.tscn`: tutorial message and buttons.
 
 ### Data and assets

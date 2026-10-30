@@ -35,6 +35,7 @@ var _tutorial_step_index: int = NO_TUTORIAL_STEP
 @onready var _help_button: Button = %HelpButton
 @onready var _combo_label: Label = %ComboLabel
 @onready var _tutorial_panel: TutorialPanel = %TutorialPanel
+@onready var _debug_tools: HBoxContainer = %DebugTools
 @onready var _theme_debug_button: Button = %ThemeDebugButton
 @onready var _vibration_debug_button: Button = %VibrationDebugButton
 @onready var _music_debug_button: Button = %MusicDebugButton
@@ -186,12 +187,10 @@ func _set_up_debug_tools() -> void:
 	print("System dark mode: %s" % DisplayServer.is_dark_mode())
 	add_child(FrameRateProbe.new(_playback))
 	add_child(AudioLatencyProbe.new())
-	_theme_debug_button.visible = true
+	_debug_tools.visible = true
 	_theme_debug_button.pressed.connect(_switch_to_next_palette)
-	_vibration_debug_button.visible = true
 	_vibration_debug_button.pressed.connect(_switch_vibration)
 	_show_vibration_setting()
-	_music_debug_button.visible = true
 	_music_debug_button.pressed.connect(_switch_music)
 	_show_music_setting()
 
