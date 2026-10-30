@@ -126,6 +126,9 @@ Objectif : **savoir si le jeu est fun**, rien d'autre.
 - [x] Gérer pause, mise en veille, retour d'application, appel entrant
 - [x] Écran d'accueil minimal (Jouer / Continuer)
 
+Outil : simulateur d'équilibrage (`./run_simulation.sh`, voir `docs/balancing.md`), pour comparer des réglages avant de les faire tester.
+- [ ] Comparer les réglages candidats (grille, reflet déformé, paliers de tirage) avec le simulateur avant les playtests du Gate 2
+
 **✅ Gate 2 :** le jeu est agréable à jouer pendant 10 minutes d'affilée, sur téléphone, et les retours sont positifs.
 
 ---

@@ -8,6 +8,9 @@
 # Source assets kept out of the build (Godot skips the folder through its .gdignore)
 /_sources/
 
+# Balance simulation results (see docs/balancing.md)
+/simulation_results/
+
 # Build output
 /build/
 *.apk

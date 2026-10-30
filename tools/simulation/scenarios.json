@@ -1,0 +1,12 @@
+{
+	"scenarios": [
+		{ "name": "base", "overrides": {} },
+		{ "name": "rows_5", "overrides": { "row_count": 5 } },
+		{ "name": "rows_4", "overrides": { "row_count": 4 } },
+		{ "name": "distortion_every_5", "overrides": { "is_distorted_reflection_enabled": true, "distorted_reflection_period": 5 } },
+		{ "name": "distortion_every_3", "overrides": { "is_distorted_reflection_enabled": true, "distorted_reflection_period": 3 } },
+		{ "name": "distortion_off", "overrides": { "is_distorted_reflection_enabled": false } },
+		{ "name": "tiers_up_to_expert", "overrides": { "max_spawn_tier_threshold": 8 } },
+		{ "name": "tiers_up_to_advanced", "overrides": { "max_spawn_tier_threshold": 7 } }
+	]
+}

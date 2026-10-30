@@ -66,6 +66,20 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 | `ui_theme_builder.gd` | Builds the interface `Theme` (label color, panels, buttons) of a palette on top of `assets/themes/base_theme.tres` |
 | `safe_area_margin.gd` | `MarginContainer` whose scene margins are measured from the safe area (notch, system bars), on mobile only |
 
+### `tools/simulation/` — balance simulator (not exported)
+
+Command line tool run by `./run_simulation.sh` (see [balancing.md](balancing.md#balance-simulator)). It plays games on the core only: no scene, audio, vibration or save. Excluded from the Android export (`tools/*`, `run_simulation.sh`, `simulation_results/*` in the preset's `exclude_filter`).
+
+| File | Responsibility |
+|------|----------------|
+| `simulation_runner.gd` | Entry point (`extends SceneTree`): reads `--games` and `--scenarios`, plays each scenario with each strategy, prints the report, writes the CSV, and checks that the player's save is unchanged |
+| `move_evaluator.gd`, `move_outcome.gd` | `MoveEvaluator`: plays a column on a copy of the board (`preview_placement()` then `MergeResolver`), without touching the session or its generator |
+| `play_strategy.gd` | `PlayStrategy`: base of the `random`, `greedy` and `heuristic` strategies; ties are broken by the strategy's own seeded generator |
+| `balance_simulator.gd` | `BalanceSimulator`: plays whole games, game *i* on seed `first_seed + i`, with a placement cap |
+| `game_record.gd`, `simulation_stats.gd` | One game's figures, and their aggregates |
+| `simulation_scenario.gd`, `scenarios.json` | `SimulationScenario`: a name and overrides applied to a copy of the balancing config |
+| `simulation_report.gd` | Console table and CSV text |
+
 ### `scripts/debug/` — debug builds only
 
 | Script | Responsibility |
