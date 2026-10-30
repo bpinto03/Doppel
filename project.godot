@@ -18,6 +18,7 @@ config/quit_on_go_back=false
 
 [autoload]
 
+AppLifecycle="*res://scripts/autoload/app_lifecycle.gd"
 SaveManager="*res://scripts/autoload/save_manager.gd"
 Settings="*res://scripts/autoload/settings.gd"
 I18n="*res://scripts/autoload/i18n.gd"

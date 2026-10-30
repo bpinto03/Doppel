@@ -122,9 +122,9 @@ Objectif : **savoir si le jeu est fun**, rien d'autre.
 - [x] Noter les **licences** de chaque asset audio et visuel (fichier `CREDITS.md`)
 
 ### 2.5 Persistance
-- [ ] Sauvegarder record, réglages, et **la partie en cours** (reprise après interruption)
-- [ ] Gérer pause, mise en veille, retour d'application, appel entrant
-- [ ] Écran d'accueil minimal (Jouer / Continuer)
+- [x] Sauvegarder record, réglages, et **la partie en cours** (reprise après interruption)
+- [x] Gérer pause, mise en veille, retour d'application, appel entrant
+- [x] Écran d'accueil minimal (Jouer / Continuer)
 
 **✅ Gate 2 :** le jeu est agréable à jouer pendant 10 minutes d'affilée, sur téléphone, et les retours sont positifs.
 

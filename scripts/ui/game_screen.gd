@@ -53,6 +53,7 @@ func _ready() -> void:
 	_help_button.pressed.connect(_feedback.play_ui_click)
 	_tutorial_panel.next_requested.connect(_feedback.play_ui_click)
 	_tutorial_panel.skip_requested.connect(_feedback.play_ui_click)
+	AppLifecycle.deactivated.connect(_on_app_deactivated)
 	_set_up_debug_tools()
 
 
@@ -128,6 +129,12 @@ func _on_column_released(column: int) -> void:
 		_save_turn()
 	_set_input_enabled(false)
 	_playback.play(board_before, chain_result.events)
+
+
+## The turn is already saved: the display jumps to the final state, so the app never resumes half animated.
+func _on_app_deactivated() -> void:
+	_board_view.cancel_press()
+	_playback.skip()
 
 
 ## Saved before the playback: the session already holds the final state of the turn, and the app may be killed mid-animation.

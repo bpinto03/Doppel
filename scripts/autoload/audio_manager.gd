@@ -29,6 +29,8 @@ func _ready() -> void:
 		add_child(player)
 		_effect_players.append(player)
 	Settings.changed.connect(apply_settings)
+	AppLifecycle.deactivated.connect(_set_app_active.bind(false))
+	AppLifecycle.activated.connect(_set_app_active.bind(true))
 	apply_settings()
 
 
@@ -75,14 +77,6 @@ func apply_settings() -> void:
 	_apply_bus(MUSIC_BUS, Settings.is_music_enabled)
 	_music_state.is_enabled = Settings.is_music_enabled
 	_apply_music_state()
-
-
-func _notification(what: int) -> void:
-	match what:
-		NOTIFICATION_APPLICATION_PAUSED, NOTIFICATION_APPLICATION_FOCUS_OUT:
-			_set_app_active(false)
-		NOTIFICATION_APPLICATION_RESUMED, NOTIFICATION_APPLICATION_FOCUS_IN:
-			_set_app_active(true)
 
 
 ## A volume of zero mutes the bus, since its decibel value would be minus infinity.

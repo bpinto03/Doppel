@@ -79,10 +79,11 @@ Loaded in this order; each one may use the ones above it.
 
 | Autoload | Responsibility |
 |----------|----------------|
-| `SaveManager` | Versioned local save in `user://save.cfg` (see [0002](decisions/0002-save-format.md)). `get_value` / `set_value` by section and key. Changes made in the same frame make one write at the end of the frame, and an unchanged save is not written again; `flush()` writes at once. Each write goes through a checked temporary file and keeps the previous save as a backup; a missing, empty, unreadable or newer save falls back to the backup, then to an empty save (see [0005](decisions/0005-save-writing.md)) |
+| `AppLifecycle` | Turns `NOTIFICATION_APPLICATION_PAUSED` / `FOCUS_OUT` and `RESUMED` / `FOCUS_IN` into `is_active` and the `deactivated` / `activated` signals (the last notification wins). The only place that reads these notifications (see App lifecycle) |
+| `SaveManager` | Versioned local save in `user://save.cfg` (see [0002](decisions/0002-save-format.md)). `get_value` / `set_value` by section and key. Changes made in the same frame make one write at the end of the frame, and an unchanged save is not written again; `flush()` writes at once, and runs on `AppLifecycle.deactivated`. Each write goes through a checked temporary file and keeps the previous save as a backup; a missing, empty, unreadable or newer save falls back to the backup, then to an empty save (see [0005](decisions/0005-save-writing.md)) |
 | `Settings` | Sound, music, vibration, screen shake, language, theme (`palette_name`: `paper` or `night`) and linear volume per audio bus (`get_bus_volume` / `set_bus_volume`, 0 to 1), stored in the `settings` section. Emits `changed`, and `palette_changed` for the theme |
 | `I18n` | Sets the locale: chosen language, else the device language if supported (en, fr), else English |
-| `AudioManager` | Applies the saved sound, music and volume settings to the buses at startup and on every change: a disabled sound or a volume of zero mutes its bus. `play_effect()` plays a `SoundEffect` on the `SFX` bus with a pool of reused players; a missing sound plays nothing. `start_music()` / `stop_music()` fade the looping ambient music in and out on the `Music` bus; the fades belong to the autoload. A `MusicState` decides from the music setting, the app request (`Main` asks once at launch) and the app state: play, pause while the app is in the background or has lost focus, or stop and release the stream (music disabled or no longer requested). A missing music file logs a warning and the game plays without music. Until the settings screen (step 3.1), debug builds switch music with the temporary "Music" HUD button |
+| `AudioManager` | Applies the saved sound, music and volume settings to the buses at startup and on every change: a disabled sound or a volume of zero mutes its bus. `play_effect()` plays a `SoundEffect` on the `SFX` bus with a pool of reused players; a missing sound plays nothing. `start_music()` / `stop_music()` fade the looping ambient music in and out on the `Music` bus; the fades belong to the autoload. A `MusicState` decides from the music setting, the app request (`Main` asks once at launch) and the app state: play, pause while `AppLifecycle` reports the app inactive, or stop and release the stream (music disabled or no longer requested). A missing music file logs a warning and the game plays without music. Until the settings screen (step 3.1), debug builds switch music with the temporary "Music" HUD button |
 | `HapticsManager` | The only caller of `Input.vibrate_handheld()`. `request()` keeps the strongest `HapticPulse` of the frame and sends it on the next `_process`; nothing is sent while `Settings.is_vibration_enabled` is off. A pulse closer than `min_interval_ms` to the last one sent is dropped unless it is stronger. `take_pending_pulse()` makes the decision without the device call, for tests. `pulse_sent` reports every pulse sent. Until the settings screen (step 3.1), debug builds switch vibration with the temporary "Vib" HUD button. On desktop, or on a phone without a vibrator, the call does nothing |
 
 Audio buses (`default_bus_layout.tres`): `SFX` and `Music`, both sent to `Master`.
@@ -198,6 +199,18 @@ When:
 - After each real turn, right after `play_column()` and before the playback: the session already holds the final state, so a kill during the animation keeps the turn. The record is raised, then the game is stored, or erased if the turn ended it.
 - `start_new_game()` counts the saved game for the record, then replaces it with the new game. Play never clears the save by itself: with the tutorial first, the saved game stays until the tutorial starts the new game.
 - Continue rebuilds the saved game with `GameSession.create_from_data()` and shows its board at once, without animation. A game the core rejects is discarded; the record and settings stay.
+
+## App lifecycle
+
+Background, screen lock, incoming call, notification shade and, in phase 4, full-screen ads all make the app inactive. Nothing assumes the player left: being inactive only makes the app safe to kill or to leave paused.
+
+On `AppLifecycle.deactivated`:
+
+- `SaveManager.flush()` writes the waiting changes; the game itself is already saved after each turn.
+- `GameScreen` cancels a finger still down (`BoardView.cancel_press()`), so its release after the return plays nothing, and skips the running playback to the final state (`ResolutionPlayback.skip()`), so the app never comes back half animated. A skip plays no landing or chain sound.
+- `AudioManager` pauses the music (`MusicState`).
+
+In the background, Android stops the Godot main loop: tweens and processing freeze until the return. With only the focus lost (shade, call screen on top), the loop runs, but the board is idle: the playback was skipped. On `activated`, the music resumes; the game needs nothing, the board already shows the saved state.
 
 ## Tests
 

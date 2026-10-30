@@ -17,7 +17,9 @@ var _last_written_text: String
 var _is_write_pending: bool
 
 
+## The app may be killed without warning once inactive, so the waiting changes are written at once.
 func _ready() -> void:
+	AppLifecycle.deactivated.connect(flush)
 	load_save()
 
 

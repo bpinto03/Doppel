@@ -6,7 +6,7 @@ This file is the source of truth for the rules once coded. Values in *italics* a
 
 - *6 rows*, *3 columns per side* of a central mirror axis: G1 G2 G3 | D1 D2 D3.
 - The player only plays the left columns. G1 reflects to D3, G2 to D2, G3 to D1.
-- G3 and D1 are orthogonal neighbors across the axis. They only merge together when *cross-axis merge* is enabled (off by default; the tutorial keeps it on).
+- G3 and D1 are orthogonal neighbors across the axis. They only merge together when *cross-axis merge* is enabled (on in `data/balancing.tres` and in the tutorial).
 - Gravity pulls tiles down; each column falls independently.
 
 ## Tiles
@@ -27,7 +27,7 @@ The turn is computed at once, then shown step by step (drop, merges, falls). Inp
 ## Merges
 
 - Two or more orthogonally connected tiles of the same level form a group. Diagonals do not count. With *cross-axis merge* off, the axis splits groups.
-- A group of any size becomes **one** tile of level +1. Groups of 3 or more can earn a bonus (*large group bonus*, 0 by default).
+- A group of any size becomes **one** tile of level +1. Groups of 3 or more can earn a bonus (*large group bonus*, 1 point per extra tile in `data/balancing.tres`).
 - Max-level tiles never merge.
 - All groups found at the same moment merge together. Then gravity applies, and the board is checked again. Each new round of merges is one more **chain link**.
 

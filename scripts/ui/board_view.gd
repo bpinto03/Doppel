@@ -254,6 +254,12 @@ func _notification(what: int) -> void:
 		_place_axis()
 
 
+## Forgets a finger still down, so its release after an interruption plays nothing.
+func cancel_press() -> void:
+	_is_press_armed = false
+	_set_hovered_column(NO_COLUMN)
+
+
 ## A skipped playback unlocks the board at once, so the same press can play; in the tutorial it stays locked.
 func _on_pressed(press_position: Vector2) -> void:
 	if not is_input_enabled:
