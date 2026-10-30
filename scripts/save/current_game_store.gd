@@ -16,3 +16,11 @@ static func load_session(config: BalancingConfig) -> GameSession:
 		push_warning("Saved game in progress discarded: damaged, finished, or made under other rules")
 		SaveManager.erase_section(SECTION)
 	return session
+
+
+static func store(session: GameSession) -> void:
+	SaveManager.set_section(SECTION, session.to_data())
+
+
+static func erase() -> void:
+	SaveManager.erase_section(SECTION)

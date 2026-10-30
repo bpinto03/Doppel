@@ -4,8 +4,6 @@ const MAIN_SCENE: PackedScene = preload("res://scenes/main.tscn")
 const BALANCING_CONFIG: BalancingConfig = preload("res://data/balancing.tres")
 const TEST_SAVE_PATH: String = "user://test_main_navigation_save.cfg"
 const SEED: int = 1234
-const RECORD_SECTION: String = "record"
-const BEST_SCORE_KEY: String = "best_score"
 
 var _save := SaveFixture.new(TEST_SAVE_PATH)
 
@@ -44,14 +42,14 @@ func test_invalid_saved_game_is_discarded_and_the_rest_of_the_save_kept() -> voi
 	var data: Dictionary[String, Variant] = _create_game_in_progress().to_data()
 	data[TileGenerator.CURRENT_LEVEL_KEY] = BALANCING_CONFIG.max_tile_level + 1
 	_store_game(data)
-	SaveManager.set_value(RECORD_SECTION, BEST_SCORE_KEY, 321)
+	SaveManager.set_value(RecordBook.SECTION, RecordBook.BEST_SCORE_KEY, 321)
 	Settings.is_vibration_enabled = false
 
 	var home := _start_main().get_current_screen() as HomeScreen
 
 	assert_false(home.is_choice_shown(HomeMenu.Choice.CONTINUE))
 	assert_true(SaveManager.get_section(CurrentGameStore.SECTION).is_empty())
-	assert_eq(SaveManager.get_value(RECORD_SECTION, BEST_SCORE_KEY, 0), 321)
+	assert_eq(RecordBook.get_best_score(), 321)
 	assert_false(Settings.is_vibration_enabled)
 
 

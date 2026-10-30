@@ -54,18 +54,19 @@ When *enabled*, every *5th* placement gives a reflection of level +*1* (capped a
   - `extra_tiles` = group size − 2.
   - `chain_multiplier` = 1 + (link − 1) × *step*: ×1, ×2, ×3 … with the default step of 1.
   - All merges of the same chain link share the same multiplier.
-- The HUD shows score, best score of the session (in memory only) and highest tile reached.
+- The HUD shows score, best score (saved, over every game) and highest tile reached in the game.
+- The record keeps the best score and the highest tile level over every game, and never goes down. An abandoned game (Play while a game is saved) counts for the record.
 
 ## Tutorial
 
-- Shown on every launch in Phase 1 (no save), and again with the "?" button, which abandons the current game.
+- Shown on the first Play of each launch (not remembered between launches yet), never on Continue, and again with the "?" button. It leaves the saved game untouched until it starts a new game.
 - Three steps, each on a predefined board with a fixed tile sequence and its own rules (6×6 grid, no distorted reflection):
   1. **Drop**: on an empty board, the tile and its reflection drop on the outer columns.
   2. **Merge**: the same tile dropped on its twin merges on both sides.
   3. **Axis**: a matching tile waits in D1, with a tile above it so the reflection lands higher. Dropping in G3 merges the placed tile with the waiting one across the axis. The text then presents playing next to the axis as one option among others.
 - Each step accepts only its target column, or a touch on its mirror; both are highlighted with a pulse, along with the cells involved and, in step 3, the axis.
 - The explanation shows once the turn's playback has finished. "Skip" starts a real game at any time; "Play" does so after step 3.
-- Tutorial scores do not count toward the session best score.
+- Tutorial scores do not count toward the record, and the tutorial is never saved.
 
 ## Game over
 

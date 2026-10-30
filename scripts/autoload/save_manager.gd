@@ -48,6 +48,15 @@ func get_section(section: String) -> Dictionary[String, Variant]:
 	return values
 
 
+## Replaces the whole section, so no key from an older content is left behind.
+func set_section(section: String, values: Dictionary[String, Variant]) -> void:
+	if _save_file.has_section(section):
+		_save_file.erase_section(section)
+	for key: String in values:
+		_save_file.set_value(section, key, values[key])
+	_request_write()
+
+
 func erase_section(section: String) -> void:
 	if _save_file.has_section(section):
 		_save_file.erase_section(section)

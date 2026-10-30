@@ -39,7 +39,8 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 
 | Script | Responsibility |
 |--------|----------------|
-| `current_game_store.gd` | `CurrentGameStore`: the game in progress in the `current_game` save section. `load_session()` returns null when none is saved, and discards (with a warning) a saved game that `GameSession.create_from_data()` rejects, keeping the rest of the save |
+| `current_game_store.gd` | `CurrentGameStore`: the game in progress in the `current_game` save section. `load_session()` returns null when none is saved, and discards (with a warning) a saved game that `GameSession.create_from_data()` rejects, keeping the rest of the save. `store()` replaces the section, `erase()` removes it |
+| `record_book.gd` | `RecordBook`: best score and highest tile level over every real game, in the `record` section; `submit()` only raises them |
 
 ### `scripts/ui/` — presentation
 
@@ -48,7 +49,7 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 | `palette_screen.gd` | `PaletteScreen`: base of full screens. Applies the active palette (interface theme, background color and image) and rebuilds it on `Settings.palette_changed`; `_apply_screen_palette()` adds what a screen draws itself |
 | `home_screen.gd` | `HomeScreen`: title, Play, and Continue when a game is saved; emits `play_requested`, `continue_requested`. Lays the buttons side by side (Play left, Continue right, same width) when twice the widest button's minimum width fits, else stacks them (Continue on top), checked again on resize and language change |
 | `home_menu.gd` | `HomeMenu`: pure decisions of the home screen: choices offered, their order, and whether to stack them from the buttons' real minimum widths |
-| `game_screen.gd` | `GameScreen`: owns the `GameSession` (`start_new_game()`, `start_tutorial()`, or `start_game()` with a given session), forwards released columns, starts the playback of each turn, refreshes the HUD when it ends, emits `turn_playback_finished`, saves the best score through `SaveManager`, redraws the tiles and combo outline with the palette; in debug builds, shows the debug row (theme, vibration and music switches) and logs `DisplayServer.is_dark_mode()` |
+| `game_screen.gd` | `GameScreen`: owns the `GameSession` (`start_new_game()`, `start_tutorial()`, or `start_game()` with a given session), forwards released columns, saves each real turn (see Save flow), starts the playback of each turn, refreshes the HUD when it ends, emits `turn_playback_finished`, redraws the tiles and combo outline with the palette; in debug builds, shows the debug row (theme, vibration and music switches) and logs `DisplayServer.is_dark_mode()` |
 | `board_view.gd` | Draws the board frame (`StyleBoxFlat`, palette `panel` color), the displayed board, moving tiles, merge pulses and the placement ghost, dims unplayable columns, maps a touched column to the played left column (`find_played_column`), emits `column_released`, `pressed_while_locked`, and `unplayable_column_released` on a release over a column that cannot take the pair. The mirror axis (a `ColorRect`, placed when the board or the view size changes) and board effects such as particles sit in a child effects layer |
 | `merge_particles.gd` | `MergeParticles`: fixed pool of one-shot `CPUParticles2D` emitters with a generated disc texture; bursts never exceed the live particle cap |
 | `board_style.gd` | `BoardStyle`: frame padding and corner radius, cell gap, axis width, loaded from `data/board_style.tres` |
@@ -132,8 +133,9 @@ The ambient music is `assets/audio/music/musical_ambiance.ogg`, one track for ev
 3. `GameSession` drops the tile and its reflection in `BoardState`, then calls `MergeResolver.resolve_chain()`.
 4. The resolver merges, applies gravity and repeats; it returns a `ChainResult` (chain length, points, highest level, events).
 5. `GameSession` updates score, highest level and game over, then advances the `TileGenerator`.
-6. `GameScreen` locks input and hands a copy of the board taken before the turn, with the events, to `ResolutionPlayback`.
-7. When `playback_finished` fires, `GameScreen` unlocks input, redraws the board and HUD from the session state, and emits `turn_playback_finished`.
+6. Outside the tutorial, `GameScreen` saves the turn (see Save flow).
+7. `GameScreen` locks input and hands a copy of the board taken before the turn, with the events, to `ResolutionPlayback`.
+8. When `playback_finished` fires, `GameScreen` unlocks input, redraws the board and HUD from the session state, and emits `turn_playback_finished`.
 
 ## Resolution events
 
@@ -178,10 +180,24 @@ Both playback signals are tween callbacks: a skip kills the tween, so the remain
 
 ## Tutorial flow
 
-1. `GameScreen.start_tutorial()` runs at launch and from the "?" button. It replaces the current session with the step's `TutorialStep.create_session()`.
+1. `GameScreen.start_tutorial()` runs on the first Play of each launch and from the "?" button. It replaces the displayed session with the step's `TutorialStep.create_session()`; the saved game in progress is left untouched.
 2. `BoardView.show_tutorial_hint()` pulses the target column, its mirror, the step's cells and the axis, and sets `restricted_column` so only the target column (or its mirror) can be played.
 3. On release, `GameScreen` plays the turn like any other, through `ResolutionPlayback`. The hint is cleared.
-4. On `playback_finished`, the board stays locked and `TutorialPanel` shows the explanation. Next loads the following step; after the last one, or on Skip, `start_new_game()` starts a real game.
+4. On `playback_finished`, the board stays locked and `TutorialPanel` shows the explanation. Next loads the following step; after the last one, or on Skip, `start_new_game()` starts a real game, which replaces the saved one.
+
+## Save flow
+
+What is saved, in `user://save.cfg` (format: [0002](decisions/0002-save-format.md), writing: [0005](decisions/0005-save-writing.md)):
+
+- `record`: best score and highest tile level (`RecordBook`).
+- `settings`: every `Settings` value, written on each change.
+- `current_game`: the game in progress, `GameSession.to_data()` (`CurrentGameStore`). Never the tutorial.
+
+When:
+
+- After each real turn, right after `play_column()` and before the playback: the session already holds the final state, so a kill during the animation keeps the turn. The record is raised, then the game is stored, or erased if the turn ended it.
+- `start_new_game()` counts the saved game for the record, then replaces it with the new game. Play never clears the save by itself: with the tutorial first, the saved game stays until the tutorial starts the new game.
+- Continue rebuilds the saved game with `GameSession.create_from_data()` and shows its board at once, without animation. A game the core rejects is discarded; the record and settings stay.
 
 ## Tests
 
