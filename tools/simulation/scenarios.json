@@ -4,9 +4,15 @@
 		{ "name": "rows_5", "overrides": { "row_count": 5 } },
 		{ "name": "rows_4", "overrides": { "row_count": 4 } },
 		{ "name": "distortion_every_5", "overrides": { "is_distorted_reflection_enabled": true, "distorted_reflection_period": 5 } },
-		{ "name": "distortion_every_3", "overrides": { "is_distorted_reflection_enabled": true, "distorted_reflection_period": 3 } },
 		{ "name": "distortion_off", "overrides": { "is_distorted_reflection_enabled": false } },
 		{ "name": "tiers_up_to_expert", "overrides": { "max_spawn_tier_threshold": 8 } },
-		{ "name": "tiers_up_to_advanced", "overrides": { "max_spawn_tier_threshold": 7 } }
+		{ "name": "tiers_up_to_advanced", "overrides": { "max_spawn_tier_threshold": 7 } },
+		{ "name": "rows_7", "overrides": { "row_count": 7 } },
+		{ "name": "distortion_every_4", "overrides": { "is_distorted_reflection_enabled": true, "distorted_reflection_period": 4 } },
+		{ "name": "distortion_every_6", "overrides": { "is_distorted_reflection_enabled": true, "distorted_reflection_period": 6 } },
+		{ "name": "distortion_bonus_2", "overrides": { "distorted_reflection_level_bonus": 2 } },
+		{ "name": "cross_axis_off", "overrides": { "is_cross_axis_merge_enabled": false } },
+		{ "name": "large_group_bonus_0", "overrides": { "large_group_bonus_per_extra_tile": 0 } },
+		{ "name": "chain_step_0_5", "overrides": { "chain_multiplier_step": 0.5 } }
 	]
 }
