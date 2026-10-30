@@ -14,6 +14,7 @@ Decision records:
 - [0002 — Save format](decisions/0002-save-format.md)
 - [0003 — Art direction](decisions/0003-art-direction.md)
 - [0004 — Audio key](decisions/0004-audio-key.md)
+- [0005 — Save writing](decisions/0005-save-writing.md)
 
 Product spec and roadmap (French): [`../CAHIER_DES_CHARGES.md`](../CAHIER_DES_CHARGES.md), [`../STEPS.md`](../STEPS.md).
 

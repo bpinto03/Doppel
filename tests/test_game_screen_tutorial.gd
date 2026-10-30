@@ -4,7 +4,7 @@ const GAME_SCREEN_SCENE: PackedScene = preload("res://scenes/game/game_screen.ts
 const MAX_WAIT_SECONDS: float = 5.0
 const TEST_SAVE_PATH: String = "user://test_game_screen_tutorial_save.cfg"
 
-var _player_save_path: String
+var _save := SaveFixture.new(TEST_SAVE_PATH)
 var _screen: Control
 var _board_view: BoardView
 var _tutorial_panel: TutorialPanel
@@ -12,10 +12,7 @@ var _tutorial_panel: TutorialPanel
 
 ## Music off in a test save, so the screen plays no music and the player's save is untouched.
 func before_each() -> void:
-	_player_save_path = SaveManager.save_path
-	SaveManager.save_path = TEST_SAVE_PATH
-	DirAccess.remove_absolute(TEST_SAVE_PATH)
-	SaveManager.load_save()
+	_save.use_test_save()
 	Settings.is_music_enabled = false
 	_screen = GAME_SCREEN_SCENE.instantiate()
 	add_child_autofree(_screen)
@@ -26,9 +23,7 @@ func before_each() -> void:
 
 func after_each() -> void:
 	AudioManager.stop_music()
-	DirAccess.remove_absolute(TEST_SAVE_PATH)
-	SaveManager.save_path = _player_save_path
-	SaveManager.load_save()
+	_save.restore_player_save()
 	AudioManager.apply_settings()
 
 

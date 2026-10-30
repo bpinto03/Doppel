@@ -7,16 +7,13 @@ const TEST_SAVE_PATH: String = "user://test_game_screen_audio_save.cfg"
 const MAX_WAIT_SECONDS: float = 5.0
 const SEED: int = 1234
 
-var _player_save_path: String
+var _save := SaveFixture.new(TEST_SAVE_PATH)
 var _screen: Control
 var _board_view: BoardView
 
 
 func before_each() -> void:
-	_player_save_path = SaveManager.save_path
-	SaveManager.save_path = TEST_SAVE_PATH
-	DirAccess.remove_absolute(TEST_SAVE_PATH)
-	SaveManager.load_save()
+	_save.use_test_save()
 	Settings.is_music_enabled = false
 	_screen = GAME_SCREEN_SCENE.instantiate()
 	add_child_autofree(_screen)
@@ -26,9 +23,7 @@ func before_each() -> void:
 
 func after_each() -> void:
 	AudioManager.stop_music()
-	DirAccess.remove_absolute(TEST_SAVE_PATH)
-	SaveManager.save_path = _player_save_path
-	SaveManager.load_save()
+	_save.restore_player_save()
 	AudioManager.apply_settings()
 
 

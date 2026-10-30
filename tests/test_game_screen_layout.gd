@@ -3,22 +3,17 @@ extends GutTest
 const GAME_SCREEN_SCENE: PackedScene = preload("res://scenes/game/game_screen.tscn")
 const TEST_SAVE_PATH: String = "user://test_game_screen_layout_save.cfg"
 
-var _player_save_path: String
+var _save := SaveFixture.new(TEST_SAVE_PATH)
 
 
 func before_each() -> void:
-	_player_save_path = SaveManager.save_path
-	SaveManager.save_path = TEST_SAVE_PATH
-	DirAccess.remove_absolute(TEST_SAVE_PATH)
-	SaveManager.load_save()
+	_save.use_test_save()
 	Settings.is_music_enabled = false
 
 
 func after_each() -> void:
 	AudioManager.stop_music()
-	DirAccess.remove_absolute(TEST_SAVE_PATH)
-	SaveManager.save_path = _player_save_path
-	SaveManager.load_save()
+	_save.restore_player_save()
 	AudioManager.apply_settings()
 
 

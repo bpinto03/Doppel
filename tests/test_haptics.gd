@@ -6,23 +6,18 @@ const CONFIG: HapticsConfig = preload("res://data/haptics_config.tres")
 const START_MSEC: int = 1000
 const AMPLITUDE_TOLERANCE: float = 0.0001
 
-var _player_save_path: String
+var _save := SaveFixture.new(TEST_SAVE_PATH)
 ## Never added to the tree, so it never processes and never makes the device vibrate.
 var _manager: Node
 
 
 func before_each() -> void:
-	_player_save_path = SaveManager.save_path
-	SaveManager.save_path = TEST_SAVE_PATH
-	DirAccess.remove_absolute(TEST_SAVE_PATH)
-	SaveManager.load_save()
+	_save.use_test_save()
 	_manager = autofree(HAPTICS_MANAGER_SCRIPT.new())
 
 
 func after_each() -> void:
-	DirAccess.remove_absolute(TEST_SAVE_PATH)
-	SaveManager.save_path = _player_save_path
-	SaveManager.load_save()
+	_save.restore_player_save()
 
 
 func test_requested_pulse_is_sent() -> void:

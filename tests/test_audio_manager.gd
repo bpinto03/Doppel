@@ -7,20 +7,15 @@ const DECIBEL_TOLERANCE: float = 0.01
 ## Players store their pitch in single precision.
 const PITCH_TOLERANCE: float = 0.000001
 
-var _player_save_path: String
+var _save := SaveFixture.new(TEST_SAVE_PATH)
 
 
 func before_each() -> void:
-	_player_save_path = SaveManager.save_path
-	SaveManager.save_path = TEST_SAVE_PATH
-	DirAccess.remove_absolute(TEST_SAVE_PATH)
-	SaveManager.load_save()
+	_save.use_test_save()
 
 
 func after_each() -> void:
-	DirAccess.remove_absolute(TEST_SAVE_PATH)
-	SaveManager.save_path = _player_save_path
-	SaveManager.load_save()
+	_save.restore_player_save()
 	AudioManager.apply_settings()
 
 

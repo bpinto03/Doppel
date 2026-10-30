@@ -60,7 +60,7 @@ Loaded in this order; each one may use the ones above it.
 
 | Autoload | Responsibility |
 |----------|----------------|
-| `SaveManager` | Versioned local save in `user://save.cfg` (see [0002](decisions/0002-save-format.md)). `get_value` / `set_value` by section and key; every change is written at once |
+| `SaveManager` | Versioned local save in `user://save.cfg` (see [0002](decisions/0002-save-format.md)). `get_value` / `set_value` by section and key. Changes made in the same frame make one write at the end of the frame, and an unchanged save is not written again; `flush()` writes at once. Each write goes through a checked temporary file and keeps the previous save as a backup; a missing, empty, unreadable or newer save falls back to the backup, then to an empty save (see [0005](decisions/0005-save-writing.md)) |
 | `Settings` | Sound, music, vibration, screen shake, language, theme (`palette_name`: `paper` or `night`) and linear volume per audio bus (`get_bus_volume` / `set_bus_volume`, 0 to 1), stored in the `settings` section. Emits `changed`, and `palette_changed` for the theme |
 | `I18n` | Sets the locale: chosen language, else the device language if supported (en, fr), else English |
 | `AudioManager` | Applies the saved sound, music and volume settings to the buses at startup and on every change: a disabled sound or a volume of zero mutes its bus. `play_effect()` plays a `SoundEffect` on the `SFX` bus with a pool of reused players; a missing sound plays nothing. `start_music()` / `stop_music()` fade the looping ambient music in and out on the `Music` bus; the fades belong to the autoload, so a fade-out outlives the screen that asked for it. A `MusicState` decides from the music setting, the screen request and the app state: play, pause while the app is in the background or has lost focus, or stop and release the stream (music disabled or no longer requested). A missing music file logs a warning and the game plays without music. Until the settings screen (step 3.1), debug builds switch music with the temporary "Music" HUD button |
@@ -166,4 +166,4 @@ Both playback signals are tween callbacks: a skip kills the tween, so the remain
 
 ## Tests
 
-`tests/` holds GUT tests for the core, the tutorial scenarios, the resolution playback, board input and the tutorial flow on the game screen (`test_*.gd`) and fixtures (`BoardFixture` describes boards as text, `BalancingFixture` builds explicit configs). Tests and GUT are excluded from exports.
+`tests/` holds GUT tests for the core, the tutorial scenarios, the resolution playback, board input and the tutorial flow on the game screen (`test_*.gd`) and fixtures (`BoardFixture` describes boards as text, `BalancingFixture` builds explicit configs, `SaveFixture` points `SaveManager` at a test file and deletes it afterwards, so no test touches the player's save). Tests and GUT are excluded from exports.
