@@ -26,11 +26,29 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 | `TutorialStep` | One step: texts, initial board, scripted tiles, target column, cells and axis to highlight. Creates its `GameSession` with dedicated rules (6×6 grid, no distorted reflection) independent of `data/balancing.tres` |
 | `TutorialScenarios` | The three steps: drop, merge, merge across the axis |
 
+### `scripts/main.gd` — navigation
+
+`Main` (`scenes/main.tscn`) owns the navigation and shows one screen at a time, freeing the previous one:
+
+- At launch, the home screen, never a game directly. Its choices come from `CurrentGameStore.load_session()`.
+- Play opens the tutorial on the first Play of each launch (not remembered between launches until step 3.1), then a new game. Continue resumes the saved game with `GameScreen.start_game()`, with no drop or merge animation.
+- The Android back button (`NOTIFICATION_WM_GO_BACK_REQUEST`, with `application/config/quit_on_go_back` off) goes from the game, the tutorial or the game over screen back to the home screen, and quits from the home screen.
+- It asks `AudioManager.start_music()` once at launch, so the music never restarts between screens.
+
+### `scripts/save/` — saved game data
+
+| Script | Responsibility |
+|--------|----------------|
+| `current_game_store.gd` | `CurrentGameStore`: the game in progress in the `current_game` save section. `load_session()` returns null when none is saved, and discards (with a warning) a saved game that `GameSession.create_from_data()` rejects, keeping the rest of the save |
+
 ### `scripts/ui/` — presentation
 
 | Script | Responsibility |
 |--------|----------------|
-| `game_screen.gd` | Owns the `GameSession` (`start_new_game()`, or `start_game()` with a given session), forwards released columns, starts the playback of each turn, refreshes the HUD when it ends, emits `turn_playback_finished`, saves the best score through `SaveManager`, applies the active palette (colors and background image) and rebuilds it on `Settings.palette_changed`; in debug builds, shows the debug row (theme, vibration and music switches) and logs `DisplayServer.is_dark_mode()` |
+| `palette_screen.gd` | `PaletteScreen`: base of full screens. Applies the active palette (interface theme, background color and image) and rebuilds it on `Settings.palette_changed`; `_apply_screen_palette()` adds what a screen draws itself |
+| `home_screen.gd` | `HomeScreen`: title, Play, and Continue when a game is saved; emits `play_requested`, `continue_requested`. Lays the buttons side by side (Play left, Continue right, same width) when twice the widest button's minimum width fits, else stacks them (Continue on top), checked again on resize and language change |
+| `home_menu.gd` | `HomeMenu`: pure decisions of the home screen: choices offered, their order, and whether to stack them from the buttons' real minimum widths |
+| `game_screen.gd` | `GameScreen`: owns the `GameSession` (`start_new_game()`, `start_tutorial()`, or `start_game()` with a given session), forwards released columns, starts the playback of each turn, refreshes the HUD when it ends, emits `turn_playback_finished`, saves the best score through `SaveManager`, redraws the tiles and combo outline with the palette; in debug builds, shows the debug row (theme, vibration and music switches) and logs `DisplayServer.is_dark_mode()` |
 | `board_view.gd` | Draws the board frame (`StyleBoxFlat`, palette `panel` color), the displayed board, moving tiles, merge pulses and the placement ghost, dims unplayable columns, maps a touched column to the played left column (`find_played_column`), emits `column_released`, `pressed_while_locked`, and `unplayable_column_released` on a release over a column that cannot take the pair. The mirror axis (a `ColorRect`, placed when the board or the view size changes) and board effects such as particles sit in a child effects layer |
 | `merge_particles.gd` | `MergeParticles`: fixed pool of one-shot `CPUParticles2D` emitters with a generated disc texture; bursts never exceed the live particle cap |
 | `board_style.gd` | `BoardStyle`: frame padding and corner radius, cell gap, axis width, loaded from `data/board_style.tres` |
@@ -63,7 +81,7 @@ Loaded in this order; each one may use the ones above it.
 | `SaveManager` | Versioned local save in `user://save.cfg` (see [0002](decisions/0002-save-format.md)). `get_value` / `set_value` by section and key. Changes made in the same frame make one write at the end of the frame, and an unchanged save is not written again; `flush()` writes at once. Each write goes through a checked temporary file and keeps the previous save as a backup; a missing, empty, unreadable or newer save falls back to the backup, then to an empty save (see [0005](decisions/0005-save-writing.md)) |
 | `Settings` | Sound, music, vibration, screen shake, language, theme (`palette_name`: `paper` or `night`) and linear volume per audio bus (`get_bus_volume` / `set_bus_volume`, 0 to 1), stored in the `settings` section. Emits `changed`, and `palette_changed` for the theme |
 | `I18n` | Sets the locale: chosen language, else the device language if supported (en, fr), else English |
-| `AudioManager` | Applies the saved sound, music and volume settings to the buses at startup and on every change: a disabled sound or a volume of zero mutes its bus. `play_effect()` plays a `SoundEffect` on the `SFX` bus with a pool of reused players; a missing sound plays nothing. `start_music()` / `stop_music()` fade the looping ambient music in and out on the `Music` bus; the fades belong to the autoload, so a fade-out outlives the screen that asked for it. A `MusicState` decides from the music setting, the screen request and the app state: play, pause while the app is in the background or has lost focus, or stop and release the stream (music disabled or no longer requested). A missing music file logs a warning and the game plays without music. Until the settings screen (step 3.1), debug builds switch music with the temporary "Music" HUD button |
+| `AudioManager` | Applies the saved sound, music and volume settings to the buses at startup and on every change: a disabled sound or a volume of zero mutes its bus. `play_effect()` plays a `SoundEffect` on the `SFX` bus with a pool of reused players; a missing sound plays nothing. `start_music()` / `stop_music()` fade the looping ambient music in and out on the `Music` bus; the fades belong to the autoload. A `MusicState` decides from the music setting, the app request (`Main` asks once at launch) and the app state: play, pause while the app is in the background or has lost focus, or stop and release the stream (music disabled or no longer requested). A missing music file logs a warning and the game plays without music. Until the settings screen (step 3.1), debug builds switch music with the temporary "Music" HUD button |
 | `HapticsManager` | The only caller of `Input.vibrate_handheld()`. `request()` keeps the strongest `HapticPulse` of the frame and sends it on the next `_process`; nothing is sent while `Settings.is_vibration_enabled` is off. A pulse closer than `min_interval_ms` to the last one sent is dropped unless it is stronger. `take_pending_pulse()` makes the decision without the device call, for tests. `pulse_sent` reports every pulse sent. Until the settings screen (step 3.1), debug builds switch vibration with the temporary "Vib" HUD button. On desktop, or on a phone without a vibrator, the call does nothing |
 
 Audio buses (`default_bus_layout.tres`): `SFX` and `Music`, both sent to `Master`.
@@ -85,11 +103,12 @@ Audio buses (`default_bus_layout.tres`): `SFX` and `Music`, both sent to `Master
 
 Sound files live in `assets/audio/sfx/`, as short mono WAV files imported uncompressed (`compress/mode=0`: no decoding artifact, about 60 KB more in the APK for all of them; music will stay compressed): `placement.wav`, `merge.wav` (also played by `chain`), `game_over.wav`, `ui_click.wav`, `unplayable_column.wav`. A replacement with the same name needs no other change; another name or format (OGG) is set in `data/audio_config.tres`. Every sound effect file is listed in `CREDITS.md`.
 
-The ambient music is `assets/audio/music/musical_ambiance.ogg`, one track for every theme: Ogg Vorbis (`libvorbis -q:a 4`, about 0.9 MB) imported with `loop=true` and `loop_offset=0`. Its WAV master stays outside the build in `_sources/audio/`, ignored by git and by Godot (`_sources/.gdignore`). The game screen starts the music when it enters the tree and stops it when it leaves.
+The ambient music is `assets/audio/music/musical_ambiance.ogg`, one track for every theme: Ogg Vorbis (`libvorbis -q:a 4`, about 0.9 MB) imported with `loop=true` and `loop_offset=0`. Its WAV master stays outside the build in `_sources/audio/`, ignored by git and by Godot (`_sources/.gdignore`). `Main` starts the music at launch; it keeps playing across screens.
 
 ### Scenes
 
-- `scenes/main.tscn`: entry point, hosts the game screen.
+- `scenes/main.tscn`: entry point, `Main` (see above).
+- `scenes/ui/home_screen.tscn`: title and the Play / Continue buttons.
 - `scenes/game/game_screen.tscn`: HUD with "?" button, a `DebugTools` row under it (hidden outside debug builds, so the debug buttons never widen the HUD), previews, board with the centered combo label, tutorial panel, restart button.
 - `scenes/game/tutorial_panel.tscn`: tutorial message and buttons.
 
@@ -166,4 +185,4 @@ Both playback signals are tween callbacks: a skip kills the tween, so the remain
 
 ## Tests
 
-`tests/` holds GUT tests for the core, the tutorial scenarios, the resolution playback, board input and the tutorial flow on the game screen (`test_*.gd`) and fixtures (`BoardFixture` describes boards as text, `BalancingFixture` builds explicit configs, `SaveFixture` points `SaveManager` at a test file and deletes it afterwards, so no test touches the player's save). Tests and GUT are excluded from exports.
+`tests/` holds GUT tests for the core, the tutorial scenarios, the resolution playback, board input, the tutorial flow on the game screen, saving, the home screen and the navigation (`test_*.gd`) and fixtures (`BoardFixture` describes boards as text, `BalancingFixture` builds explicit configs, `SaveFixture` points `SaveManager` at a test file and deletes it afterwards, so no test touches the player's save). Tests and GUT are excluded from exports.

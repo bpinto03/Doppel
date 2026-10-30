@@ -7,7 +7,7 @@ enum Action { PLAY, PAUSE, STOP }
 
 var is_enabled: bool
 var is_app_active: bool = true
-## A screen asked for the music.
+## The app asked for the music; Main does at launch, so tests that do not start Main play none.
 var is_requested: bool
 
 

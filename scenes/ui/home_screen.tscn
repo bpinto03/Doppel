@@ -1,0 +1,81 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/home_screen.gd" id="1_screen"]
+[ext_resource type="Theme" path="res://assets/themes/base_theme.tres" id="2_theme"]
+[ext_resource type="Script" uid="uid://c0a5hkffmvw0b" path="res://scripts/ui/safe_area_margin.gd" id="3_safe_area"]
+
+[node name="HomeScreen" type="Control" unique_id=1934027715]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_screen")
+
+[node name="Background" type="ColorRect" parent="." unique_id=1093582217]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BackgroundImage" type="TextureRect" parent="." unique_id=1093582218]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Margin" type="MarginContainer" parent="." unique_id=1520716394]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_top = 120
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 120
+script = ExtResource("3_safe_area")
+
+[node name="Layout" type="VBoxContainer" parent="Margin" unique_id=1755096150]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 160
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="Margin/Layout" unique_id=1302457719]
+layout_mode = 2
+theme_override_font_sizes/font_size = 144
+text = "UI_GAME_TITLE"
+horizontal_alignment = 1
+
+[node name="ChoiceButtons" type="BoxContainer" parent="Margin/Layout" unique_id=1880664275]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 40
+
+[node name="PlayButton" type="Button" parent="Margin/Layout/ChoiceButtons" unique_id=1170235906]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 180)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "UI_PLAY"
+
+[node name="ContinueButton" type="Button" parent="Margin/Layout/ChoiceButtons" unique_id=1170235907]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(0, 180)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "UI_CONTINUE"

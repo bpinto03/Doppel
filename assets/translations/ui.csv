@@ -7,6 +7,9 @@ UI_REFLECTION,Reflection,Reflet
 UI_NEXT_TILE,Next,Suivante
 UI_GAME_OVER,Game over,Partie terminée
 UI_RESTART,Restart,Recommencer
+UI_GAME_TITLE,Doppel,Doppel
+UI_PLAY,Play,Jouer
+UI_CONTINUE,Continue,Continuer
 TUTORIAL_STEP_1,Tap the highlighted column to drop your tile.,Touche la colonne en surbrillance pour poser ta tuile.
 TUTORIAL_STEP_1_DONE,"Your tile fell, and its reflection fell on the other side of the mirror line.","Ta tuile est tombée, et son reflet est tombé de l'autre côté de l'axe."
 TUTORIAL_STEP_2,Drop the same tile on top of it.,Pose la même tuile par-dessus.

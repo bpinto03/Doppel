@@ -124,6 +124,7 @@ Objectif : **savoir si le jeu est fun**, rien d'autre.
 ### 2.5 Persistance
 - [ ] Sauvegarder record, réglages, et **la partie en cours** (reprise après interruption)
 - [ ] Gérer pause, mise en veille, retour d'application, appel entrant
+- [ ] Écran d'accueil minimal (Jouer / Continuer)
 
 **✅ Gate 2 :** le jeu est agréable à jouer pendant 10 minutes d'affilée, sur téléphone, et les retours sont positifs.
 
@@ -132,11 +133,10 @@ Objectif : **savoir si le jeu est fun**, rien d'autre.
 ## Phase 3 — Méta-jeu : menus, pièces, thèmes, défis
 
 ### 3.1 Navigation et écrans
-- [ ] Écran d'accueil (Jouer, Défi du jour, Boutique, Réglages)
+- [ ] Écran d'accueil : Jouer / Continuer existent déjà (2.5) ; reste à ajouter Défi du jour, Boutique et Réglages
 - [ ] Écran de fin de partie (score, record, pièces gagnées, rejouer)
 - [ ] Écran de pause
 - [ ] Écran de réglages (son, musique, vibration, langue, thème Papier / Nuit) ; retirer les boutons de debug « Thème », « Vib » et « Musique » du HUD et les logs de debug FPS (`FrameRateProbe`) et latence audio (`AudioLatencyProbe`). Mode daltonisme à reconsidérer en phase 3 (par exemple palette alternative à contraste renforcé), à décider avec le développeur
-- [ ] Revoir la condition de démarrage de la musique quand le menu d'accueil existera : la musique doit continuer entre menu et partie sans redémarrer (aujourd'hui, l'écran de jeu la lance à son entrée et l'arrête à sa sortie)
 - [ ] **Tutoriel** : version finale (mémoriser qu'il a été vu, visuels soignés ; version simple faite en phase 1)
 
 ### 3.2 Pièces et boutique

@@ -39,6 +39,21 @@ func get_value(section: String, key: String, default_value: Variant) -> Variant:
 	return _save_file.get_value(section, key, default_value)
 
 
+## Every key of the section, or an empty dictionary when the section is missing.
+func get_section(section: String) -> Dictionary[String, Variant]:
+	var values: Dictionary[String, Variant] = {}
+	if _save_file.has_section(section):
+		for key: String in _save_file.get_section_keys(section):
+			values[key] = _save_file.get_value(section, key)
+	return values
+
+
+func erase_section(section: String) -> void:
+	if _save_file.has_section(section):
+		_save_file.erase_section(section)
+		_request_write()
+
+
 ## Written at the end of the frame, so several changes in a row make one write.
 func set_value(section: String, key: String, value: Variant) -> void:
 	_save_file.set_value(section, key, value)

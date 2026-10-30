@@ -16,6 +16,7 @@ func before_each() -> void:
 	Settings.is_music_enabled = false
 	_screen = GAME_SCREEN_SCENE.instantiate()
 	add_child_autofree(_screen)
+	_screen.start_tutorial()
 	_board_view = _screen.get_node("%BoardView")
 	_tutorial_panel = _screen.get_node("%TutorialPanel")
 	watch_signals(_screen)
@@ -27,7 +28,7 @@ func after_each() -> void:
 	AudioManager.apply_settings()
 
 
-func test_tutorial_starts_at_launch_on_the_first_step() -> void:
+func test_tutorial_starts_on_the_first_step() -> void:
 	assert_true(_screen.is_tutorial_running())
 	assert_eq(_screen.get_tutorial_step_index(), 0)
 	assert_true(_tutorial_panel.visible)

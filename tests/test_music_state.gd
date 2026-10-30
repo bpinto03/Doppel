@@ -14,7 +14,7 @@ func test_disabled_music_stops_even_when_requested() -> void:
 	assert_eq(_create_state(false, true, false).get_action(), MusicState.Action.STOP)
 
 
-func test_music_stops_when_no_screen_requests_it() -> void:
+func test_music_stops_when_the_app_does_not_request_it() -> void:
 	assert_eq(_create_state(true, false, true).get_action(), MusicState.Action.STOP)
 	assert_eq(_create_state(true, false, false).get_action(), MusicState.Action.STOP)
 

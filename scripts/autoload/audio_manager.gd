@@ -60,6 +60,10 @@ func stop_music() -> void:
 	_apply_music_state()
 
 
+func is_music_requested() -> bool:
+	return _music_state.is_requested
+
+
 func is_music_loaded() -> bool:
 	return _music_player.stream != null
 
