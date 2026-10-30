@@ -55,7 +55,11 @@ Une grille de tuiles numérotées partagée autour d'un **axe central miroir**. 
 ### 4.2 Tuiles
 - Les tuiles ont un **niveau** de 1 à 12 (valeur affichée = 2^niveau : 2, 4, 8, ... 4096).
 - Chaque tour, une tuile est proposée (le joueur voit aussi la **suivante** en aperçu).
-- Niveau de la tuile proposée : tirage pondéré, par exemple niveau 1 (60 %), niveau 2 (30 %), niveau 3 (10 %). Les pondérations évoluent selon le niveau maximum atteint dans la partie. **[À TESTER]**
+- Niveau de la tuile proposée : tirage pondéré. Les pondérations évoluent par paliers selon la plus grosse tuile atteinte dans la partie (poids relatifs) : **[À TESTER]**
+  - dès le début : 2 (60), 4 (30), 8 (10) ;
+  - à partir de 128 : 2 (50), 4 (30), 8 (15), 16 (5) ;
+  - à partir de 256 : 2 (40), 4 (30), 8 (20), 16 (8), 32 (2) ;
+  - à partir de 512 : 2 (30), 4 (30), 8 (20), 16 (13), 32 (6), 64 (1).
 
 ### 4.3 Tour de jeu
 1. Le joueur touche une colonne, sur n'importe quelle moitié. Toucher une colonne de droite revient à choisir sa colonne symétrique à gauche.

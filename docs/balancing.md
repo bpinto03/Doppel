@@ -20,14 +20,20 @@ Bump `rules_version` only when old saved games would no longer make sense: a lev
 
 ## Spawn weight tiers
 
-The tier with the highest `min_highest_level` not above the highest level reached applies.
+Each `SpawnWeightTier` has a threshold, `min_highest_level`, and `level_weights`: the levels it can draw and their relative weights. The tier with the highest threshold not above the highest level reached in the game applies; the order of the list does not matter. The highest level reached never goes down, so a tier, once reached, stays for the rest of the game. Thresholds and weights are levels: tile value = 2^level.
 
-| `min_highest_level` | Level 1 | Level 2 | Level 3 | Level 4 |
-|---------------------|---------|---------|---------|---------|
-| 0 | 60 | 30 | 10 | – |
-| 7 | 50 | 30 | 15 | 5 |
+| Tier | `min_highest_level` (highest tile) | Tile 2 (level 1) | 4 (2) | 8 (3) | 16 (4) | 32 (5) | 64 (6) |
+|------|------------------------------------|------------------|-------|-------|--------|--------|--------|
+| start | 0 (from the start) | 60 | 30 | 10 | – | – | – |
+| advanced | 7 (128) | 50 | 30 | 15 | 5 | – | – |
+| expert | 8 (256) | 40 | 30 | 20 | 8 | 2 | – |
+| master | 9 (512) | 30 | 30 | 20 | 13 | 6 | 1 |
 
-Weights are relative; they do not need to sum to 100.
+Weights are relative; they do not need to sum to 100. **[TO TEST]**
+
+The expert and master tiers only concern good players. Bigger tiles earlier make levels climb faster, but also fill the board faster.
+
+`tests/test_balancing_data.gd` checks the shipped data: a tier from level 0, distinct thresholds, at least one level per tier, levels within `max_tile_level`, positive weights, and the shipped thresholds (`SHIPPED_TIER_THRESHOLDS`), so a threshold lowered for a phone test fails the tests. Update `SHIPPED_TIER_THRESHOLDS` when the thresholds change on purpose.
 
 ## Resolution playback
 

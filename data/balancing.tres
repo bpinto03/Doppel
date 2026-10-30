@@ -21,13 +21,36 @@ level_weights = Dictionary[int, float]({
 4: 5.0
 })
 
+[sub_resource type="Resource" id="Resource_expert_tier"]
+script = ExtResource("2_tier")
+min_highest_level = 8
+level_weights = Dictionary[int, float]({
+1: 40.0,
+2: 30.0,
+3: 20.0,
+4: 8.0,
+5: 2.0
+})
+
+[sub_resource type="Resource" id="Resource_master_tier"]
+script = ExtResource("2_tier")
+min_highest_level = 9
+level_weights = Dictionary[int, float]({
+1: 30.0,
+2: 30.0,
+3: 20.0,
+4: 13.0,
+5: 6.0,
+6: 1.0
+})
+
 [resource]
 script = ExtResource("1_config")
 rules_version = 1
 column_count_per_side = 3
 row_count = 6
 max_tile_level = 12
-spawn_weight_tiers = Array[ExtResource("2_tier")]([SubResource("Resource_start_tier"), SubResource("Resource_advanced_tier")])
+spawn_weight_tiers = Array[ExtResource("2_tier")]([SubResource("Resource_start_tier"), SubResource("Resource_advanced_tier"), SubResource("Resource_expert_tier"), SubResource("Resource_master_tier")])
 chain_multiplier_step = 1.0
 large_group_bonus_per_extra_tile = 1
 is_distorted_reflection_enabled = true
