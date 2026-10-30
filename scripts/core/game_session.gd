@@ -1,6 +1,14 @@
 class_name GameSession
 extends RefCounted
 
+const RULES_VERSION_KEY: String = "rules_version"
+const COLUMN_COUNT_PER_SIDE_KEY: String = "column_count_per_side"
+const ROW_COUNT_KEY: String = "row_count"
+const BOARD_LEVELS_KEY: String = "board_levels"
+const SCORE_KEY: String = "score"
+const HIGHEST_LEVEL_KEY: String = "highest_level_reached"
+const PLACEMENT_COUNT_KEY: String = "placement_count"
+
 var board: BoardState
 var tile_generator: TileGenerator
 var score: int
@@ -72,6 +80,57 @@ func play_column(column: int) -> ChainResult:
 	is_game_over = not _has_playable_column()
 	tile_generator.advance(highest_level_reached)
 	return chain_result
+
+
+## Plain values only (int, PackedInt32Array), so any storage can keep them exactly.
+func to_data() -> Dictionary[String, Variant]:
+	var data: Dictionary[String, Variant] = {
+		RULES_VERSION_KEY: _config.rules_version,
+		COLUMN_COUNT_PER_SIDE_KEY: board.column_count_per_side,
+		ROW_COUNT_KEY: board.row_count,
+		BOARD_LEVELS_KEY: board.get_levels(),
+		SCORE_KEY: score,
+		HIGHEST_LEVEL_KEY: highest_level_reached,
+		PLACEMENT_COUNT_KEY: placement_count,
+	}
+	data.merge(tile_generator.to_data())
+	return data
+
+
+## Returns null when the data does not describe a game in progress under these rules:
+## missing or mistyped value, other board size or rules version, impossible board or levels, finished game.
+static func create_from_data(config: BalancingConfig, data: Dictionary) -> GameSession:
+	if not _has_valid_counters(config, data) or not TileGenerator.is_valid_data(data, config):
+		return null
+	if not data.get(BOARD_LEVELS_KEY) is PackedInt32Array:
+		return null
+	var restored_board: BoardState = BoardState.create_from_levels(
+		data[COLUMN_COUNT_PER_SIDE_KEY], data[ROW_COUNT_KEY], data[BOARD_LEVELS_KEY], config.max_tile_level
+	)
+	if restored_board == null or not restored_board.is_settled() or restored_board.get_highest_level() > data[HIGHEST_LEVEL_KEY]:
+		return null
+	var session := GameSession.new(config, RandomNumberGenerator.new(), restored_board)
+	session.score = data[SCORE_KEY]
+	session.highest_level_reached = data[HIGHEST_LEVEL_KEY]
+	session.placement_count = data[PLACEMENT_COUNT_KEY]
+	session.tile_generator.restore_data(data)
+	if not session._has_playable_column():
+		return null
+	return session
+
+
+static func _has_valid_counters(config: BalancingConfig, data: Dictionary) -> bool:
+	for key: String in [RULES_VERSION_KEY, COLUMN_COUNT_PER_SIDE_KEY, ROW_COUNT_KEY, SCORE_KEY, HIGHEST_LEVEL_KEY, PLACEMENT_COUNT_KEY]:
+		if not data.get(key) is int:
+			return false
+	return (
+		data[RULES_VERSION_KEY] == config.rules_version
+		and data[COLUMN_COUNT_PER_SIDE_KEY] == config.column_count_per_side
+		and data[ROW_COUNT_KEY] == config.row_count
+		and data[SCORE_KEY] >= 0
+		and data[PLACEMENT_COUNT_KEY] >= 0
+		and data[HIGHEST_LEVEL_KEY] <= config.max_tile_level
+	)
 
 
 func _has_playable_column() -> bool:

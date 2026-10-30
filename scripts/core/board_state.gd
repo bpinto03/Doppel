@@ -91,6 +91,33 @@ func get_landing_cell(column: int) -> Vector2i:
 	return Vector2i(column, get_column_height(column))
 
 
+## Levels column by column, from the bottom row up. A copy, so callers cannot change the board.
+func get_levels() -> PackedInt32Array:
+	return _levels.duplicate()
+
+
+## Returns null when the levels do not fill the board or a level is outside [EMPTY_CELL, max_level].
+static func create_from_levels(columns_per_side: int, rows: int, levels: PackedInt32Array, max_level: int) -> BoardState:
+	if columns_per_side <= 0 or rows <= 0 or levels.size() != columns_per_side * SIDE_COUNT * rows:
+		return null
+	for level: int in levels:
+		if level < EMPTY_CELL or level > max_level:
+			return null
+	var board := BoardState.new(columns_per_side, rows)
+	board._levels = levels.duplicate()
+	return board
+
+
+## True when no tile floats above an empty cell, as after every turn.
+func is_settled() -> bool:
+	for column: int in get_column_count():
+		var height: int = get_column_height(column)
+		for row: int in height:
+			if is_empty(Vector2i(column, row)):
+				return false
+	return true
+
+
 func duplicate_board() -> BoardState:
 	var copy := BoardState.new(column_count_per_side, row_count)
 	copy._levels = _levels.duplicate()

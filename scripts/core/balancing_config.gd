@@ -1,6 +1,10 @@
 class_name BalancingConfig
 extends Resource
 
+@export_group("Saves")
+## Saved games made under another rules version are discarded. See docs/balancing.md.
+@export var rules_version: int
+
 @export_group("Board")
 @export var column_count_per_side: int
 @export var row_count: int

@@ -9,13 +9,13 @@ Game logic is separated from presentation. The core never touches nodes, scenes,
 | Class | Responsibility |
 |-------|----------------|
 | `BalancingConfig`, `SpawnWeightTier` | Typed balancing values, loaded from `data/balancing.tres` by the presentation layer and injected into the core |
-| `BoardState` | Grid of tile levels (`0` = empty), mirror columns, landing cells, gravity |
-| `TileGenerator` | Weighted draw of the current and next tile from an injected `RandomNumberGenerator`; optional scripted levels are drawn first |
+| `BoardState` | Grid of tile levels (`0` = empty), mirror columns, landing cells, gravity. `get_levels()` and `create_from_levels()` (null for a wrong size or a level out of bounds) carry the grid as plain data; `is_settled()` checks that no tile floats |
+| `TileGenerator` | Weighted draw of the current and next tile from an injected `RandomNumberGenerator`; optional scripted levels are drawn first. `to_data()` / `restore_data()` carry the current and next levels and the generator seed and state, so a restored game draws the same tiles. It is the only source of randomness in the core |
 | `MergeResolver` | Finds merge groups, picks where each result lands, loops merge + gravity until stable |
 | `MergeGroup`, `ChainResult` | Data returned by the resolver; `ChainResult.events` lists the turn's resolution events in order |
 | `ResolutionEvent` and subclasses, `TileFall` | One step of a turn (see below) |
 | `MergeScoring` | Tile values, chain multiplier, merge points |
-| `GameSession` | One game: turn flow, reflection, distorted reflection, score, highest level, game over. Starts on an empty board, or from a given board and scripted tile sequence. `preview_placement()` tells where the tile and its reflection would land, without changing the board |
+| `GameSession` | One game: turn flow, reflection, distorted reflection, score, highest level, game over. Starts on an empty board, or from a given board and scripted tile sequence. `preview_placement()` tells where the tile and its reflection would land, without changing the board. `to_data()` turns a game into plain values (`int`, `PackedInt32Array`); `create_from_data()` rebuilds it, or returns null when the data is missing a value, has another board size or `rules_version`, holds an impossible board or levels, or describes a finished game. The core never reads or writes files |
 
 ### `scripts/tutorial/` — tutorial content
 

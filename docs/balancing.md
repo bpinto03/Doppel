@@ -14,6 +14,9 @@ All gameplay values live in `data/balancing.tres` (a `BalancingConfig` resource,
 | `is_distorted_reflection_enabled` | true | Turns the distorted reflection lever on or off |
 | `distorted_reflection_period` | 5 | Every Nth placement has a distorted reflection **[TO TEST]** |
 | `distorted_reflection_level_bonus` | 1 | Levels added to a distorted reflection |
+| `rules_version` | 1 | Saved games made under another value are discarded on load (record and settings are kept) |
+
+Bump `rules_version` only when old saved games would no longer make sense: a level changes meaning, or a rule changes what a board or a turn can be. Do not bump it for a weight, score or timing tweak: a saved game stays valid and simply continues with the new values. A board size change discards saved games on its own.
 
 ## Spawn weight tiers
 

@@ -6,6 +6,7 @@ extends RefCounted
 
 static func create_config() -> BalancingConfig:
 	var config := BalancingConfig.new()
+	config.rules_version = 1
 	config.column_count_per_side = 3
 	config.row_count = 6
 	config.max_tile_level = 12
