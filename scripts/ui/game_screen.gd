@@ -37,6 +37,7 @@ var _tutorial_step_index: int = NO_TUTORIAL_STEP
 @onready var _tutorial_panel: TutorialPanel = %TutorialPanel
 @onready var _theme_debug_button: Button = %ThemeDebugButton
 @onready var _vibration_debug_button: Button = %VibrationDebugButton
+@onready var _music_debug_button: Button = %MusicDebugButton
 
 
 func _ready() -> void:
@@ -57,7 +58,12 @@ func _ready() -> void:
 	Settings.palette_changed.connect(_apply_palette)
 	_apply_palette()
 	_set_up_debug_tools()
+	AudioManager.start_music()
 	start_tutorial()
+
+
+func _exit_tree() -> void:
+	AudioManager.stop_music()
 
 
 func start_new_game() -> void:
@@ -173,7 +179,7 @@ func _apply_palette() -> void:
 		swatch.tile_painter = tile_painter
 
 
-## Debug builds only, to compare themes, switch vibration and measure playback frame rate and audio latency on a phone until the settings screen exists (step 3.1).
+## Debug builds only, to compare themes, switch vibration and music, and measure playback frame rate and audio latency on a phone until the settings screen exists (step 3.1).
 func _set_up_debug_tools() -> void:
 	if not OS.is_debug_build():
 		return
@@ -185,6 +191,9 @@ func _set_up_debug_tools() -> void:
 	_vibration_debug_button.visible = true
 	_vibration_debug_button.pressed.connect(_switch_vibration)
 	_show_vibration_setting()
+	_music_debug_button.visible = true
+	_music_debug_button.pressed.connect(_switch_music)
+	_show_music_setting()
 
 
 func _switch_to_next_palette() -> void:
@@ -201,6 +210,15 @@ func _switch_vibration() -> void:
 
 func _show_vibration_setting() -> void:
 	_vibration_debug_button.text = "DEBUG_VIBRATION_ON" if Settings.is_vibration_enabled else "DEBUG_VIBRATION_OFF"
+
+
+func _switch_music() -> void:
+	Settings.is_music_enabled = not Settings.is_music_enabled
+	_show_music_setting()
+
+
+func _show_music_setting() -> void:
+	_music_debug_button.text = "DEBUG_MUSIC_ON" if Settings.is_music_enabled else "DEBUG_MUSIC_OFF"
 
 
 func _format_highest_tile() -> String:

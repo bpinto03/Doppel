@@ -2,18 +2,34 @@ extends GutTest
 
 const GAME_SCREEN_SCENE: PackedScene = preload("res://scenes/game/game_screen.tscn")
 const MAX_WAIT_SECONDS: float = 5.0
+const TEST_SAVE_PATH: String = "user://test_game_screen_tutorial_save.cfg"
 
+var _player_save_path: String
 var _screen: Control
 var _board_view: BoardView
 var _tutorial_panel: TutorialPanel
 
 
+## Music off in a test save, so the screen plays no music and the player's save is untouched.
 func before_each() -> void:
+	_player_save_path = SaveManager.save_path
+	SaveManager.save_path = TEST_SAVE_PATH
+	DirAccess.remove_absolute(TEST_SAVE_PATH)
+	SaveManager.load_save()
+	Settings.is_music_enabled = false
 	_screen = GAME_SCREEN_SCENE.instantiate()
 	add_child_autofree(_screen)
 	_board_view = _screen.get_node("%BoardView")
 	_tutorial_panel = _screen.get_node("%TutorialPanel")
 	watch_signals(_screen)
+
+
+func after_each() -> void:
+	AudioManager.stop_music()
+	DirAccess.remove_absolute(TEST_SAVE_PATH)
+	SaveManager.save_path = _player_save_path
+	SaveManager.load_save()
+	AudioManager.apply_settings()
 
 
 func test_tutorial_starts_at_launch_on_the_first_step() -> void:

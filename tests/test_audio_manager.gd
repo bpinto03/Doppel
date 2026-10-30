@@ -55,6 +55,22 @@ func test_zero_volume_mutes_the_bus() -> void:
 	assert_true(_is_bus_muted(AudioManager.MUSIC_BUS))
 
 
+func test_disabled_music_loads_nothing_when_a_screen_starts_it() -> void:
+	Settings.is_music_enabled = false
+
+	AudioManager.start_music()
+
+	assert_false(AudioManager.is_music_loaded())
+	AudioManager.stop_music()
+
+
+func test_missing_music_file_loads_no_stream() -> void:
+	var config := AudioConfig.new()
+	config.music_path = "res://assets/audio/music/missing_music.ogg"
+
+	assert_null(config.load_music())
+
+
 func _is_bus_muted(bus_name: StringName) -> bool:
 	return AudioServer.is_bus_mute(AudioServer.get_bus_index(bus_name))
 

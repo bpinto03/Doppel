@@ -8,8 +8,13 @@ const MASTER_BUS: StringName = &"Master"
 const SFX_BUS: StringName = &"SFX"
 const MUSIC_BUS: StringName = &"Music"
 const CONFIG: AudioConfig = preload("res://data/audio_config.tres")
+## Low enough to be inaudible: fades start and end here.
+const SILENT_DB: float = -80.0
 
 var _music_player := AudioStreamPlayer.new()
+var _music_state := MusicState.new()
+## Owned by this autoload so a fade-out outlives the screen that stopped the music.
+var _music_fade: Tween
 var _effect_players: Array[AudioStreamPlayer] = []
 var _next_taken_player_index: int
 var _variation_rng := RandomNumberGenerator.new()
@@ -44,9 +49,19 @@ func get_effect_player_count() -> int:
 	return _effect_players.size()
 
 
-func play_music(stream: AudioStream) -> void:
-	_music_player.stream = stream
-	_apply_music_setting()
+## Fades the ambient music in, if the music setting allows it. Calling it while the music plays changes nothing.
+func start_music() -> void:
+	_music_state.is_requested = true
+	_apply_music_state()
+
+
+func stop_music() -> void:
+	_music_state.is_requested = false
+	_apply_music_state()
+
+
+func is_music_loaded() -> bool:
+	return _music_player.stream != null
 
 
 ## Called at startup and on every settings change, so the saved state always applies.
@@ -54,7 +69,16 @@ func apply_settings() -> void:
 	_apply_bus(MASTER_BUS, true)
 	_apply_bus(SFX_BUS, Settings.is_sound_enabled)
 	_apply_bus(MUSIC_BUS, Settings.is_music_enabled)
-	_apply_music_setting()
+	_music_state.is_enabled = Settings.is_music_enabled
+	_apply_music_state()
+
+
+func _notification(what: int) -> void:
+	match what:
+		NOTIFICATION_APPLICATION_PAUSED, NOTIFICATION_APPLICATION_FOCUS_OUT:
+			_set_app_active(false)
+		NOTIFICATION_APPLICATION_RESUMED, NOTIFICATION_APPLICATION_FOCUS_IN:
+			_set_app_active(true)
 
 
 ## A volume of zero mutes the bus, since its decibel value would be minus infinity.
@@ -82,9 +106,59 @@ func _vary(variation_percent: float) -> float:
 	return 1.0 + _variation_rng.randf_range(-spread, spread)
 
 
-func _apply_music_setting() -> void:
-	var should_play: bool = Settings.is_music_enabled and _music_player.stream != null
-	if should_play and not _music_player.playing:
+func _set_app_active(is_active: bool) -> void:
+	_music_state.is_app_active = is_active
+	_apply_music_state()
+
+
+func _apply_music_state() -> void:
+	match _music_state.get_action():
+		MusicState.Action.PLAY:
+			_play_music()
+		MusicState.Action.PAUSE:
+			_pause_music()
+		MusicState.Action.STOP:
+			_stop_music()
+
+
+func _play_music() -> void:
+	if _music_player.stream == null:
+		_music_player.stream = CONFIG.load_music()
+		if _music_player.stream == null:
+			return
+	_music_player.stream_paused = false
+	if not _music_player.playing:
+		_music_player.volume_db = SILENT_DB
 		_music_player.play()
-	elif not should_play:
-		_music_player.stop()
+	_fade_music_to(CONFIG.music_volume_db, CONFIG.music_fade_in_seconds)
+
+
+func _pause_music() -> void:
+	_cancel_music_fade()
+	_music_player.stream_paused = true
+
+
+func _stop_music() -> void:
+	if _music_player.playing and not _music_player.stream_paused:
+		_fade_music_to(SILENT_DB, CONFIG.music_fade_out_seconds).finished.connect(_release_music)
+	else:
+		_release_music()
+
+
+func _release_music() -> void:
+	_cancel_music_fade()
+	_music_player.stop()
+	_music_player.stream_paused = false
+	_music_player.stream = null
+
+
+func _fade_music_to(volume_db: float, seconds: float) -> Tween:
+	_cancel_music_fade()
+	_music_fade = create_tween()
+	_music_fade.tween_property(_music_player, "volume_db", volume_db, seconds)
+	return _music_fade
+
+
+func _cancel_music_fade() -> void:
+	if _music_fade != null:
+		_music_fade.kill()

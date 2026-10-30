@@ -17,6 +17,7 @@ func before_each() -> void:
 	SaveManager.save_path = TEST_SAVE_PATH
 	DirAccess.remove_absolute(TEST_SAVE_PATH)
 	SaveManager.load_save()
+	Settings.is_music_enabled = false
 	_screen = GAME_SCREEN_SCENE.instantiate()
 	add_child_autofree(_screen)
 	_board_view = _screen.get_node("%BoardView")
@@ -24,9 +25,11 @@ func before_each() -> void:
 
 
 func after_each() -> void:
+	AudioManager.stop_music()
 	DirAccess.remove_absolute(TEST_SAVE_PATH)
 	SaveManager.save_path = _player_save_path
 	SaveManager.load_save()
+	AudioManager.apply_settings()
 
 
 func test_new_turn_plays_its_placement_sound_after_a_skip() -> void:
@@ -69,6 +72,18 @@ func test_vibration_debug_button_switches_the_setting() -> void:
 
 	assert_false(Settings.is_vibration_enabled)
 	assert_eq(button.text, "DEBUG_VIBRATION_OFF")
+
+
+func test_music_debug_button_switches_the_setting() -> void:
+	var button: Button = _screen.get_node("%MusicDebugButton")
+	# Unrequested first, so switching the setting on plays nothing in the test.
+	AudioManager.stop_music()
+
+	button.pressed.emit()
+
+	assert_true(Settings.is_music_enabled)
+	assert_eq(button.text, "DEBUG_MUSIC_ON")
+	assert_false(AudioManager.is_music_loaded())
 
 
 func _create_session(board: BoardState) -> GameSession:

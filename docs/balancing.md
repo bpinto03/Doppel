@@ -113,6 +113,10 @@ Sound files are normalized to the same perceived loudness: −20 dB K-weighted R
 | `chain_max_pitch_link` | 11 | Later links keep the pitch of this one (two octaves up) |
 | `chain_max_semitones` | 24 | The pitch never climbs more than this above link 1 (C7) |
 | `player_pool_size` | 8 | Effect players created once and reused; when all are busy, the oldest sound is cut |
+| `music_path` | `res://assets/audio/music/musical_ambiance.ogg` | Ambient music file, loaded only while the music is wanted |
+| `music_volume_db` | −14 | Volume of the music player, kept below the effects so chain sounds stay clear. Not yet checked on a phone |
+| `music_fade_in_seconds` | 1.5 | Fade-in when the music starts or comes back |
+| `music_fade_out_seconds` | 1.0 | Fade-out when the music is stopped or disabled |
 
 ## Haptics
 

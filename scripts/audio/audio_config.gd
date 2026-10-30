@@ -32,6 +32,25 @@ const SEMITONES_PER_OCTAVE: int = 12
 ## Players created once and reused; when all are busy, the oldest started is taken.
 @export var player_pool_size: int
 
+@export_group("Music")
+## Loaded only while the music is wanted, so a disabled music takes no memory.
+@export_file("*.ogg") var music_path: String
+## Volume of the music player, below the effects so chain sounds stay clear. The Music bus volume stays the player's setting.
+@export var music_volume_db: float
+@export var music_fade_in_seconds: float
+@export var music_fade_out_seconds: float
+
+
+## Returns null when the file is missing or is not audio: the game then plays without music.
+func load_music() -> AudioStream:
+	if not ResourceLoader.exists(music_path):
+		push_warning("Music file not found: %s" % music_path)
+		return null
+	var stream := load(music_path) as AudioStream
+	if stream == null:
+		push_warning("Music file is not an audio stream: %s" % music_path)
+	return stream
+
 
 func get_chain_link_effect(chain_link: int) -> SoundEffect:
 	return merge if chain_link == 1 else chain

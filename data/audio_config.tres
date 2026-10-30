@@ -51,3 +51,7 @@ chain_scale_intervals = Array[int]([2, 2, 3, 2, 3])
 chain_max_pitch_link = 11
 chain_max_semitones = 24
 player_pool_size = 8
+music_path = "res://assets/audio/music/musical_ambiance.ogg"
+music_volume_db = -14.0
+music_fade_in_seconds = 1.5
+music_fade_out_seconds = 1.0

@@ -5,6 +5,9 @@
 # Generated from ui.csv on import
 *.translation
 
+# Source assets kept out of the build (Godot skips the folder through its .gdignore)
+/_sources/
+
 # Build output
 /build/
 *.apk

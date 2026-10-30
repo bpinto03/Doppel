@@ -117,7 +117,7 @@ Objectif : **savoir si le jeu est fun**, rien d'autre.
 
 ### 2.4 Audio et haptique
 - [x] Ajouter les effets sonores (pose, fusion, chaîne avec hauteur croissante, fin de partie)
-- [ ] Ajouter une musique d'ambiance en boucle
+- [x] Ajouter une musique d'ambiance en boucle
 - [x] Ajouter une vibration légère (désactivable)
 - [ ] Noter les **licences** de chaque asset audio et visuel (fichier `CREDITS.md`)
 
@@ -135,7 +135,8 @@ Objectif : **savoir si le jeu est fun**, rien d'autre.
 - [ ] Écran d'accueil (Jouer, Défi du jour, Boutique, Réglages)
 - [ ] Écran de fin de partie (score, record, pièces gagnées, rejouer)
 - [ ] Écran de pause
-- [ ] Écran de réglages (son, musique, vibration, langue, thème Papier / Nuit) ; retirer les boutons de debug « Thème » et « Vib » du HUD et les logs de debug FPS (`FrameRateProbe`) et latence audio (`AudioLatencyProbe`). Mode daltonisme à reconsidérer en phase 3 (par exemple palette alternative à contraste renforcé), à décider avec le développeur
+- [ ] Écran de réglages (son, musique, vibration, langue, thème Papier / Nuit) ; retirer les boutons de debug « Thème », « Vib » et « Musique » du HUD et les logs de debug FPS (`FrameRateProbe`) et latence audio (`AudioLatencyProbe`). Mode daltonisme à reconsidérer en phase 3 (par exemple palette alternative à contraste renforcé), à décider avec le développeur
+- [ ] Revoir la condition de démarrage de la musique quand le menu d'accueil existera : la musique doit continuer entre menu et partie sans redémarrer (aujourd'hui, l'écran de jeu la lance à son entrée et l'arrête à sa sortie)
 - [ ] **Tutoriel** : version finale (mémoriser qu'il a été vu, visuels soignés ; version simple faite en phase 1)
 
 ### 3.2 Pièces et boutique
