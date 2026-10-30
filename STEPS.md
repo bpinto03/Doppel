@@ -119,7 +119,7 @@ Objectif : **savoir si le jeu est fun**, rien d'autre.
 - [x] Ajouter les effets sonores (pose, fusion, chaîne avec hauteur croissante, fin de partie)
 - [x] Ajouter une musique d'ambiance en boucle
 - [x] Ajouter une vibration légère (désactivable)
-- [ ] Noter les **licences** de chaque asset audio et visuel (fichier `CREDITS.md`)
+- [x] Noter les **licences** de chaque asset audio et visuel (fichier `CREDITS.md`)
 
 ### 2.5 Persistance
 - [ ] Sauvegarder record, réglages, et **la partie en cours** (reprise après interruption)

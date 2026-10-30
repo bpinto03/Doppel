@@ -138,4 +138,4 @@ Rules:
 
 Tracked in `STEPS.md` (tick the boxes). Keep this section to a single line naming the current phase.
 
-**Current phase:** Phase 2.4 audio and haptics in progress (sound effects, music and vibration done; licenses left); Gate 1 playtest pending.
+**Current phase:** Phase 2.5 persistence in progress; Gate 1 playtest not yet ticked in STEPS.md.
