@@ -41,8 +41,10 @@ extends Resource
 @export var highlight: Color
 
 @export_group("Tiles")
-## Value text, the same on every tile so all tiles share one contrast rule.
-@export var tile_text: Color
+## Value text on light tiles.
+@export var tile_text_dark: Color
+## Value text on dark tiles.
+@export var tile_text_light: Color
 ## Opacity of the glow around each tile, in its own color; 0 removes it, the first saving to try if the frame rate drops.
 @export var tile_glow_opacity: float
 ## One color per level, from level 1.
@@ -51,3 +53,11 @@ extends Resource
 
 func get_tile_color(level: int) -> Color:
 	return tile_colors[level - 1]
+
+
+## The value text with the higher contrast on this level's tile. TilePainter keeps the answer for each level.
+func pick_tile_text_color(level: int) -> Color:
+	var tile_color: Color = get_tile_color(level)
+	var dark_contrast: float = ColorContrast.calculate_ratio(tile_text_dark, tile_color)
+	var light_contrast: float = ColorContrast.calculate_ratio(tile_text_light, tile_color)
+	return tile_text_dark if dark_contrast >= light_contrast else tile_text_light

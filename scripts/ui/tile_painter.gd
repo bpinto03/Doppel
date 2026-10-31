@@ -14,11 +14,15 @@ const GLOW_SIZE_RATIO: float = 0.08
 var palette: ThemePalette
 var _text_config: TileTextConfig
 var _tile_box := StyleBoxFlat.new()
+## Value text color of each level, from level 1, picked once when the painter is built.
+var _text_colors: Array[Color] = []
 
 
 func _init(theme_palette: ThemePalette, text_config: TileTextConfig) -> void:
 	palette = theme_palette
 	_text_config = text_config
+	for level: int in range(1, palette.tile_colors.size() + 1):
+		_text_colors.append(palette.pick_tile_text_color(level))
 
 
 func draw_tile(canvas: CanvasItem, rect: Rect2, level: int, opacity: float = 1.0) -> void:
@@ -35,7 +39,11 @@ func draw_tile(canvas: CanvasItem, rect: Rect2, level: int, opacity: float = 1.0
 		_tile_box.shadow_size = roundi(_get_shorter_side(rect) * GLOW_SIZE_RATIO)
 	_tile_box.draw(canvas.get_canvas_item(), rect)
 	var face := Rect2(rect.position, rect.size - Vector2(0.0, relief))
-	_draw_value(canvas, face, str(MergeScoring.calculate_tile_value(level)), Color(palette.tile_text, opacity))
+	_draw_value(canvas, face, str(MergeScoring.calculate_tile_value(level)), Color(get_text_color(level), opacity))
+
+
+func get_text_color(level: int) -> Color:
+	return _text_colors[level - 1]
 
 
 ## A faint fill, a solid outline and the value in the tile color, without relief, so a ghost never looks placed.
