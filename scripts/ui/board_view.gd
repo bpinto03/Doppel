@@ -34,8 +34,7 @@ var restricted_column: int = NO_COLUMN:
 var tile_painter: TilePainter:
 	set(value):
 		tile_painter = value
-		_frame_box.bg_color = tile_painter.palette.panel
-		_axis.color = tile_painter.palette.axis
+		_apply_palette_to_frame_and_axis(tile_painter.palette)
 		queue_redraw()
 
 var _session: GameSession
@@ -67,11 +66,15 @@ var _frame_box := StyleBoxFlat.new()
 ## Holds the axis and board effects, so they move with the drawn board.
 var _effects_layer := Node2D.new()
 var _shake_offset := Vector2.ZERO
-var _axis := ColorRect.new()
+var _axis := Panel.new()
+var _axis_box := StyleBoxFlat.new()
 
 
 func _ready() -> void:
 	_frame_box.set_corner_radius_all(BOARD_STYLE.frame_corner_radius)
+	_frame_box.set_border_width_all(BOARD_STYLE.frame_border_width)
+	_axis_box.set_corner_radius_all(ceili(BOARD_STYLE.axis_width / 2.0))
+	_axis.add_theme_stylebox_override(&"panel", _axis_box)
 	_axis.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_axis.visible = false
 	_effects_layer.add_child(_axis)
@@ -374,12 +377,15 @@ func _draw() -> void:
 		return
 	draw_set_transform(_shake_offset)
 	_frame_box.draw(get_canvas_item(), _get_frame_rect())
-	for column: int in _displayed_board.get_column_count():
-		for row: int in _displayed_board.row_count:
-			var cell := Vector2i(column, row)
-			var is_drawn_elsewhere: bool = _hidden_cells.has(cell) or _scaled_cells.has(cell)
-			var level: int = BoardState.EMPTY_CELL if is_drawn_elsewhere else _displayed_board.get_level(cell)
-			tile_painter.draw_tile(self, _get_tile_rect(cell), level)
+	# Empty cells first, so no cell covers the glow of a neighboring tile.
+	for is_tile_pass: bool in [false, true]:
+		for column: int in _displayed_board.get_column_count():
+			for row: int in _displayed_board.row_count:
+				var cell := Vector2i(column, row)
+				var is_drawn_elsewhere: bool = _hidden_cells.has(cell) or _scaled_cells.has(cell)
+				var level: int = BoardState.EMPTY_CELL if is_drawn_elsewhere else _displayed_board.get_level(cell)
+				if (level != BoardState.EMPTY_CELL) == is_tile_pass:
+					tile_painter.draw_tile(self, _get_tile_rect(cell), level)
 	_draw_scaled_tiles()
 	_draw_blocked_columns()
 	_draw_moving_tiles()
@@ -453,6 +459,16 @@ func _draw_ghost_tile(rect: Rect2, level: int, opacity: float) -> void:
 func _draw_axis_line(color: Color, width: float) -> void:
 	var axis_rect: Rect2 = _get_axis_rect(width)
 	draw_line(Vector2(axis_rect.get_center().x, axis_rect.position.y), Vector2(axis_rect.get_center().x, axis_rect.end.y), color, width)
+
+
+func _apply_palette_to_frame_and_axis(palette: ThemePalette) -> void:
+	_frame_box.bg_color = palette.frame_fill
+	_frame_box.border_color = palette.frame_border
+	_frame_box.shadow_color = Color(palette.frame_border, palette.glow_opacity)
+	_frame_box.shadow_size = BOARD_STYLE.frame_glow_size if palette.glow_opacity > 0.0 else 0
+	_axis_box.bg_color = palette.axis
+	_axis_box.shadow_color = Color(palette.axis, palette.glow_opacity)
+	_axis_box.shadow_size = BOARD_STYLE.axis_glow_size if palette.glow_opacity > 0.0 else 0
 
 
 func _place_axis() -> void:

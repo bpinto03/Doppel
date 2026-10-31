@@ -152,14 +152,19 @@ Sound files are normalized to the same perceived loudness: −20 dB K-weighted R
 
 ## Board style
 
-`data/board_style.tres` (a `BoardStyle`). Colors come from the palette: frame `panel`, empty cells `empty_cell`, axis `axis`.
+`data/board_style.tres` (a `BoardStyle`). Colors come from the palette: frame `frame_fill` and `frame_border`, empty cells `empty_cell` and `cell_outline`, axis `axis`. Glow opacities come from the palette too: `glow_opacity` (frame, axis, HUD) and `tile_glow_opacity` (tiles); 0 removes them.
 
 | Parameter | Default | Controls |
 |-----------|---------|----------|
-| `frame_padding` | 16 | Space between the frame edge and the cells, in pixels |
-| `frame_corner_radius` | 28 | Frame corner radius, in pixels |
-| `cell_gap_ratio` | 0.06 | Space between two cells, relative to the cell width |
-| `axis_width` | 6 | Mirror axis width, in pixels |
+| `frame_padding` | 23 | Space between the frame edge and the cells, in pixels |
+| `frame_corner_radius` | 23 | Frame corner radius, in pixels |
+| `frame_border_width` | 2 | Frame border width, in pixels |
+| `frame_glow_size` | 14 | Frame glow size, in pixels |
+| `cell_gap_ratio` | 0.07 | Space between two cells, relative to the cell width |
+| `axis_width` | 5 | Mirror axis width, in pixels |
+| `axis_glow_size` | 8 | Mirror axis glow size, in pixels |
+
+Rendering cost of the glows, measured on a full board (36 tiles) at 1080×2340 in the Compatibility renderer: tile glows add about 4,100 primitives per frame (+28 %), the frame, axis and HUD glows about 430; the number of draw calls does not change (101). If the frame rate drops on a phone, set `tile_glow_opacity` to 0 first.
 
 ## Confusable tile colors
 

@@ -4,7 +4,10 @@
 
 [resource]
 script = ExtResource("1_style")
-frame_padding = 16.0
-frame_corner_radius = 28
-cell_gap_ratio = 0.06
-axis_width = 6.0
+frame_padding = 23.0
+frame_corner_radius = 23
+frame_border_width = 2
+frame_glow_size = 14
+cell_gap_ratio = 0.07
+axis_width = 5.0
+axis_glow_size = 8
