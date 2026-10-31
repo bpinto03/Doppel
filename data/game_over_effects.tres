@@ -1,6 +1,6 @@
-[gd_resource type="Resource" script_class="GameOverEffectsConfig" format=3]
+[gd_resource type="Resource" script_class="GameOverEffectsConfig" format=3 uid="uid://ep0mgsl3lhm4"]
 
-[ext_resource type="Script" path="res://scripts/ui/game_over_effects_config.gd" id="1_config"]
+[ext_resource type="Script" uid="uid://dp21lswcetxy6" path="res://scripts/ui/game_over_effects_config.gd" id="1_config"]
 
 [resource]
 script = ExtResource("1_config")
