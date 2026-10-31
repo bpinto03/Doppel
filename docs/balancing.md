@@ -173,7 +173,7 @@ Non-neighbor levels whose colors look alike with color vision deficiency (simula
 | Theme | Several deficiency types | Protanopia | Deuteranopia | Tritanopia |
 |-------|------------------|------------|--------------|------------|
 | Paper | 4/32, 8/512, 128/1024 | 4/4096, 8/2048, 32/4096 | — | — |
-| Night | — | 64/4096, 4/256 | 64/4096 | 2/128, 4/32, 16/1024, 32/2048 |
+| Night | 4/256, 16/64, 64/4096 (deuteranopia, protanopia) | — | 2/8, 4/128, 16/4096 | 2/128, 16/1024, 32/2048 |
 
 ## Tutorial highlight
 
