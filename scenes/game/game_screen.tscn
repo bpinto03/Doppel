@@ -9,8 +9,6 @@
 [ext_resource type="PackedScene" path="res://scenes/game/game_over_panel.tscn" id="7_game_over_panel"]
 [ext_resource type="PackedScene" path="res://scenes/game/pause_panel.tscn" id="8_pause_panel"]
 [ext_resource type="Script" path="res://scripts/ui/pause_button.gd" id="9_pause_button"]
-[ext_resource type="Texture2D" uid="uid://d3py061abhtja" path="res://assets/icons/icon_score_crown.svg" id="10_crown"]
-[ext_resource type="Texture2D" uid="uid://dw8o2w1du56h5" path="res://assets/icons/icon_record_trophy.svg" id="11_trophy"]
 
 [node name="GameScreen" type="Control" unique_id=1464355714]
 layout_mode = 3
@@ -93,7 +91,6 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("10_crown")
 expand_mode = 1
 stretch_mode = 5
 
@@ -132,7 +129,6 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("11_trophy")
 expand_mode = 1
 stretch_mode = 5
 

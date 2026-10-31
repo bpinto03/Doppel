@@ -68,8 +68,8 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 | `combo_text.gd` | `ComboText`: combo message text, with the decimal separator of the current language |
 | `tile_swatch.gd` | Draws one tile (current, reflection, next previews) |
 | `color_contrast.gd` | `ColorContrast`: WCAG 2 contrast ratio and relative luminance |
-| `tile_painter.gd` | Draws a tile with the active palette (text color of each level picked once, when the painter is built): a rounded `StyleBoxFlat` with a darker bottom relief, a glow in its color (`tile_glow_opacity`, 0 removes it), and its value sized with `TileTextConfig`. Empty cells use the same shape with a thin light outline (`cell_outline`). `draw_tile_shape()` draws the same rounded shape, filled or outlined, for merge pulses and tutorial highlights |
-| `theme_palette.gd` | `ThemePalette`: colors of one theme, for the interface, the HUD, the board and tiles (a dark and a light value text, `pick_tile_text_color()` takes the one with the higher contrast on a level), and the opacity of the HUD glows (`glow_opacity`, 0 removes them) |
+| `tile_painter.gd` | Draws a tile with the active palette (text color of each level picked once, when the painter is built): a rounded `StyleBoxFlat` with a darker bottom relief, a glow in its color (`tile_glow_opacity`, 0 removes it), and its value sized with `TileTextConfig`. A tile below the palette's `min_tile_edge_contrast` against the empty cells or the frame gets a thin outline in a darkened relief color that reaches it, decided once per level. Empty cells use the same shape with a thin light outline (`cell_outline`). `draw_tile_shape()` draws the same rounded shape, filled or outlined, for merge pulses and tutorial highlights |
+| `theme_palette.gd` | `ThemePalette`: colors of one theme, for the interface, the HUD, the board and tiles (a dark and a light value text, `pick_tile_text_color()` takes the one with the higher contrast on a level). Every HUD, frame and axis border, glow and soft shadow is a color of its own (transparent for none), and the HUD icons are textures of the palette |
 | `tile_text_config.gd` | Font and size limits of tile values, loaded from `data/tile_text.tres` |
 | `ui_theme_builder.gd` | Builds the interface `Theme` (label color, panels, buttons, and the `SecondaryButton` variation, outlined, for secondary actions, and `ChoiceButton`, based on it, for settings toggles and choices, filled when on) of a palette on top of `assets/themes/base_theme.tres`. Also the HUD variations (see HUD); every HUD radius, border, margin, font size and glow is a named constant there |
 | `pause_button.gd` | `PauseButton`: square HUD button that draws its pause symbol, two rounded bars in the font color |
@@ -177,19 +177,19 @@ The HUD above the board holds only the score, the record and the pause button; t
 
 ```
 HudRow (HBoxContainer, HudRow)
-├ Capsule (PanelContainer, HudCapsule: translucent, score_accent border and glow)
+├ Capsule (PanelContainer, HudCapsule: hud_capsule fill, hud_capsule_border, hud_capsule_glow)
 │ └ Halves (HBoxContainer)
-│   ├ ScoreMargin (HudScoreMargin: inset from the capsule) → ScorePanel (HudScorePanel: faint score_accent border)
+│   ├ ScoreMargin (HudScoreMargin: inset from the capsule) → ScorePanel (HudScorePanel: hud_panel fill, hud_score_panel_border)
 │   │   └ Row (HudPanelRow) [ScoreIcon, Stack [Caption (HudScoreCaption), ScoreLabel (HudScoreValue)]]
 │   ├ Separator (VSeparator, HudSeparator)
-│   └ RecordPanel (HudRecordPanel: record_accent border and glow, flush with the capsule)
+│   └ RecordPanel (HudRecordPanel: hud_record_panel_border and glow, flush with the capsule)
 │       └ Row (HudPanelRow) [RecordIcon, Stack [Caption (HudRecordCaption), BestLabel (HudRecordValue)]]
 └ PauseButton (PauseButton)
 ```
 
-- Both halves expand equally. The record panel has the capsule's corners and covers its right edge, so the capsule border turns from the score color to the record color at the record panel (the reference shows a gradient, which a `StyleBoxFlat` cannot draw).
-- Glows are `StyleBoxFlat` shadows without offset; value glows are label shadows widened by `shadow_outline_size` (no blur), fainter than the panel glows. Nothing is redrawn while the values do not change.
-- Icons: `assets/icons/icon_score_crown.svg` and `icon_record_trophy.svg`, imported at 0.75 scale (96 px) and shown at `GameScreen.HUD_ICON_SIZE`.
+- Both halves expand equally. The record panel has the capsule's corners and covers its right edge. In Night, the capsule border turns from cyan to violet at the record panel (the reference shows a gradient, which a `StyleBoxFlat` cannot draw). In Paper, panels and borders take the capsule color, so the HUD reads as one cream capsule with a beige separator and a soft shadow, and the pause button is filled.
+- Glows and soft shadows are `StyleBoxFlat` shadows without offset; value glows are label shadows widened by `shadow_outline_size` (no blur). Nothing is redrawn while the values do not change.
+- Icons come from the palette (`score_icon`, `record_icon`): the crown in both themes, the violet trophy in Night and the gold one (`icon_record_trophy_gold.svg`) in Paper. Imported at 0.75 scale (96 px), shown at `GameScreen.HUD_ICON_SIZE`.
 
 Under the HUD, the tile, mirror and next previews (`TileSwatch`) sit in three columns of the same width (`GameScreen.PREVIEW_COLUMN_WIDTH`, `PreviewColumn` variation), so the mirror preview is centered on the screen, above the axis. The next tile is smaller and aligned on the bottom of the others. Captions use the `PreviewCaption` variation (Fredoka Bold).
 

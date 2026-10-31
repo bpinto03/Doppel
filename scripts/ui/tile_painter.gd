@@ -10,12 +10,16 @@ const RELIEF_DARKENING: float = 0.3
 const CELL_OUTLINE_RATIO: float = 0.015
 ## Glow size relative to the tile's shorter side; its opacity comes from the palette.
 const GLOW_SIZE_RATIO: float = 0.08
+const TILE_OUTLINE_RATIO: float = 0.02
+const OUTLINE_DARKENING_STEP: float = 0.05
 
 var palette: ThemePalette
 var _text_config: TileTextConfig
 var _tile_box := StyleBoxFlat.new()
-## Value text color of each level, from level 1, picked once when the painter is built.
+## Per level, from level 1, decided once when the painter is built.
 var _text_colors: Array[Color] = []
+var _edge_colors: Array[Color] = []
+var _outlined_levels: Array[bool] = []
 
 
 func _init(theme_palette: ThemePalette, text_config: TileTextConfig) -> void:
@@ -23,6 +27,10 @@ func _init(theme_palette: ThemePalette, text_config: TileTextConfig) -> void:
 	_text_config = text_config
 	for level: int in range(1, palette.tile_colors.size() + 1):
 		_text_colors.append(palette.pick_tile_text_color(level))
+		var tile_color: Color = palette.get_tile_color(level)
+		var is_outlined: bool = not stands_out_from_board(tile_color)
+		_outlined_levels.append(is_outlined)
+		_edge_colors.append(_find_outline_color(tile_color) if is_outlined else tile_color.darkened(RELIEF_DARKENING))
 
 
 func draw_tile(canvas: CanvasItem, rect: Rect2, level: int, opacity: float = 1.0) -> void:
@@ -32,8 +40,10 @@ func draw_tile(canvas: CanvasItem, rect: Rect2, level: int, opacity: float = 1.0
 	var tile_color := Color(palette.get_tile_color(level), opacity)
 	var relief: int = roundi(_get_shorter_side(rect) * RELIEF_RATIO)
 	_set_up_box(rect, tile_color)
+	if is_outlined(level):
+		_tile_box.set_border_width_all(maxi(1, roundi(_get_shorter_side(rect) * TILE_OUTLINE_RATIO)))
 	_tile_box.border_width_bottom = relief
-	_tile_box.border_color = tile_color.darkened(RELIEF_DARKENING)
+	_tile_box.border_color = Color(get_edge_color(level), opacity)
 	if palette.tile_glow_opacity > 0.0:
 		_tile_box.shadow_color = Color(tile_color, palette.tile_glow_opacity * opacity)
 		_tile_box.shadow_size = roundi(_get_shorter_side(rect) * GLOW_SIZE_RATIO)
@@ -44,6 +54,27 @@ func draw_tile(canvas: CanvasItem, rect: Rect2, level: int, opacity: float = 1.0
 
 func get_text_color(level: int) -> Color:
 	return _text_colors[level - 1]
+
+
+## The relief color, which is also the outline color of an outlined tile.
+func get_edge_color(level: int) -> Color:
+	return _edge_colors[level - 1]
+
+
+func is_outlined(level: int) -> bool:
+	return _outlined_levels[level - 1]
+
+
+## The colors around a tile: empty cells, and the frame seen over the background between cells.
+func get_board_backdrops() -> Array[Color]:
+	return [palette.empty_cell, palette.background.blend(palette.frame_fill)]
+
+
+func stands_out_from_board(color: Color) -> bool:
+	for backdrop: Color in get_board_backdrops():
+		if ColorContrast.calculate_ratio(color, backdrop) < palette.min_tile_edge_contrast:
+			return false
+	return true
 
 
 ## A faint fill, a solid outline and the value in the tile color, without relief, so a ghost never looks placed.
@@ -74,6 +105,14 @@ func calculate_font_size(text: String, tile_size: Vector2) -> int:
 	var width_limited_size: float = REFERENCE_FONT_SIZE * tile_size.x * _text_config.max_width_ratio / reference_width
 	var height_limited_size: float = tile_size.y * _text_config.max_height_ratio
 	return floori(minf(width_limited_size, height_limited_size))
+
+
+## Darker than the relief until it stands out from the board, or as dark as it gets.
+func _find_outline_color(tile_color: Color) -> Color:
+	var darkening: float = RELIEF_DARKENING
+	while not stands_out_from_board(tile_color.darkened(darkening)) and darkening < 1.0:
+		darkening += OUTLINE_DARKENING_STEP
+	return tile_color.darkened(minf(darkening, 1.0))
 
 
 func _draw_empty_cell(canvas: CanvasItem, rect: Rect2, opacity: float) -> void:

@@ -464,11 +464,11 @@ func _draw_axis_line(color: Color, width: float) -> void:
 func _apply_palette_to_frame_and_axis(palette: ThemePalette) -> void:
 	_frame_box.bg_color = palette.frame_fill
 	_frame_box.border_color = palette.frame_border
-	_frame_box.shadow_color = Color(palette.frame_border, palette.glow_opacity)
-	_frame_box.shadow_size = BOARD_STYLE.frame_glow_size if palette.glow_opacity > 0.0 else 0
+	_frame_box.shadow_color = palette.frame_glow
+	_frame_box.shadow_size = BOARD_STYLE.frame_glow_size if palette.frame_glow.a > 0.0 else 0
 	_axis_box.bg_color = palette.axis
-	_axis_box.shadow_color = Color(palette.axis, palette.glow_opacity)
-	_axis_box.shadow_size = BOARD_STYLE.axis_glow_size if palette.glow_opacity > 0.0 else 0
+	_axis_box.shadow_color = palette.axis_glow
+	_axis_box.shadow_size = BOARD_STYLE.axis_glow_size if palette.axis_glow.a > 0.0 else 0
 
 
 func _place_axis() -> void:

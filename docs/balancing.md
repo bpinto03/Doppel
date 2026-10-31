@@ -152,7 +152,7 @@ Sound files are normalized to the same perceived loudness: −20 dB K-weighted R
 
 ## Board style
 
-`data/board_style.tres` (a `BoardStyle`). Colors come from the palette: frame `frame_fill` and `frame_border`, empty cells `empty_cell` and `cell_outline`, axis `axis`. Glow opacities come from the palette too: `glow_opacity` (frame, axis, HUD) and `tile_glow_opacity` (tiles); 0 removes them.
+`data/board_style.tres` (a `BoardStyle`). Colors come from the palette: frame `frame_fill` and `frame_border`, empty cells `empty_cell` and `cell_outline`, axis `axis`. Glows come from the palette too: `frame_glow` and `axis_glow` colors (transparent for none) and `tile_glow_opacity` (tiles, 0 for none). `min_tile_edge_contrast` (3.0 in both themes) is the least contrast of a tile against the empty cells and the frame; a tile below it gets an outline. Lower it to outline fewer tiles: at 1.3, Paper 128 and 256 lose theirs and the other outlines get lighter.
 
 | Parameter | Default | Controls |
 |-----------|---------|----------|
@@ -168,11 +168,10 @@ Rendering cost of the glows, measured on a full board (36 tiles) at 1080×2340 i
 
 ## Confusable tile colors
 
-Non-neighbor levels whose colors look alike with color vision deficiency (simulated, see [0003](decisions/0003-art-direction.md)). Only the value tells them apart. Kept for a possible high-contrast mode in phase 3.
+Night non-neighbor levels whose colors look alike with color vision deficiency (simulated, see [0003](decisions/0003-art-direction.md)). Only the value tells them apart. Kept for a possible high-contrast mode in phase 3. Paper is not checked for color vision deficiency (see 0003).
 
 | Theme | Several deficiency types | Protanopia | Deuteranopia | Tritanopia |
 |-------|------------------|------------|--------------|------------|
-| Paper | 4/32, 8/512, 128/1024 | 4/4096, 8/2048, 32/4096 | — | — |
 | Night | 4/256, 16/64, 64/4096 (deuteranopia, protanopia) | — | 2/8, 4/128, 16/4096 | 2/128, 16/1024, 32/2048 |
 
 ## Tutorial highlight

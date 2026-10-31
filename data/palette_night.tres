@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" uid="uid://c6sglf02fiibu" path="res://scripts/ui/theme_palette.gd" id="1_palette"]
 [ext_resource type="Texture2D" uid="uid://dr53hu5fuj5tt" path="res://assets/backgrounds/background_night.png" id="2_background"]
+[ext_resource type="Texture2D" uid="uid://d3py061abhtja" path="res://assets/icons/icon_score_crown.svg" id="3_crown"]
+[ext_resource type="Texture2D" uid="uid://dw8o2w1du56h5" path="res://assets/icons/icon_record_trophy.svg" id="4_trophy"]
 
 [resource]
 script = ExtResource("1_palette")
@@ -11,21 +13,33 @@ text = Color(0.9137, 0.9255, 0.9608, 1)
 panel = Color(0.1176, 0.1333, 0.1882, 1)
 button = Color(0.9137, 0.9255, 0.9608, 1)
 button_text = Color(0.07059, 0.07843, 0.1098, 1)
-panel_border = Color(0.2314, 0.2941, 0.4824, 1)
-glow_opacity = 0.35
 hud_capsule = Color(0.0549, 0.102, 0.1373, 0.75)
-hud_panel = Color(0.1020, 0.1255, 0.2039, 0.9)
-score_accent = Color(0.1725, 0.8941, 0.9804, 1)
-record_accent = Color(0.5608, 0.4706, 0.9137, 1)
+hud_capsule_border = Color(0.1725, 0.8941, 0.9804, 1)
+hud_capsule_glow = Color(0.1725, 0.8941, 0.9804, 0.35)
+hud_panel = Color(0.102, 0.1255, 0.2039, 0.9)
+hud_score_panel_border = Color(0.1725, 0.8941, 0.9804, 0.4)
+hud_record_panel_border = Color(0.5608, 0.4706, 0.9137, 1)
+hud_record_panel_glow = Color(0.5608, 0.4706, 0.9137, 0.35)
+hud_separator = Color(0.9137, 0.9255, 0.9608, 0.2)
 score_caption = Color(0.749, 0.8431, 0.9725, 1)
 record_caption = Color(0.7647, 0.6078, 0.9961, 1)
+score_value_glow = Color(0.1725, 0.8941, 0.9804, 0.175)
+record_value_glow = Color(0.5608, 0.4706, 0.9137, 0.175)
+score_icon = ExtResource("3_crown")
+record_icon = ExtResource("4_trophy")
+pause_button = Color(0.102, 0.1255, 0.2039, 0.9)
+pause_button_border = Color(0.2314, 0.2941, 0.4824, 1)
+pause_symbol = Color(0.9137, 0.9255, 0.9608, 1)
 frame_fill = Color(0.1059, 0.1216, 0.2196, 0.85)
 frame_border = Color(0.2784, 0.3451, 0.6039, 1)
+frame_glow = Color(0.2784, 0.3451, 0.6039, 0.35)
 empty_cell = Color(0.149, 0.1686, 0.2275, 1)
 cell_outline = Color(0.1843, 0.2118, 0.302, 1)
 axis = Color(0.7882, 0.8118, 0.8745, 1)
+axis_glow = Color(0.7882, 0.8118, 0.8745, 0.35)
 highlight = Color(1, 0.8235, 0.302, 1)
 tile_text_dark = Color(0.07843, 0.08627, 0.1216, 1)
 tile_text_light = Color(1, 1, 1, 1)
 tile_glow_opacity = 0.3
+min_tile_edge_contrast = 3.0
 tile_colors = Array[Color]([Color(0.1961, 0.9529, 0.8745, 1), Color(0.8275, 0.4627, 0.8353, 1), Color(0.9412, 0.9294, 0.9922, 1), Color(0.9725, 0.7882, 0.251, 1), Color(0.9451, 0.4275, 0.6235, 1), Color(1, 0.9412, 0.5412, 1), Color(0.1333, 0.8275, 1, 1), Color(0.498, 0.549, 1, 1), Color(0.7686, 1, 0.8392, 1), Color(1, 0.6392, 0.5608, 1), Color(0.8235, 0.4627, 0.102, 1), Color(0.8863, 1, 0.5412, 1)])

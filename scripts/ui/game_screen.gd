@@ -13,7 +13,7 @@ const HAPTICS_CONFIG: HapticsConfig = preload("res://data/haptics_config.tres")
 const TUTORIAL_HINT_CONFIG: TutorialHintConfig = preload("res://data/tutorial_hint.tres")
 const TILE_TEXT_CONFIG: TileTextConfig = preload("res://data/tile_text.tres")
 const NO_TUTORIAL_STEP: int = -1
-const HUD_ICON_SIZE := Vector2(72.0, 72.0)
+const HUD_ICON_SIZE := Vector2(80.0, 80.0)
 ## The three preview columns share one width, so the mirror preview sits on the axis.
 const PREVIEW_COLUMN_WIDTH: float = 228.0
 const PREVIEW_TILE_SIZE := Vector2(176.0, 176.0)
@@ -235,6 +235,8 @@ func _refresh() -> void:
 
 
 func _apply_screen_palette(palette: ThemePalette) -> void:
+	(%ScoreIcon as TextureRect).texture = palette.score_icon
+	(%RecordIcon as TextureRect).texture = palette.record_icon
 	_combo_label.add_theme_color_override(&"font_outline_color", palette.background)
 	var tile_painter := TilePainter.new(palette, TILE_TEXT_CONFIG)
 	_board_view.tile_painter = tile_painter

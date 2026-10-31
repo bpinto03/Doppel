@@ -34,8 +34,6 @@ const HUD_CAPSULE_RADIUS: int = 40
 const HUD_PANEL_RADIUS: int = 28
 const HUD_BORDER_WIDTH: int = 3
 const HUD_SCORE_PANEL_BORDER_WIDTH: int = 2
-## The score panel border is a faint version of the capsule border.
-const HUD_SCORE_PANEL_BORDER_OPACITY: float = 0.4
 const HUD_GLOW_SIZE: int = 12
 ## Space between the capsule border and the score panel.
 const HUD_CAPSULE_INSET: int = 14
@@ -46,14 +44,12 @@ const HUD_RECORD_PANEL_VERTICAL_MARGIN: int = HUD_CAPSULE_INSET + HUD_SCORE_PANE
 const HUD_PANEL_ROW_SEPARATION: int = 14
 const HUD_SEPARATOR_WIDTH: int = 2
 const HUD_SEPARATOR_SPACE: int = 40
-const HUD_SEPARATOR_OPACITY: float = 0.2
 ## Shortens the separator at both ends, so it spans about half of the capsule height.
 const HUD_SEPARATOR_INSET: float = 44.0
 const HUD_CAPTION_FONT_SIZE: int = 32
 const HUD_VALUE_FONT_SIZE: int = 60
+## Label shadows cannot blur: a thin, faint outline reads as a halo rather than a stroke.
 const HUD_VALUE_GLOW_SIZE: int = 6
-## Label shadows cannot blur: a fainter outline than the panel glows reads as a halo rather than a stroke.
-const HUD_VALUE_GLOW_STRENGTH: float = 0.5
 const PAUSE_BUTTON_RADIUS: int = 26
 const PAUSE_BUTTON_BORDER_WIDTH: int = 3
 ## Tile, mirror and next previews under the HUD.
@@ -113,15 +109,15 @@ static func _add_hud_styles(theme: Theme, palette: ThemePalette) -> void:
 	_add_hud_separator_style(theme, palette)
 	_add_hud_caption_style(theme, HUD_SCORE_CAPTION_TYPE, palette.score_caption)
 	_add_hud_caption_style(theme, HUD_RECORD_CAPTION_TYPE, palette.record_caption)
-	_add_hud_value_style(theme, HUD_SCORE_VALUE_TYPE, palette, palette.score_accent)
-	_add_hud_value_style(theme, HUD_RECORD_VALUE_TYPE, palette, palette.record_accent)
+	_add_hud_value_style(theme, HUD_SCORE_VALUE_TYPE, palette.text, palette.score_value_glow)
+	_add_hud_value_style(theme, HUD_RECORD_VALUE_TYPE, palette.text, palette.record_value_glow)
 	_add_pause_button_styles(theme, palette)
 
 
 static func _add_hud_capsule_style(theme: Theme, palette: ThemePalette) -> void:
 	theme.set_type_variation(HUD_CAPSULE_TYPE, &"PanelContainer")
-	var box: StyleBoxFlat = _create_bordered_box(palette.hud_capsule, palette.score_accent, HUD_BORDER_WIDTH, HUD_CAPSULE_RADIUS)
-	_add_glow(box, palette.score_accent, palette.glow_opacity)
+	var box: StyleBoxFlat = _create_bordered_box(palette.hud_capsule, palette.hud_capsule_border, HUD_BORDER_WIDTH, HUD_CAPSULE_RADIUS)
+	_add_glow(box, palette.hud_capsule_glow)
 	theme.set_stylebox(&"panel", HUD_CAPSULE_TYPE, box)
 	theme.set_type_variation(HUD_SCORE_MARGIN_TYPE, &"MarginContainer")
 	for side: StringName in [&"margin_left", &"margin_top", &"margin_bottom"]:
@@ -130,18 +126,17 @@ static func _add_hud_capsule_style(theme: Theme, palette: ThemePalette) -> void:
 
 static func _add_hud_score_panel_style(theme: Theme, palette: ThemePalette) -> void:
 	theme.set_type_variation(HUD_SCORE_PANEL_TYPE, &"PanelContainer")
-	var border_color := Color(palette.score_accent, HUD_SCORE_PANEL_BORDER_OPACITY)
-	var box: StyleBoxFlat = _create_bordered_box(palette.hud_panel, border_color, HUD_SCORE_PANEL_BORDER_WIDTH, HUD_PANEL_RADIUS)
+	var box: StyleBoxFlat = _create_bordered_box(palette.hud_panel, palette.hud_score_panel_border, HUD_SCORE_PANEL_BORDER_WIDTH, HUD_PANEL_RADIUS)
 	_set_content_margins(box, HUD_PANEL_HORIZONTAL_MARGIN, HUD_PANEL_VERTICAL_MARGIN)
 	theme.set_stylebox(&"panel", HUD_SCORE_PANEL_TYPE, box)
 
 
-## Same corners as the capsule: its violet border covers the capsule border on the right.
+## Same corners as the capsule: its border covers the capsule border on the right.
 static func _add_hud_record_panel_style(theme: Theme, palette: ThemePalette) -> void:
 	theme.set_type_variation(HUD_RECORD_PANEL_TYPE, &"PanelContainer")
-	var box: StyleBoxFlat = _create_bordered_box(palette.hud_panel, palette.record_accent, HUD_BORDER_WIDTH, HUD_CAPSULE_RADIUS)
+	var box: StyleBoxFlat = _create_bordered_box(palette.hud_panel, palette.hud_record_panel_border, HUD_BORDER_WIDTH, HUD_CAPSULE_RADIUS)
 	_set_content_margins(box, HUD_PANEL_HORIZONTAL_MARGIN, HUD_RECORD_PANEL_VERTICAL_MARGIN)
-	_add_glow(box, palette.record_accent, palette.glow_opacity)
+	_add_glow(box, palette.hud_record_panel_glow)
 	theme.set_stylebox(&"panel", HUD_RECORD_PANEL_TYPE, box)
 
 
@@ -149,7 +144,7 @@ static func _add_hud_separator_style(theme: Theme, palette: ThemePalette) -> voi
 	theme.set_type_variation(HUD_SEPARATOR_TYPE, &"VSeparator")
 	var line := StyleBoxLine.new()
 	line.vertical = true
-	line.color = Color(palette.text, HUD_SEPARATOR_OPACITY)
+	line.color = palette.hud_separator
 	line.thickness = HUD_SEPARATOR_WIDTH
 	line.grow_begin = -HUD_SEPARATOR_INSET
 	line.grow_end = -HUD_SEPARATOR_INSET
@@ -164,25 +159,25 @@ static func _add_hud_caption_style(theme: Theme, type: StringName, color: Color)
 
 
 ## The glow is the label shadow, centered and widened by its outline.
-static func _add_hud_value_style(theme: Theme, type: StringName, palette: ThemePalette, glow_color: Color) -> void:
+static func _add_hud_value_style(theme: Theme, type: StringName, color: Color, glow_color: Color) -> void:
 	theme.set_type_variation(type, &"Label")
 	theme.set_font(&"font", type, HUD_VALUE_FONT)
 	theme.set_font_size(&"font_size", type, HUD_VALUE_FONT_SIZE)
-	theme.set_color(&"font_color", type, palette.text)
-	theme.set_color(&"font_shadow_color", type, Color(glow_color, palette.glow_opacity * HUD_VALUE_GLOW_STRENGTH))
+	theme.set_color(&"font_color", type, color)
+	theme.set_color(&"font_shadow_color", type, glow_color)
 	theme.set_constant(&"shadow_offset_x", type, 0)
 	theme.set_constant(&"shadow_offset_y", type, 0)
-	theme.set_constant(&"shadow_outline_size", type, HUD_VALUE_GLOW_SIZE)
+	theme.set_constant(&"shadow_outline_size", type, HUD_VALUE_GLOW_SIZE if glow_color.a > 0.0 else 0)
 
 
 ## The pause symbol is drawn by PauseButton in the font color.
 static func _add_pause_button_styles(theme: Theme, palette: ThemePalette) -> void:
 	theme.set_type_variation(PAUSE_BUTTON_TYPE, &"Button")
 	for state: StringName in BUTTON_FONT_STATES:
-		theme.set_color(state, PAUSE_BUTTON_TYPE, palette.text)
-	var normal_box: StyleBoxFlat = _create_bordered_box(palette.hud_panel, palette.panel_border, PAUSE_BUTTON_BORDER_WIDTH, PAUSE_BUTTON_RADIUS)
+		theme.set_color(state, PAUSE_BUTTON_TYPE, palette.pause_symbol)
+	var normal_box: StyleBoxFlat = _create_bordered_box(palette.pause_button, palette.pause_button_border, PAUSE_BUTTON_BORDER_WIDTH, PAUSE_BUTTON_RADIUS)
 	var pressed_box: StyleBoxFlat = normal_box.duplicate()
-	pressed_box.bg_color = palette.hud_panel.darkened(PRESSED_DARKENING)
+	pressed_box.bg_color = palette.pause_button.darkened(PRESSED_DARKENING)
 	theme.set_stylebox(&"normal", PAUSE_BUTTON_TYPE, normal_box)
 	theme.set_stylebox(&"hover", PAUSE_BUTTON_TYPE, normal_box)
 	theme.set_stylebox(&"pressed", PAUSE_BUTTON_TYPE, pressed_box)
@@ -213,10 +208,10 @@ static func _set_content_margins(box: StyleBox, horizontal: float, vertical: flo
 		box.set_content_margin(side, vertical)
 
 
-## A glow is a shadow in the border color, without offset; an opacity of 0 removes it.
-static func _add_glow(box: StyleBoxFlat, color: Color, opacity: float) -> void:
-	box.shadow_color = Color(color, opacity)
-	box.shadow_size = HUD_GLOW_SIZE if opacity > 0.0 else 0
+## A glow is a shadow without offset; a transparent color removes it.
+static func _add_glow(box: StyleBoxFlat, color: Color) -> void:
+	box.shadow_color = color
+	box.shadow_size = HUD_GLOW_SIZE if color.a > 0.0 else 0
 
 
 static func _create_rounded_box(color: Color) -> StyleBoxFlat:

@@ -1,18 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
   <defs>
-    <linearGradient id="violet" gradientUnits="userSpaceOnUse" x1="0" y1="18" x2="0" y2="108">
+    <linearGradient id="violet" gradientUnits="userSpaceOnUse" x1="0" y1="14" x2="0" y2="112">
       <stop offset="0" stop-color="#B78CFF"/>
       <stop offset="1" stop-color="#7C4DDB"/>
     </linearGradient>
   </defs>
   <g fill="url(#violet)">
-    <path d="M36 20 H92 Q96 20 96 24 V44 C96 64 82 78 64 78 C46 78 32 64 32 44 V24 Q32 20 36 20 Z"/>
-    <path d="M33 28 H24 C16 28 12 34 12 42 C12 55 22 63 38 66 L41 56 C30 54 23 49 23 42 C23 39 24 38 27 38 H33 Z"/>
-    <path d="M95 28 H104 C112 28 116 34 116 42 C116 55 106 63 90 66 L87 56 C98 54 105 49 105 42 C105 39 104 38 101 38 H95 Z"/>
-    <rect x="57" y="74" width="14" height="20" rx="2"/>
-    <path d="M38 106 C38 98 46 94 56 92 H72 C82 94 90 98 90 106 Q90 108 88 108 H40 Q38 108 38 106 Z"/>
+    <path d="M34 14 H94 Q98 14 98 18 V46 C98 68 84 82 64 82 C44 82 30 68 30 46 V18 Q30 14 34 14 Z"/>
+    <path d="M31 20 H22 C13 20 8 27 8 36 C8 50 19 60 36 64 L40 54 C27 51 19 45 19 36 C19 32 21 31 24 31 H31 Z"/>
+    <path d="M97 20 H106 C115 20 120 27 120 36 C120 50 109 60 92 64 L88 54 C101 51 109 45 109 36 C109 32 107 31 104 31 H97 Z"/>
+    <rect x="57" y="78" width="14" height="18" rx="2"/>
+    <path d="M36 110 C36 101 45 96 55 95 H73 C83 96 92 101 92 110 Q92 112 90 112 H38 Q36 112 36 110 Z"/>
   </g>
   <g fill="#EEE4FF" fill-opacity="0.75">
-    <path d="M40 28 H48 V44 C48 56 52 64 58 70 C47 67 40 57 40 45 Z"/>
+    <path d="M38 22 H46 V44 C46 58 50 66 56 72 C45 69 38 59 38 46 Z"/>
   </g>
 </svg>
