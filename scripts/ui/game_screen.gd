@@ -101,6 +101,7 @@ func start_game(session: GameSession, best_score_before_game: int) -> void:
 ## The saved game stays untouched: the tutorial ends on the home screen, on its last step or on Skip.
 func start_tutorial() -> void:
 	_tutorial_steps = TutorialScenarios.create_steps()
+	_tutorial_panel.fit_to_steps(_tutorial_steps)
 	_show_tutorial_step(0)
 
 
@@ -238,6 +239,7 @@ func _apply_screen_palette(palette: ThemePalette) -> void:
 	(%ScoreIcon as TextureRect).texture = palette.score_icon
 	(%RecordIcon as TextureRect).texture = palette.record_icon
 	_game_over_panel.apply_palette(palette)
+	_tutorial_panel.apply_palette(palette)
 	_combo_label.add_theme_color_override(&"font_outline_color", palette.background)
 	var tile_painter := TilePainter.new(palette, TILE_TEXT_CONFIG)
 	_board_view.tile_painter = tile_painter

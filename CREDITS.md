@@ -4,7 +4,7 @@
 |-------|--------|------|------|---------|
 | `assets/fonts/fredoka_semibold.ttf`, `assets/fonts/fredoka_bold.ttf` | Fredoka 2.001 by The Fredoka Project Authors, static files from Google Fonts (`fonts.google.com/download/list?family=Fredoka`) | — | 2026-10-27 | SIL OFL 1.1 (`assets/fonts/OFL.txt`) |
 | `assets/icons/icon_score_crown.svg`, `assets/icons/icon_record_trophy.svg`, `assets/icons/icon_record_trophy_gold.svg` | Written in SVG with Claude Code for Doppel | Claude Code | 2026-10-31 | Original project asset |
-| `assets/icons/icon_play.svg`, `icon_resume.svg`, `icon_graduation_cap.svg`, `icon_gear.svg`, `icon_chevron_right.svg`, `icon_home.svg`, `icon_restart.svg`, `icon_back.svg`, `icon_max_tile.svg` | Phosphor Icons 2.1.1 (`github.com/phosphor-icons/core`): `play-fill`, `arrow-counter-clockwise-bold`, `graduation-cap-fill`, `gear-six-fill`, `caret-right-bold`, `house-fill`, `arrow-clockwise-bold`, `arrow-left-bold`, `squares-four-fill`, filled in white so the game tints them | — | 2026-10-31 | MIT (`assets/icons/LICENSE_PHOSPHOR.txt`) |
+| `assets/icons/icon_play.svg`, `icon_resume.svg`, `icon_graduation_cap.svg`, `icon_gear.svg`, `icon_chevron_right.svg`, `icon_home.svg`, `icon_restart.svg`, `icon_back.svg`, `icon_max_tile.svg`, `icon_hand_tap.svg`, `icon_next.svg`, `icon_done.svg`, `icon_skip.svg` | Phosphor Icons 2.1.1 (`github.com/phosphor-icons/core`): `play-fill`, `arrow-counter-clockwise-bold`, `graduation-cap-fill`, `gear-six-fill`, `caret-right-bold`, `house-fill`, `arrow-clockwise-bold`, `arrow-left-bold`, `squares-four-fill`, `hand-tap`, `arrow-right-bold`, `check-bold`, `skip-forward-fill`, filled in white so the game tints them | — | 2026-10-31 | MIT (`assets/icons/LICENSE_PHOSPHOR.txt`) |
 
 ## Audio
 

@@ -19,11 +19,11 @@ const HOME_COLOR_PROPERTIES: Array[StringName] = [
 	&"home_primary_button", &"home_primary_button_border", &"home_primary_button_glow", &"home_primary_badge", &"home_primary_icon", &"home_primary_text",
 	&"home_secondary_button", &"home_secondary_button_border", &"home_secondary_badge", &"home_secondary_icon", &"home_secondary_text",
 ]
-## Modal colors (pause, game over) every palette sets itself, for the same reason.
+## Modal colors (pause, game over, tutorial panel) every palette sets itself, for the same reason.
 const MODAL_COLOR_PROPERTIES: Array[StringName] = [
 	&"modal_scrim", &"modal_panel", &"modal_panel_border", &"modal_panel_glow", &"modal_title_rule",
 	&"modal_primary_button", &"modal_primary_button_border", &"modal_primary_button_glow", &"modal_primary_badge", &"modal_primary_icon", &"modal_primary_text",
-	&"modal_secondary_button", &"modal_secondary_button_border", &"modal_secondary_badge", &"modal_secondary_icon", &"modal_secondary_text",
+	&"modal_secondary_button", &"modal_secondary_button_border", &"modal_secondary_badge", &"modal_secondary_icon", &"modal_secondary_text", &"tutorial_icon",
 	&"game_over_halo", &"game_over_score_row", &"game_over_score_row_border", &"game_over_score_row_glow",
 	&"game_over_record_row", &"game_over_record_row_border", &"game_over_record_row_glow", &"game_over_record_caption",
 	&"game_over_tile_row", &"game_over_tile_row_border", &"game_over_tile_row_glow", &"game_over_tile_icon",

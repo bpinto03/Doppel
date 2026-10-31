@@ -65,7 +65,7 @@ When *enabled*, every *5th* placement gives a reflection of level +*1* (capped a
   2. **Merge**: the same tile dropped on its twin merges on both sides.
   3. **Axis**: a matching tile waits in D1, with a tile above it so the reflection lands higher. Dropping in G3 merges the placed tile with the waiting one across the axis. The text then presents playing next to the axis as one option among others.
 - Each step accepts only its target column, or a touch on its mirror; both are highlighted with a pulse, along with the cells involved and, in step 3, the axis.
-- The explanation shows once the turn's playback has finished. "Skip" starts a real game at any time; "Play" does so after step 3.
+- The explanation shows once the turn's playback has finished, with "Next", or "Done" after step 3. "Done" and "Skip" (at any time before) go back to the home screen; neither starts a game.
 - Tutorial scores do not count toward the record, and the tutorial is never saved.
 
 ## Game over

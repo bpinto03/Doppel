@@ -81,6 +81,8 @@ extends Resource
 @export var modal_secondary_badge: Color
 @export var modal_secondary_icon: Color
 @export var modal_secondary_text: Color
+## Tap icon beside the tutorial instruction; the tutorial text takes modal_secondary_text.
+@export var tutorial_icon: Color
 
 @export_group("Game over")
 ## Soft disc and rays behind the crown; a transparent color removes them.

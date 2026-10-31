@@ -141,11 +141,12 @@ Outil : simulateur d'équilibrage (`./run_simulation.sh`, voir `docs/balancing.m
 - [x] Écran de pause (Reprendre, Recommencer, Menu) avec ses réglages : sons, musique, vibration, tremblement d'écran, sans quitter la partie
 - [x] Écran de réglages (son, musique, vibration, langue, thème Papier / Nuit) ; retirer les boutons de debug « Thème », « Vib » et « Musique » du HUD et les logs de debug FPS (`FrameRateProbe`) et latence audio (`AudioLatencyProbe`).
 - [x] **Tutoriel** à la demande : bouton Tutoriel à l'accueil, jamais lancé automatiquement ni depuis la partie (plus de bouton « ? »), retour à l'accueil à la fin
-- [ ] Tutoriel : visuels soignés (version simple faite en phase 1) : doigt qui tapote la colonne cible (asset `assets/tutorial/tutorial_pointer.svg` à fournir) ou flèche dessinée en code
-- [ ] Écran de jeu fidèle aux maquettes (`docs/maquettes/`) : HUD en capsule (score, record, pause), rangée Tuile / Reflet / Suivante centrée sur l'axe, cadre de grille, cellules et axe lumineux, couleurs de tuiles Nuit (Papier à valider) ; vérifié sur téléphone en français et en anglais, thèmes Nuit et Papier, 60 FPS ressentis, sans régression (pause, reflet animé, retour Android)
-- [ ] Écran d'accueil fidèle aux maquettes (`docs/maquettes/`) : logo, titre, boutons principaux et secondaires avec icônes ; vérifié sur téléphone en français et en anglais, thèmes Nuit et Papier
-- [ ] Écran de pause fidèle aux maquettes (`docs/maquettes/`) ; vérifié sur téléphone en français et en anglais, thèmes Nuit et Papier
-- [ ] Écran de fin de partie fidèle aux maquettes (`docs/maquettes/`) ; vérifié sur téléphone en français et en anglais, thèmes Nuit et Papier
+- [x] Tutoriel : visuels soignés (version simple faite en phase 1) : doigt qui tapote la colonne cible (asset `assets/tutorial/tutorial_pointer.svg` à fournir) ou flèche dessinée en code
+- [x] Écran de jeu fidèle aux maquettes (`docs/maquettes/`) : HUD en capsule (score, record, pause), rangée Tuile / Reflet / Suivante centrée sur l'axe, cadre de grille, cellules et axe lumineux, couleurs de tuiles Nuit (Papier à valider) ; vérifié sur téléphone en français et en anglais, thèmes Nuit et Papier, 60 FPS ressentis, sans régression (pause, reflet animé, retour Android)
+- [x] Écran d'accueil fidèle aux maquettes (`docs/maquettes/`) : logo, titre, boutons principaux et secondaires avec icônes ; vérifié sur téléphone en français et en anglais, thèmes Nuit et Papier
+- [x] Écran de pause fidèle aux maquettes (`docs/maquettes/`) ; vérifié sur téléphone en français et en anglais, thèmes Nuit et Papier
+- [x] Écran de fin de partie fidèle aux maquettes (`docs/maquettes/`) ; vérifié sur téléphone en français et en anglais, thèmes Nuit et Papier
+- [x] Panneau du tutoriel fidèle aux maquettes (`docs/maquettes/`) ; vérifié sur téléphone en français et en anglais, thèmes Nuit et Papier
 
 ### 3.2 Pièces et boutique
 - [ ] Définir la formule des pièces gagnées par partie

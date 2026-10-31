@@ -1,43 +1,55 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/tutorial_panel.gd" id="1_panel"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_hand_tap.svg" id="2_hand"]
+[ext_resource type="PackedScene" path="res://scenes/ui/icon_action_button.tscn" id="3_button"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_skip.svg" id="4_skip"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_next.svg" id="5_next"]
 
 [node name="TutorialPanel" type="PanelContainer"]
+theme_type_variation = &"TutorialCard"
 script = ExtResource("1_panel")
 
-[node name="Margin" type="MarginContainer" parent="."]
-layout_mode = 2
-theme_override_constants/margin_left = 24
-theme_override_constants/margin_top = 24
-theme_override_constants/margin_right = 24
-theme_override_constants/margin_bottom = 24
-
-[node name="Content" type="VBoxContainer" parent="Margin"]
-layout_mode = 2
-theme_override_constants/separation = 24
-
-[node name="MessageLabel" type="Label" parent="Margin/Content"]
+[node name="Content" type="VBoxContainer" parent="."]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 160)
 layout_mode = 2
+
+[node name="MessageRow" type="HBoxContainer" parent="Content"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="HandIcon" type="TextureRect" parent="Content/MessageRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("2_hand")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="MessageLabel" type="Label" parent="Content/MessageRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"TutorialMessage"
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
-[node name="Buttons" type="HBoxContainer" parent="Margin/Content"]
-layout_mode = 2
-theme_override_constants/separation = 24
-
-[node name="SkipButton" type="Button" parent="Margin/Content/Buttons"]
+[node name="Buttons" type="HBoxContainer" parent="Content"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 120)
 layout_mode = 2
-size_flags_horizontal = 3
+
+[node name="SkipButton" parent="Content/Buttons" instance=ExtResource("3_button")]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ModalSecondaryButton"
 text = "TUTORIAL_SKIP"
+badge_icon = ExtResource("4_skip")
 
-[node name="NextButton" type="Button" parent="Margin/Content/Buttons"]
+[node name="NextButton" parent="Content/Buttons" instance=ExtResource("3_button")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 120)
 layout_mode = 2
-size_flags_horizontal = 3
+theme_type_variation = &"ModalPrimaryButton"
 text = "TUTORIAL_NEXT"
+badge_icon = ExtResource("5_next")

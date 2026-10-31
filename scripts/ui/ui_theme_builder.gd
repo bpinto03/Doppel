@@ -58,7 +58,7 @@ const HOME_TITLE_FONT_SIZE: int = 168
 const TITLE_GLOW_SIZE: int = 12
 const HOME_PRIMARY_BUTTON_TYPE: StringName = &"HomePrimaryButton"
 const HOME_SECONDARY_BUTTON_TYPE: StringName = &"HomeSecondaryButton"
-## Every IconActionButton variation: home and pause buttons.
+## Every IconActionButton variation: home, pause, game over and tutorial buttons.
 const ICON_BUTTON_RADIUS: int = 36
 const ICON_BUTTON_BORDER_WIDTH: int = 3
 const ICON_BUTTON_FONT_SIZE: int = 44
@@ -89,6 +89,11 @@ const STAT_ROW_HORIZONTAL_MARGIN: int = 32
 const STAT_ROW_VERTICAL_MARGIN: int = 14
 const STAT_CAPTION_FONT_SIZE: int = 40
 const STAT_VALUE_FONT_SIZE: int = 60
+## Tutorial panel under the board: the modal card with less padding, and its message.
+const TUTORIAL_CARD_TYPE: StringName = &"TutorialCard"
+const TUTORIAL_MESSAGE_TYPE: StringName = &"TutorialMessage"
+const TUTORIAL_CARD_PADDING: int = 36
+const TUTORIAL_MESSAGE_FONT_SIZE: int = 44
 ## Tile, mirror and next previews under the HUD.
 const PREVIEW_COLUMN_TYPE: StringName = &"PreviewColumn"
 const PREVIEW_CAPTION_TYPE: StringName = &"PreviewCaption"
@@ -108,6 +113,7 @@ static func build(palette: ThemePalette, base_theme: Theme) -> Theme:
 	_add_glowing_label_style(theme, HOME_TITLE_TYPE, HOME_TITLE_FONT_SIZE, palette.title, palette.title_glow, TITLE_GLOW_SIZE)
 	_add_modal_styles(theme, palette)
 	_add_game_over_styles(theme, palette)
+	_add_tutorial_styles(theme, palette)
 	return theme
 
 
@@ -281,6 +287,16 @@ static func _add_game_over_styles(theme: Theme, palette: ThemePalette) -> void:
 	theme.set_type_variation(GAME_OVER_RECORD_CAPTION_TYPE, GAME_OVER_STAT_CAPTION_TYPE)
 	theme.set_color(&"font_color", GAME_OVER_RECORD_CAPTION_TYPE, palette.game_over_record_caption)
 	_add_glowing_label_style(theme, GAME_OVER_STAT_VALUE_TYPE, STAT_VALUE_FONT_SIZE, palette.game_over_stat_value, Color.TRANSPARENT, 0)
+
+
+static func _add_tutorial_styles(theme: Theme, palette: ThemePalette) -> void:
+	theme.set_type_variation(TUTORIAL_CARD_TYPE, MODAL_CARD_TYPE)
+	var card_box: StyleBoxFlat = theme.get_stylebox(&"panel", MODAL_CARD_TYPE).duplicate()
+	_set_content_margins(card_box, TUTORIAL_CARD_PADDING, TUTORIAL_CARD_PADDING)
+	theme.set_stylebox(&"panel", TUTORIAL_CARD_TYPE, card_box)
+	theme.set_type_variation(TUTORIAL_MESSAGE_TYPE, &"Label")
+	theme.set_font_size(&"font_size", TUTORIAL_MESSAGE_TYPE, TUTORIAL_MESSAGE_FONT_SIZE)
+	theme.set_color(&"font_color", TUTORIAL_MESSAGE_TYPE, palette.modal_secondary_text)
 
 
 static func _add_stat_row_style(theme: Theme, type: StringName, color: Color, border_color: Color, glow_color: Color) -> void:
