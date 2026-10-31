@@ -87,13 +87,18 @@ func test_continue_resumes_the_saved_game() -> void:
 	assert_eq(game.get_session().to_data(), saved_game.to_data())
 
 
-func test_back_from_a_game_returns_home() -> void:
+func test_back_in_a_game_opens_the_pause_and_back_again_resumes() -> void:
 	var main: Node = _start_main()
 	(main.get_current_screen() as HomeScreen).play_requested.emit()
+	var game := main.get_current_screen() as GameScreen
+	game.start_new_game()
 
 	main.go_back()
+	assert_eq(game.get_navigation_state(), ScreenNavigation.GameState.PAUSED)
+	main.go_back()
 
-	assert_true(main.get_current_screen() is HomeScreen)
+	assert_eq(game.get_navigation_state(), ScreenNavigation.GameState.PLAYING)
+	assert_eq(main.get_current_screen(), game)
 
 
 func test_music_request_survives_the_way_to_a_game_and_back() -> void:

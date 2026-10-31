@@ -13,11 +13,26 @@ func test_back_from_the_tutorial_shows_home() -> void:
 	)
 
 
-func test_back_from_a_game_shows_home() -> void:
+func test_back_in_a_game_opens_the_pause() -> void:
 	assert_eq(
 		ScreenNavigation.resolve_back(ScreenNavigation.Screen.GAME, ScreenNavigation.GameState.PLAYING),
-		ScreenNavigation.BackAction.SHOW_HOME
+		ScreenNavigation.BackAction.OPEN_PAUSE
 	)
+
+
+func test_back_in_the_pause_resumes() -> void:
+	assert_eq(
+		ScreenNavigation.resolve_back(ScreenNavigation.Screen.GAME, ScreenNavigation.GameState.PAUSED),
+		ScreenNavigation.BackAction.CLOSE_PAUSE
+	)
+
+
+func test_only_a_game_in_progress_pauses_when_the_app_is_inactive() -> void:
+	assert_true(ScreenNavigation.should_pause_when_inactive(ScreenNavigation.GameState.PLAYING))
+	for game_state: ScreenNavigation.GameState in [
+		ScreenNavigation.GameState.PAUSED, ScreenNavigation.GameState.TUTORIAL, ScreenNavigation.GameState.GAME_OVER
+	]:
+		assert_false(ScreenNavigation.should_pause_when_inactive(game_state))
 
 
 func test_back_from_the_game_over_screen_shows_home() -> void:

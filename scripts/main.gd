@@ -31,6 +31,10 @@ func go_back() -> void:
 			get_tree().quit()
 		ScreenNavigation.BackAction.SHOW_HOME:
 			show_home()
+		ScreenNavigation.BackAction.OPEN_PAUSE:
+			game.open_pause()
+		ScreenNavigation.BackAction.CLOSE_PAUSE:
+			game.close_pause()
 
 
 func show_home() -> void:

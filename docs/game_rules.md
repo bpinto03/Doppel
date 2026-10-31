@@ -73,4 +73,4 @@ When *enabled*, every *5th* placement gives a reflection of level +*1* (capped a
 - A left column is playable only if **both** it and its mirror column have at least one empty cell.
 - **Known rule:** a tile cannot be dropped on a full column, even if it would merge with the top tile.
 - Game over is checked after all chains are resolved; at that point no merge is possible, so no merge can free space. The game ends when no left column is playable.
-- Restart starts a new game with a new random seed.
+- Restart (pause screen) and Play again (game over screen) start a new game with a new random seed.

@@ -29,11 +29,12 @@ var _best_score_before_game: int
 @onready var _current_swatch: TileSwatch = %CurrentSwatch
 @onready var _reflection_swatch: TileSwatch = %ReflectionSwatch
 @onready var _next_swatch: TileSwatch = %NextSwatch
-@onready var _restart_button: Button = %RestartButton
 @onready var _help_button: Button = %HelpButton
+@onready var _pause_button: Button = %PauseButton
 @onready var _combo_label: Label = %ComboLabel
 @onready var _tutorial_panel: TutorialPanel = %TutorialPanel
 @onready var _game_over_panel: GameOverPanel = %GameOverPanel
+@onready var _pause_panel: PausePanel = %PausePanel
 @onready var _debug_tools: HBoxContainer = %DebugTools
 @onready var _theme_debug_button: Button = %ThemeDebugButton
 @onready var _vibration_debug_button: Button = %VibrationDebugButton
@@ -47,11 +48,9 @@ func _ready() -> void:
 	_feedback = GameFeedback.new(AUDIO_CONFIG, HAPTICS_CONFIG, _playback, _board_view)
 	_board_view.pressed_while_locked.connect(_playback.skip)
 	_board_view.column_released.connect(_on_column_released)
-	_restart_button.pressed.connect(start_new_game)
 	_help_button.pressed.connect(start_tutorial)
 	_tutorial_panel.next_requested.connect(_on_tutorial_next_requested)
 	_tutorial_panel.skip_requested.connect(start_new_game)
-	_restart_button.pressed.connect(_feedback.play_ui_click)
 	_help_button.pressed.connect(_feedback.play_ui_click)
 	_tutorial_panel.next_requested.connect(_feedback.play_ui_click)
 	_tutorial_panel.skip_requested.connect(_feedback.play_ui_click)
@@ -59,6 +58,12 @@ func _ready() -> void:
 	_game_over_panel.menu_requested.connect(home_requested.emit)
 	_game_over_panel.replay_requested.connect(_feedback.play_ui_click)
 	_game_over_panel.menu_requested.connect(_feedback.play_ui_click)
+	_pause_button.pressed.connect(open_pause)
+	_pause_panel.resume_requested.connect(close_pause)
+	_pause_panel.restart_requested.connect(start_new_game)
+	_pause_panel.menu_requested.connect(home_requested.emit)
+	for button_signal: Signal in [_pause_button.pressed, _pause_panel.resume_requested, _pause_panel.restart_requested, _pause_panel.menu_requested]:
+		button_signal.connect(_feedback.play_ui_click)
 	AppLifecycle.deactivated.connect(_on_app_deactivated)
 	_set_up_debug_tools()
 
@@ -79,6 +84,8 @@ func start_new_game() -> void:
 func start_game(session: GameSession, best_score_before_game: int) -> void:
 	_stop_tutorial()
 	_game_over_panel.visible = false
+	_pause_panel.visible = false
+	_pause_button.visible = true
 	_session = session
 	_best_score_before_game = best_score_before_game
 	_set_input_enabled(true)
@@ -104,7 +111,24 @@ func get_navigation_state() -> ScreenNavigation.GameState:
 		return ScreenNavigation.GameState.TUTORIAL
 	if _game_over_panel.visible:
 		return ScreenNavigation.GameState.GAME_OVER
+	if _pause_panel.visible:
+		return ScreenNavigation.GameState.PAUSED
 	return ScreenNavigation.GameState.PLAYING
+
+
+## The playback jumps to its final state first; if that turn ended the game, the game over screen shows instead.
+func open_pause() -> void:
+	_board_view.cancel_press()
+	_playback.skip()
+	if get_navigation_state() != ScreenNavigation.GameState.PLAYING:
+		return
+	_pause_panel.visible = true
+	_set_input_enabled(false)
+
+
+func close_pause() -> void:
+	_pause_panel.visible = false
+	_set_input_enabled(true)
 
 
 func get_tutorial_step_index() -> int:
@@ -113,6 +137,7 @@ func get_tutorial_step_index() -> int:
 
 func _show_tutorial_step(step_index: int) -> void:
 	_tutorial_step_index = step_index
+	_pause_button.visible = false
 	var step: TutorialStep = _tutorial_steps[step_index]
 	_session = step.create_session()
 	_set_input_enabled(true)
@@ -149,9 +174,13 @@ func _on_column_released(column: int) -> void:
 
 
 ## The turn is already saved: the display jumps to the final state, so the app never resumes half animated.
+## A real game also pauses, so the player resumes it on purpose.
 func _on_app_deactivated() -> void:
-	_board_view.cancel_press()
-	_playback.skip()
+	if ScreenNavigation.should_pause_when_inactive(get_navigation_state()):
+		open_pause()
+	else:
+		_board_view.cancel_press()
+		_playback.skip()
 
 
 ## Saved before the playback: the session already holds the final state of the turn, and the app may be killed mid-animation.
@@ -170,7 +199,6 @@ func _on_playback_finished() -> void:
 		_feedback.play_game_over()
 		_game_over_panel.show_summary(GameOverSummary.new(_session, _best_score_before_game, RecordBook.get_best_score()))
 	if is_tutorial_running():
-		_restart_button.disabled = false
 		_help_button.disabled = false
 		_tutorial_panel.show_explanation(_tutorial_steps[_tutorial_step_index].explanation_key, _is_last_tutorial_step())
 	else:
@@ -184,7 +212,6 @@ func _is_last_tutorial_step() -> bool:
 
 func _set_input_enabled(is_enabled: bool) -> void:
 	_board_view.is_input_enabled = is_enabled
-	_restart_button.disabled = not is_enabled
 	_help_button.disabled = not is_enabled
 
 

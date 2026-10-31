@@ -32,7 +32,7 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 
 - At launch, the home screen, never a game directly. Its choices come from `CurrentGameStore.load_session()`.
 - Play opens the tutorial on the first Play of each launch (not remembered between launches until step 3.1), then a new game. Continue resumes the saved game with `GameScreen.start_game()`, with no drop or merge animation.
-- The Android back button (`NOTIFICATION_WM_GO_BACK_REQUEST`, with `application/config/quit_on_go_back` off) is resolved by `ScreenNavigation.resolve_back()` from the current screen and the game state (`GameScreen.get_navigation_state()`); `Main` applies the answer. It goes from a game, the tutorial or the game over screen back to the home screen, and quits from the home screen.
+- The Android back button (`NOTIFICATION_WM_GO_BACK_REQUEST`, with `application/config/quit_on_go_back` off) is resolved by `ScreenNavigation.resolve_back()` from the current screen and the game state (`GameScreen.get_navigation_state()`); `Main` applies the answer: quit from home, pause from a game in progress, resume from the pause, home from the tutorial and the game over screen (see [0006](decisions/0006-back-button-and-overlays.md)).
 - It asks `AudioManager.start_music()` once at launch, so the music never restarts between screens.
 
 ### `scripts/save/` — saved game data
@@ -50,9 +50,10 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 | `home_screen.gd` | `HomeScreen`: title, Play, and Continue when a game is saved; emits `play_requested`, `continue_requested`. Lays the buttons side by side (Play left, Continue right, same width) when twice the widest button's minimum width fits, else stacks them (Continue on top), checked again on resize and language change |
 | `game_over_summary.gd` | `GameOverSummary`: pure values of the game over screen (score, record, highest tile) and whether the record was just beaten, against the record before the game; a previous record of 0 is never announced as beaten |
 | `game_over_panel.gd` | `GameOverPanel`: overlay over the finished game, with Play again (new game in one tap) and Menu (`menu_requested`, which `GameScreen` turns into `home_requested`). `RewardSlot` stays hidden until coins (3.2) and rewarded ads (phase 4) |
-| `screen_navigation.gd` | `ScreenNavigation`: pure decisions of where the back button leads, per screen and game state |
+| `screen_navigation.gd` | `ScreenNavigation`: pure decisions of where the back button leads, per screen and game state (`PLAYING`, `PAUSED`, `TUTORIAL`, `GAME_OVER`), and whether an inactive app pauses the game |
+| `pause_panel.gd` | `PausePanel`: overlay over the paused game, with Resume, Restart (abandons the game, which counts for the record) and Menu (keeps it for Continue) |
 | `home_menu.gd` | `HomeMenu`: pure decisions of the home screen: choices offered, their order, and whether to stack them from the buttons' real minimum widths |
-| `game_screen.gd` | `GameScreen`: owns the `GameSession` (`start_new_game()`, `start_tutorial()`, or `start_game()` with a given session and the record before it), forwards released columns, saves each real turn (see Save flow), starts the playback of each turn, refreshes the HUD when it ends and shows the game over overlay when the game is over, emits `turn_playback_finished` and `home_requested`, reports its state to `ScreenNavigation` (`get_navigation_state()`), redraws the tiles and combo outline with the palette; in debug builds, shows the debug row (theme, vibration and music switches) and logs `DisplayServer.is_dark_mode()` |
+| `game_screen.gd` | `GameScreen`: owns the `GameSession` (`start_new_game()`, `start_tutorial()`, or `start_game()` with a given session and the record before it), forwards released columns, saves each real turn (see Save flow), starts the playback of each turn, refreshes the HUD when it ends and shows the game over overlay when the game is over, opens and closes the pause (`open_pause()`, `close_pause()`; the HUD pause button shows outside the tutorial), emits `turn_playback_finished` and `home_requested`, reports its state to `ScreenNavigation` (`get_navigation_state()`), redraws the tiles and combo outline with the palette; in debug builds, shows the debug row (theme, vibration and music switches) and logs `DisplayServer.is_dark_mode()` |
 | `board_view.gd` | Draws the board frame (`StyleBoxFlat`, palette `panel` color), the displayed board, moving tiles, merge pulses and the placement ghost, dims unplayable columns, maps a touched column to the played left column (`find_played_column`), emits `column_released`, `pressed_while_locked`, and `unplayable_column_released` on a release over a column that cannot take the pair. The mirror axis (a `ColorRect`, placed when the board or the view size changes) and board effects such as particles sit in a child effects layer |
 | `merge_particles.gd` | `MergeParticles`: fixed pool of one-shot `CPUParticles2D` emitters with a generated disc texture; bursts never exceed the live particle cap |
 | `board_style.gd` | `BoardStyle`: frame padding and corner radius, cell gap, axis width, loaded from `data/board_style.tres` |
@@ -128,9 +129,9 @@ The ambient music is `assets/audio/music/musical_ambiance.ogg`, one track for ev
 
 - `scenes/main.tscn`: entry point, `Main` (see above).
 - `scenes/ui/home_screen.tscn`: title and the Play / Continue buttons.
-- `scenes/game/game_screen.tscn`: HUD with "?" button, a `DebugTools` row under it (hidden outside debug builds, so the debug buttons never widen the HUD), previews, board with the centered combo label, tutorial panel, restart button.
+- `scenes/game/game_screen.tscn`: HUD with "?" and pause ("II") buttons, a `DebugTools` row under it (hidden outside debug builds, so the debug buttons never widen the HUD), previews, board with the centered combo label, tutorial panel, pause and game over overlays.
 - `scenes/game/tutorial_panel.tscn`: tutorial message and buttons.
-- `scenes/game/game_over_panel.tscn`: game over overlay of the game screen.
+- `scenes/game/game_over_panel.tscn`, `scenes/game/pause_panel.tscn`: game over and pause overlays of the game screen.
 
 ### Data and assets
 
@@ -183,7 +184,7 @@ While a finger is down on the board, or the mouse hovers it on PC, `BoardView` a
 - `ResolutionPlayback` builds one `Tween` for the whole turn: placed tiles drop from the top row, speeding up, and squash on landing, each chain link flashes its groups, slides them onto their result cells and pops the results, later links faster and with a larger pop (`ResolutionPlaybackConfig.get_chain_intensity()`); each result tile throws a particle burst in its palette color, larger on later links, and from a configured link the board shakes (`BoardView.set_shake_offset()`, which moves the drawing and the effects layer, never the layout), unless `Settings.is_screen_shake_enabled` is off, fallen tiles slide down and squash the same way, with a short pause after each step. From link 2 on, one combo label centered on the board shows the multiplier (`x2`, `x2,5` in French), with a word from configured links, and pops at each link; it stays `combo_hold_duration` after the turn ends, and disappears at once on a skip or when the next turn starts.
 - The displayed board only changes through `ResolutionEvent.apply_to()`; the presentation never applies game rules.
 - A turn longer than `max_chain_duration` plays faster: the tween speed scale is raised so the whole turn fits.
-- While playing, the board ignores taps and the restart button is disabled. A press on the board skips: the tween stops, the remaining events are applied, and `playback_finished` fires. Outside the tutorial this unlocks the board at once, so the same press plays the next tile on release. It fires exactly once per turn, whether the playback ends or is skipped, any number of times.
+- While playing, the board ignores taps and the "?" button is disabled. A press on the board skips: the tween stops, the remaining events are applied, and `playback_finished` fires. Outside the tutorial this unlocks the board at once, so the same press plays the next tile on release. It fires exactly once per turn, whether the playback ends or is skipped, any number of times.
 - At the end, the board view shows the session board again, which matches the replayed board.
 
 ## Audio feedback
@@ -225,10 +226,10 @@ Background, screen lock, incoming call, notification shade and, in phase 4, full
 On `AppLifecycle.deactivated`:
 
 - `SaveManager.flush()` writes the waiting changes; the game itself is already saved after each turn.
-- `GameScreen` cancels a finger still down (`BoardView.cancel_press()`), so its release after the return plays nothing, and skips the running playback to the final state (`ResolutionPlayback.skip()`), so the app never comes back half animated. A skip plays no landing or chain sound.
+- `GameScreen` cancels a finger still down (`BoardView.cancel_press()`), so its release after the return plays nothing, and skips the running playback to the final state (`ResolutionPlayback.skip()`), so the app never comes back half animated. A skip plays no landing or chain sound. During a game in progress it then opens the pause (`ScreenNavigation.should_pause_when_inactive()`, see [0006](decisions/0006-back-button-and-overlays.md)).
 - `AudioManager` pauses the music (`MusicState`).
 
-In the background, Android stops the Godot main loop: tweens and processing freeze until the return. With only the focus lost (shade, call screen on top), the loop runs, but the board is idle: the playback was skipped. On `activated`, the music resumes; the game needs nothing, the board already shows the saved state.
+In the background, Android stops the Godot main loop: tweens and processing freeze until the return. With only the focus lost (shade, call screen on top), the loop runs, but the board is idle: the playback was skipped. On `activated`, the music resumes; the game stays paused until the player resumes it.
 
 ## Tests
 

@@ -15,6 +15,7 @@ Decision records:
 - [0003 — Art direction](decisions/0003-art-direction.md)
 - [0004 — Audio key](decisions/0004-audio-key.md)
 - [0005 — Save writing](decisions/0005-save-writing.md)
+- [0006 — Back button and game overlays](decisions/0006-back-button-and-overlays.md)
 
 Product spec and roadmap (French): [`../CAHIER_DES_CHARGES.md`](../CAHIER_DES_CHARGES.md), [`../STEPS.md`](../STEPS.md).
 

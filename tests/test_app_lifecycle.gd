@@ -49,7 +49,7 @@ func test_inactive_app_writes_the_waiting_changes_at_once() -> void:
 	assert_eq(save_file.get_value(RecordBook.SECTION, RecordBook.BEST_SCORE_KEY, 0), 42)
 
 
-func test_inactive_app_shows_the_final_state_of_a_running_playback() -> void:
+func test_inactive_app_pauses_a_game_on_the_final_state_of_its_playback() -> void:
 	var game: GameScreen = _create_game_screen()
 	var board_view: BoardView = game.get_node("%BoardView")
 	board_view.column_released.emit(0)
@@ -57,7 +57,8 @@ func test_inactive_app_shows_the_final_state_of_a_running_playback() -> void:
 
 	AppLifecycle.notification(Node.NOTIFICATION_APPLICATION_FOCUS_OUT)
 
-	assert_true(board_view.is_input_enabled)
+	assert_eq(game.get_navigation_state(), ScreenNavigation.GameState.PAUSED)
+	assert_false(board_view.is_input_enabled)
 	assert_eq(BoardFixture.describe_board(board_view.get_displayed_board()), BoardFixture.describe_board(game.get_session().board))
 
 
@@ -76,6 +77,16 @@ func test_press_made_before_an_interruption_plays_nothing_on_release() -> void:
 
 	assert_signal_not_emitted(board_view, "column_released")
 	assert_eq(game.get_session().placement_count, 0)
+
+
+func test_inactive_app_does_not_pause_the_tutorial() -> void:
+	var game: GameScreen = GAME_SCREEN_SCENE.instantiate()
+	add_child_autofree(game)
+	game.start_tutorial()
+
+	AppLifecycle.notification(Node.NOTIFICATION_APPLICATION_FOCUS_OUT)
+
+	assert_eq(game.get_navigation_state(), ScreenNavigation.GameState.TUTORIAL)
 
 
 func _create_game_screen() -> GameScreen:

@@ -9,6 +9,9 @@ UI_GAME_OVER,Game over,Partie terminée
 UI_NEW_RECORD,New record!,Nouveau record !
 UI_REPLAY,Play again,Rejouer
 UI_MENU,Menu,Menu
+UI_PAUSE,II,II
+UI_PAUSE_TITLE,Pause,Pause
+UI_RESUME,Resume,Reprendre
 UI_RESTART,Restart,Recommencer
 UI_GAME_TITLE,Doppel,Doppel
 UI_PLAY,Play,Jouer

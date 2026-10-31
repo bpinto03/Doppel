@@ -124,9 +124,11 @@ func test_back_from_a_game_offers_to_continue_it() -> void:
 	(main.get_current_screen() as HomeScreen).play_requested.emit()
 	main.go_back()
 	(main.get_current_screen() as HomeScreen).play_requested.emit()
-	var played_game: GameSession = (main.get_current_screen() as GameScreen).get_session()
+	var game := main.get_current_screen() as GameScreen
+	var played_game: GameSession = game.get_session()
 
 	main.go_back()
+	(game.get_node("%PausePanel").get_node("%MenuButton") as Button).pressed.emit()
 	(main.get_current_screen() as HomeScreen).continue_requested.emit()
 
 	assert_eq((main.get_current_screen() as GameScreen).get_session().to_data(), played_game.to_data())
