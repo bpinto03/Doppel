@@ -133,7 +133,7 @@ La partie se termine lorsque **le joueur n'a plus aucune colonne** où poser sa 
 ### 7.1 Principes
 - **Une main, portrait**, boutons larges et zones tactiles généreuses.
 - **Relance instantanée** : un tap pour recommencer, sans écran intermédiaire lourd.
-- Lisibilité d'abord : contraste fort, chiffres grands. Les tuiles se distinguent par la couleur et le chiffre, sans symbole. Un mode daltonisme (par exemple palette à contraste renforcé) est à reconsidérer en phase 3.
+- Lisibilité d'abord : contraste fort, chiffres grands. Les tuiles se distinguent par la couleur et le chiffre, sans symbole. Pas de mode daltonisme au MVP (décidé le 2026-10-31) : la valeur affichée sur chaque tuile suffit à distinguer les niveaux.
 - Style visuel simple, cohérent, léger à produire (formes vectorielles / flat design).
 
 ### 7.2 Écrans
@@ -207,7 +207,7 @@ res://
 | Stabilité | Aucun crash bloquant ; taux de crash Play Console faible |
 | Batterie | Pas de calcul inutile en pause / menu |
 | Interruptions | Appel, mise en veille, retour d'app : la partie reprend correctement |
-| Accessibilité | Textes lisibles, vibration et son désactivables ; mode daltonisme à décider en phase 3 |
+| Accessibilité | Textes lisibles, vibration et son désactivables ; pas de mode daltonisme au MVP, la valeur affichée sur chaque tuile distingue les niveaux |
 
 ---
 

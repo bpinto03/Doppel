@@ -14,7 +14,7 @@ Step 2.2 needs a visual identity readable on a small screen, in sunlight and for
   - Text on tile: at least 4.5:1 in both themes (Paper 7.09, Night 5.4), enforced by `tests/test_theme_palettes.gd`.
   - Tile against the board: at least `min_tile_edge_contrast` against the empty cells and the frame (seen over the background), a palette value so it can be tuned without code; 3:1 in both themes, and Night's is fixed by a test. A tile below it gets a thin outline in its relief color, darkened step by step until it reaches the threshold (`TilePainter`, picked once per level; tested). Night tiles all pass without outline; at 3:1 every Paper tile is outlined.
   - Night only, neighbor levels: lightness gap in grayscale ≥ 10 (11.4); CIEDE2000 gap ≥ 12 in normal vision, deuteranopia, protanopia and tritanopia (13.3).
-  - Night limit: with a single text color, the theme only spans about 30 lightness points, so some **non-neighbor** pairs look alike with color vision deficiency (4/256, 16/64, 64/4096 with deuteranopia and protanopia, 2/8, 4/128, 16/4096 with deuteranopia, 2/128, 16/1024, 32/2048 with tritanopia). The value on the tile tells them apart; the pairs are kept in [balancing.md](../balancing.md) for a possible high-contrast mode.
+  - Night limit: with a single text color, the theme only spans about 30 lightness points, so some **non-neighbor** pairs look alike with color vision deficiency (4/256, 16/64, 64/4096 with deuteranopia and protanopia, 2/8, 4/128, 16/4096 with deuteranopia, 2/128, 16/1024, 32/2048 with tritanopia). The value on the tile tells them apart; the pairs are kept in [balancing.md](../balancing.md) in case a color vision deficiency mode is considered after launch.
 - **Night tile colors** (2026-10-31): levels 1 to 5 come from the visual reference in `docs/maquettes/` (2 turquoise, 4 orchid, 8 off-white, 32 coral pink), except 16, a slightly deeper yellow (`#f8c940` instead of `#fcd24a`) to keep the grayscale gap with 8 (8.7 → 11.4). Levels 6 to 12 keep the former hues, more saturated in the same style.
 - **Paper tile colors** (2026-10-31, replaced the same day): the face colors of the "normal" row of `docs/maquettes/couleur_tuiles.png`, sampled as the median of each tile's sides, without its gradient or highlight. All pastel, so every tile takes the dark text.
 
@@ -43,7 +43,11 @@ Step 2.2 needs a visual identity readable on a small screen, in sunlight and for
 
 ## Abandoned: level symbols
 
-Symbols on tiles (circle, triangle, cross, star) were drawn for four levels and rendered next to the value, above it or in a corner. They made tiles look busy, and above the value they shrank the digits by about 25 %. The value already carries the level, as in other games of the genre, so tiles show only the value. Color vision deficiency support is left for phase 3 (for example a high-contrast palette).
+Symbols on tiles (circle, triangle, cross, star) were drawn for four levels and rendered next to the value, above it or in a corner. They made tiles look busy, and above the value they shrank the digits by about 25 %. The value already carries the level, as in other games of the genre, so tiles show only the value. No color vision deficiency mode either (see below).
+
+## No color vision deficiency mode in the MVP
+
+Decided on 2026-10-31: no color vision deficiency mode (such as a global high-contrast palette) in the MVP. Every tile shows its value, which is enough to tell the levels apart even when two colors look alike. The confusable Night pairs stay listed in [balancing.md](../balancing.md) in case a mode is considered after launch.
 
 ## Consequences
 

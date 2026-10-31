@@ -191,7 +191,7 @@ Rendering cost of the glows, measured on a full board (36 tiles) at 1080×2340 i
 
 ## Confusable tile colors
 
-Night non-neighbor levels whose colors look alike with color vision deficiency (simulated, see [0003](decisions/0003-art-direction.md)). Only the value tells them apart. Kept for a possible high-contrast mode in phase 3. Paper is not checked for color vision deficiency (see 0003).
+Night non-neighbor levels whose colors look alike with color vision deficiency (simulated, see [0003](decisions/0003-art-direction.md)). Only the value tells them apart. Kept in case a color vision deficiency mode is considered after launch (none in the MVP, see 0003). Paper is not checked for color vision deficiency (see 0003).
 
 | Theme | Several deficiency types | Protanopia | Deuteranopia | Tritanopia |
 |-------|------------------|------------|--------------|------------|

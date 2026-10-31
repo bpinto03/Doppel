@@ -142,7 +142,6 @@ Outil : simulateur d'équilibrage (`./run_simulation.sh`, voir `docs/balancing.m
 - [x] Écran de réglages (son, musique, vibration, langue, thème Papier / Nuit) ; retirer les boutons de debug « Thème », « Vib » et « Musique » du HUD et les logs de debug FPS (`FrameRateProbe`) et latence audio (`AudioLatencyProbe`).
 - [x] **Tutoriel** à la demande : bouton Tutoriel à l'accueil, jamais lancé automatiquement ni depuis la partie (plus de bouton « ? »), retour à l'accueil à la fin
 - [ ] Tutoriel : visuels soignés (version simple faite en phase 1) : doigt qui tapote la colonne cible (asset `assets/tutorial/tutorial_pointer.svg` à fournir) ou flèche dessinée en code
-- [ ] Décider avec le développeur s'il faut une palette à contraste renforcé globale (daltonisme), indépendante des thèmes de la boutique
 - [ ] Écran de jeu fidèle aux maquettes (`docs/maquettes/`) : HUD en capsule (score, record, pause), rangée Tuile / Reflet / Suivante centrée sur l'axe, cadre de grille, cellules et axe lumineux, couleurs de tuiles Nuit (Papier à valider) ; vérifié sur téléphone en français et en anglais, thèmes Nuit et Papier, 60 FPS ressentis, sans régression (pause, reflet animé, retour Android)
 - [ ] Écran d'accueil fidèle aux maquettes (`docs/maquettes/`) : logo, titre, boutons principaux et secondaires avec icônes ; vérifié sur téléphone en français et en anglais, thèmes Nuit et Papier
 - [ ] Écran de pause fidèle aux maquettes (`docs/maquettes/`) ; vérifié sur téléphone en français et en anglais, thèmes Nuit et Papier
@@ -205,7 +204,7 @@ Outil : simulateur d'équilibrage (`./run_simulation.sh`, voir `docs/balancing.m
 - [ ] Vérifier la consommation batterie en menu et en pause
 - [ ] Tester les cas limites : rotation bloquée, retour d'app, appel, mode avion, stockage plein, application tuée en cours de partie
 - [ ] Tester sans réseau et avec réseau instable
-- [ ] Vérifier la lisibilité en plein soleil (et le mode daltonisme s'il a été retenu en phase 3)
+- [ ] Vérifier la lisibilité en plein soleil
 - [ ] Vérifier les zones sûres sur écrans à encoche
 - [ ] Corriger les bugs, geler les fonctionnalités (**feature freeze**)
 - [ ] Faire une passe d'équilibrage finale (difficulté, pondérations, pièces, fréquence des pubs)
