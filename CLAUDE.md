@@ -138,4 +138,4 @@ Rules:
 
 Tracked in `STEPS.md` (tick the boxes). Keep this section to a single line naming the current phase.
 
-**Current phase:** Phase 2 done (2.5 persistence finished); Gate 2 pending. Gate 1 playtest boxes still unticked in STEPS.md.
+**Current phase:** Phase 3.1 navigation and screens in progress; Gate 1 passed, Gate 2 not marked as passed in STEPS.md.

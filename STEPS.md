@@ -86,11 +86,11 @@ Objectif : **savoir si le jeu est fun**, rien d'autre.
 - [x] Exporter un APK et y jouer sur téléphone
 
 ### Test de validation
-- [ ] Faire tester à **5 personnes** sans explication préalable (observer en silence)
-- [ ] Noter : comprennent-elles seules ? Relancent-elles une partie sans qu'on leur demande ? Combien de parties d'affilée ?
-- [ ] Ajuster la mécanique (taille de grille, pondérations, leviers d'équilibrage) et retester si besoin
+- [x] Faire tester à **5 personnes** sans explication préalable (observer en silence)
+- [x] Noter : comprennent-elles seules ? Relancent-elles une partie sans qu'on leur demande ? Combien de parties d'affilée ?
+- [x] Ajuster la mécanique (taille de grille, pondérations, leviers d'équilibrage) et retester si besoin
 
-**✅ Gate 1 (go / no-go) :** au moins 3 testeurs sur 5 relancent spontanément une partie. Sinon : retravailler la mécanique avant d'aller plus loin.
+- [ ] **✅ Gate 1 (go / no-go) :** au moins 3 testeurs sur 5 relancent spontanément une partie. Sinon : retravailler la mécanique avant d'aller plus loin. **Validé (2026-10-31).**
 
 ---
 
@@ -127,9 +127,9 @@ Objectif : **savoir si le jeu est fun**, rien d'autre.
 - [x] Écran d'accueil minimal (Jouer / Continuer)
 
 Outil : simulateur d'équilibrage (`./run_simulation.sh`, voir `docs/balancing.md`), pour comparer des réglages avant de les faire tester.
-- [ ] Comparer les réglages candidats (grille, reflet déformé, paliers de tirage) avec le simulateur avant les playtests du Gate 2
+- [x] Comparer les réglages candidats (grille, reflet déformé, paliers de tirage) avec le simulateur avant les playtests du Gate 2
 
-**✅ Gate 2 :** le jeu est agréable à jouer pendant 10 minutes d'affilée, sur téléphone, et les retours sont positifs.
+- [ ] **✅ Gate 2 :** le jeu est agréable à jouer pendant 10 minutes d'affilée, sur téléphone, et les retours sont positifs.
 
 ---
 
@@ -139,8 +139,9 @@ Outil : simulateur d'équilibrage (`./run_simulation.sh`, voir `docs/balancing.m
 - [ ] Écran d'accueil : Jouer / Continuer existent déjà (2.5) ; reste à ajouter Défi du jour, Boutique et Réglages
 - [ ] Écran de fin de partie (score, record, pièces gagnées, rejouer)
 - [ ] Écran de pause
-- [ ] Écran de réglages (son, musique, vibration, langue, thème Papier / Nuit) ; retirer les boutons de debug « Thème », « Vib » et « Musique » du HUD et les logs de debug FPS (`FrameRateProbe`) et latence audio (`AudioLatencyProbe`). Mode daltonisme à reconsidérer en phase 3 (par exemple palette alternative à contraste renforcé), à décider avec le développeur
+- [ ] Écran de réglages (son, musique, vibration, langue, thème Papier / Nuit) ; retirer les boutons de debug « Thème », « Vib » et « Musique » du HUD et les logs de debug FPS (`FrameRateProbe`) et latence audio (`AudioLatencyProbe`).
 - [ ] **Tutoriel** : version finale (mémoriser qu'il a été vu, visuels soignés ; version simple faite en phase 1)
+- [ ] Décider avec le développeur s'il faut une palette à contraste renforcé globale (daltonisme), indépendante des thèmes de la boutique
 
 ### 3.2 Pièces et boutique
 - [ ] Définir la formule des pièces gagnées par partie
@@ -158,7 +159,7 @@ Outil : simulateur d'équilibrage (`./run_simulation.sh`, voir `docs/balancing.m
 - [ ] Traduire en français et en anglais
 - [ ] Vérifier que les textes ne débordent pas dans les deux langues
 
-**✅ Gate 3 :** un nouveau joueur peut installer, comprendre, jouer, gagner des pièces, changer de thème, et relever un défi sans aide.
+- [ ] **✅ Gate 3 :** un nouveau joueur peut installer, comprendre, jouer, gagner des pièces, changer de thème, et relever un défi sans aide.
 
 ---
 
@@ -187,7 +188,7 @@ Outil : simulateur d'équilibrage (`./run_simulation.sh`, voir `docs/balancing.m
 - [ ] Remplacer les IDs de test par les IDs réels uniquement dans le build de release
 - [ ] **Ne jamais cliquer sur ses propres pubs réelles** (risque de suspension du compte AdMob)
 
-**✅ Gate 4 :** pubs de test affichées correctement, consentement fonctionnel, achat "sans pub" testé de bout en bout.
+- [ ] **✅ Gate 4 :** pubs de test affichées correctement, consentement fonctionnel, achat "sans pub" testé de bout en bout.
 
 ---
 
@@ -206,7 +207,7 @@ Outil : simulateur d'équilibrage (`./run_simulation.sh`, voir `docs/balancing.m
 - [ ] Nettoyer le projet (assets inutilisés, logs de debug)
 - [ ] Faire relire les textes (fautes, ton, cohérence FR / EN)
 
-**✅ Gate 5 :** aucune crash connu, 60 FPS sur l'appareil de référence, build stable prêt à être testé par d'autres.
+- [ ] **✅ Gate 5 :** aucune crash connu, 60 FPS sur l'appareil de référence, build stable prêt à être testé par d'autres.
 
 ---
 
@@ -244,7 +245,7 @@ Outil : simulateur d'équilibrage (`./run_simulation.sh`, voir `docs/balancing.m
 - [ ] Créer une page web simple ou une page de présentation (optionnel mais utile)
 - [ ] Préparer 2 ou 3 vidéos courtes de gameplay (format vertical) pour les réseaux
 
-**✅ Gate 6 :** AAB signé prêt, fiche store complète, toutes les déclarations remplies.
+- [ ] **✅ Gate 6 :** AAB signé prêt, fiche store complète, toutes les déclarations remplies.
 
 ---
 
@@ -266,7 +267,7 @@ Outil : simulateur d'équilibrage (`./run_simulation.sh`, voir `docs/balancing.m
 
 > Si compte organisation ou ancien compte personnel exempté : sauter les exigences de nombre de testeurs, mais **garder un test interne / fermé** quand même pour valider le build.
 
-**✅ Gate 7 :** accès à la production accordé, retours critiques traités.
+- [ ] **✅ Gate 7 :** accès à la production accordé, retours critiques traités.
 
 ---
 
@@ -280,7 +281,7 @@ Outil : simulateur d'équilibrage (`./run_simulation.sh`, voir `docs/balancing.m
 - [ ] Annoncer le lancement : proches, communautés, réseaux (vidéos verticales courtes), éventuellement Product Hunt / Reddit r/AndroidGaming selon les règles de chaque communauté
 - [ ] Demander des avis aux premiers joueurs (sans les forcer ni les récompenser indûment)
 
-**✅ Gate 8 :** jeu en production, installable par tous, pas de crash au lancement.
+- [ ] **✅ Gate 8 :** jeu en production, installable par tous, pas de crash au lancement.
 
 ---
 
