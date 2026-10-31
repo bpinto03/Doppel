@@ -194,7 +194,7 @@ HudRow (HBoxContainer, HudRow)
 └ PauseButton (PauseButton)
 ```
 
-- Both halves expand equally. The record panel has the capsule's corners and covers its right edge. In Night, the capsule border turns from cyan to violet at the record panel (the reference shows a gradient, which a `StyleBoxFlat` cannot draw). In Paper, panels and borders take the capsule color, so the HUD reads as one cream capsule with a beige separator and a soft shadow, and the pause button is filled.
+- Both halves expand equally. The record panel has the capsule's corners and covers its right edge. In Night, the panels are transparent and borderless, so the HUD reads as one dark blue capsule with a cyan border and the separator between both halves. In Paper, panels and borders take the capsule color, so the HUD reads as one cream capsule with a beige separator and a soft shadow, and the pause button is filled.
 - Glows and soft shadows are `StyleBoxFlat` shadows without offset; value glows are label shadows widened by `shadow_outline_size` (no blur). Nothing is redrawn while the values do not change.
 - Icons come from the palette (`score_icon`, `record_icon`): the crown in both themes, the violet trophy in Night and the gold one (`icon_record_trophy_gold.svg`) in Paper. The trophies are imported at 0.75 scale (96 px); the crown at 2.0 (256 px) with mipmaps, since the game over screen shows it large. Shown at `GameScreen.HUD_ICON_SIZE`, with mipmap filtering so the large crown stays clean when reduced.
 
