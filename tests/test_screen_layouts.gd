@@ -7,7 +7,6 @@ const SETTINGS_SCREEN_SCENE: PackedScene = preload("res://scenes/ui/settings_scr
 const GAME_SCREEN_SCENE: PackedScene = preload("res://scenes/game/game_screen.tscn")
 const BALANCING_CONFIG: BalancingConfig = preload("res://data/balancing.tres")
 const TEST_SAVE_PATH: String = "user://test_screen_layouts_save.cfg"
-const PANEL_PATH: String = "Center/Panel"
 const SEED: int = 1234
 ## A long score, so the game over values are as wide as they get in practice.
 const LARGE_SCORE: int = 9999999
@@ -44,20 +43,27 @@ func test_screens_fit_the_base_width_in_every_language() -> void:
 			assert_lte(_get_content_width(screen), _viewport_width, "%s in %s" % [screen.name, language])
 
 
-func test_overlays_fit_their_panel_in_every_language() -> void:
+## Seven digit values and the longest title keep the panel at its width, and the crown stays on screen.
+func test_game_over_panel_and_crown_fit_the_safe_area_at_the_base_size_in_every_language() -> void:
 	for language: String in I18n.SUPPORTED_LANGUAGES:
 		TranslationServer.set_locale(language)
 		var game: GameScreen = await _add_screen(GAME_SCREEN_SCENE)
+		game.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
+		game.size = _base_size
 		var session := GameSession.new(BALANCING_CONFIG, BalancingFixture.create_seeded_rng(SEED))
 		session.score = LARGE_SCORE
 		session.highest_level_reached = BALANCING_CONFIG.max_tile_level
 		game.start_game(session, 1)
 		var game_over_panel: GameOverPanel = game.get_node("%GameOverPanel")
 		game_over_panel.show_summary(GameOverSummary.new(session, 1, LARGE_SCORE))
+		await wait_seconds(GameOverPanel.EFFECTS_CONFIG.appear_duration)
 		await wait_process_frames(1)
 
-		var panel: Control = game_over_panel.get_node(PANEL_PATH)
-		assert_lte(panel.get_combined_minimum_size().x, panel.custom_minimum_size.x, "%s in %s" % [game_over_panel.name, language])
+		var panel: Control = game_over_panel.get_node("%Panel")
+		var safe_rect: Rect2 = _get_safe_rect(game_over_panel.get_node("%Margin"))
+		assert_lte(panel.get_minimum_size().x, panel.custom_minimum_size.x, language)
+		assert_true(safe_rect.encloses(panel.get_global_rect()), "Panel in %s" % language)
+		assert_true(safe_rect.encloses((game_over_panel.get_node("%Crown") as Control).get_global_rect()), "Crown in %s" % language)
 
 
 ## The panel width is set from the screen; content wider than it would push the texts past it.

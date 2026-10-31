@@ -31,7 +31,7 @@ func test_hud_has_no_highest_tile() -> void:
 
 	var game_over_panel: Control = game.get_node("%GameOverPanel")
 
-	for label: Node in game.find_children("MaxTileLabel", "", true, false):
+	for label: Node in game.find_children("MaxTileValue", "", true, false):
 		assert_true(game_over_panel.is_ancestor_of(label), "Only the game over overlay shows the highest tile")
 
 

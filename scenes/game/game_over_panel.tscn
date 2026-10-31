@@ -1,6 +1,13 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/game_over_panel.gd" id="1_panel"]
+[ext_resource type="Script" uid="uid://c0a5hkffmvw0b" path="res://scripts/ui/safe_area_margin.gd" id="2_safe_area"]
+[ext_resource type="Script" path="res://scripts/ui/modal_card.gd" id="3_card"]
+[ext_resource type="PackedScene" path="res://scenes/ui/icon_action_button.tscn" id="4_button"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_play.svg" id="5_replay"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_home.svg" id="6_menu"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_max_tile.svg" id="7_max_tile"]
+[ext_resource type="Script" path="res://scripts/ui/crown_halo.gd" id="8_halo"]
 
 [node name="GameOverPanel" type="Control" unique_id=1748291003]
 visible = false
@@ -12,79 +19,195 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_panel")
 
-[node name="Dimmer" type="ColorRect" parent="." unique_id=1748291004]
+[node name="Scrim" type="Panel" parent="." unique_id=1748291004]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.5)
+theme_type_variation = &"ModalScrim"
 
-[node name="Center" type="CenterContainer" parent="." unique_id=1748291005]
+[node name="Content" type="Control" parent="." unique_id=1748291005]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 
-[node name="Panel" type="PanelContainer" parent="Center" unique_id=1748291006]
-custom_minimum_size = Vector2(860, 0)
-layout_mode = 2
-
-[node name="Margin" type="MarginContainer" parent="Center/Panel" unique_id=1748291007]
-layout_mode = 2
-theme_override_constants/margin_left = 48
+[node name="Margin" type="MarginContainer" parent="Content" unique_id=1748291006]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 0
 theme_override_constants/margin_top = 48
-theme_override_constants/margin_right = 48
+theme_override_constants/margin_right = 0
 theme_override_constants/margin_bottom = 48
+script = ExtResource("2_safe_area")
 
-[node name="Layout" type="VBoxContainer" parent="Center/Panel/Margin" unique_id=1748291008]
+[node name="Center" type="CenterContainer" parent="Content/Margin" unique_id=1748291007]
+layout_mode = 2
+
+[node name="Panel" type="PanelContainer" parent="Content/Margin/Center" unique_id=1748291008]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ModalCard"
+script = ExtResource("3_card")
+
+[node name="Layout" type="VBoxContainer" parent="Content/Margin/Center/Panel" unique_id=1748291009]
 layout_mode = 2
 theme_override_constants/separation = 32
 
-[node name="TitleLabel" type="Label" parent="Center/Panel/Margin/Layout" unique_id=1748291009]
+[node name="CrownSpace" type="Control" parent="Content/Margin/Center/Panel/Layout" unique_id=1748291010]
+unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 72
+mouse_filter = 2
+
+[node name="TitleLabel" type="Label" parent="Content/Margin/Center/Panel/Layout" unique_id=1748291011]
+layout_mode = 2
+theme_type_variation = &"GameOverTitle"
 text = "UI_GAME_OVER"
 horizontal_alignment = 1
 
-[node name="ScoreLabel" type="Label" parent="Center/Panel/Margin/Layout" unique_id=1748291010]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 64
-horizontal_alignment = 1
-
-[node name="NewRecordLabel" type="Label" parent="Center/Panel/Margin/Layout" unique_id=1748291011]
+[node name="NewRecordLabel" type="Label" parent="Content/Margin/Center/Panel/Layout" unique_id=1748291012]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
+theme_type_variation = &"GameOverRecordCaption"
 text = "UI_NEW_RECORD"
 horizontal_alignment = 1
 
-[node name="BestLabel" type="Label" parent="Center/Panel/Margin/Layout" unique_id=1748291012]
+[node name="Stats" type="VBoxContainer" parent="Content/Margin/Center/Panel/Layout" unique_id=1748291013]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="ScoreRow" type="PanelContainer" parent="Content/Margin/Center/Panel/Layout/Stats" unique_id=1748291014]
+layout_mode = 2
+theme_type_variation = &"GameOverScoreRow"
+
+[node name="Row" type="HBoxContainer" parent="Content/Margin/Center/Panel/Layout/Stats/ScoreRow" unique_id=1748291015]
+layout_mode = 2
+theme_override_constants/separation = 28
+
+[node name="ScoreIcon" type="TextureRect" parent="Content/Margin/Center/Panel/Layout/Stats/ScoreRow/Row" unique_id=1748291016]
 unique_name_in_owner = true
 layout_mode = 2
-horizontal_alignment = 1
+size_flags_vertical = 4
+mouse_filter = 2
+texture_filter = 4
+expand_mode = 1
+stretch_mode = 5
 
-[node name="MaxTileLabel" type="Label" parent="Center/Panel/Margin/Layout" unique_id=1748291013]
+[node name="Caption" type="Label" parent="Content/Margin/Center/Panel/Layout/Stats/ScoreRow/Row" unique_id=1748291017]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"GameOverStatCaption"
+text = "UI_HUD_SCORE"
+
+[node name="ScoreValue" type="Label" parent="Content/Margin/Center/Panel/Layout/Stats/ScoreRow/Row" unique_id=1748291018]
 unique_name_in_owner = true
 layout_mode = 2
-horizontal_alignment = 1
+theme_type_variation = &"GameOverStatValue"
+horizontal_alignment = 2
 
-[node name="RewardSlot" type="VBoxContainer" parent="Center/Panel/Margin/Layout" unique_id=1748291014]
+[node name="RecordRow" type="PanelContainer" parent="Content/Margin/Center/Panel/Layout/Stats" unique_id=1748291019]
+layout_mode = 2
+theme_type_variation = &"GameOverRecordRow"
+
+[node name="Row" type="HBoxContainer" parent="Content/Margin/Center/Panel/Layout/Stats/RecordRow" unique_id=1748291020]
+layout_mode = 2
+theme_override_constants/separation = 28
+
+[node name="RecordIcon" type="TextureRect" parent="Content/Margin/Center/Panel/Layout/Stats/RecordRow/Row" unique_id=1748291021]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture_filter = 4
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Caption" type="Label" parent="Content/Margin/Center/Panel/Layout/Stats/RecordRow/Row" unique_id=1748291022]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"GameOverRecordCaption"
+text = "UI_HUD_BEST"
+
+[node name="BestValue" type="Label" parent="Content/Margin/Center/Panel/Layout/Stats/RecordRow/Row" unique_id=1748291023]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"GameOverStatValue"
+horizontal_alignment = 2
+
+[node name="MaxTileRow" type="PanelContainer" parent="Content/Margin/Center/Panel/Layout/Stats" unique_id=1748291024]
+layout_mode = 2
+theme_type_variation = &"GameOverTileRow"
+
+[node name="Row" type="HBoxContainer" parent="Content/Margin/Center/Panel/Layout/Stats/MaxTileRow" unique_id=1748291025]
+layout_mode = 2
+theme_override_constants/separation = 28
+
+[node name="MaxTileIcon" type="TextureRect" parent="Content/Margin/Center/Panel/Layout/Stats/MaxTileRow/Row" unique_id=1748291026]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture_filter = 4
+texture = ExtResource("7_max_tile")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Caption" type="Label" parent="Content/Margin/Center/Panel/Layout/Stats/MaxTileRow/Row" unique_id=1748291027]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"GameOverStatCaption"
+text = "UI_MAX_TILE_CAPTION"
+
+[node name="MaxTileValue" type="Label" parent="Content/Margin/Center/Panel/Layout/Stats/MaxTileRow/Row" unique_id=1748291028]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"GameOverStatValue"
+horizontal_alignment = 2
+
+[node name="RewardSlot" type="VBoxContainer" parent="Content/Margin/Center/Panel/Layout" unique_id=1748291029]
 visible = false
 layout_mode = 2
 
-[node name="MenuButton" type="Button" parent="Center/Panel/Margin/Layout" unique_id=1748291015]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 160)
+[node name="Buttons" type="VBoxContainer" parent="Content/Margin/Center/Panel/Layout" unique_id=1748291030]
 layout_mode = 2
-text = "UI_MENU"
+theme_override_constants/separation = 28
 
-[node name="ReplayButton" type="Button" parent="Center/Panel/Margin/Layout" unique_id=1748291016]
+[node name="ReplayButton" parent="Content/Margin/Center/Panel/Layout/Buttons" unique_id=1748291031 instance=ExtResource("4_button")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 180)
 layout_mode = 2
+theme_type_variation = &"ModalPrimaryButton"
 text = "UI_REPLAY"
+badge_icon = ExtResource("5_replay")
+
+[node name="MenuButton" parent="Content/Margin/Center/Panel/Layout/Buttons" unique_id=1748291032 instance=ExtResource("4_button")]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ModalSecondaryButton"
+text = "UI_MENU"
+badge_icon = ExtResource("6_menu")
+
+[node name="Halo" type="Control" parent="Content" unique_id=1748291033]
+unique_name_in_owner = true
+layout_mode = 0
+mouse_filter = 2
+script = ExtResource("8_halo")
+
+[node name="Crown" type="TextureRect" parent="Content" unique_id=1748291034]
+unique_name_in_owner = true
+layout_mode = 0
+mouse_filter = 2
+texture_filter = 4
+expand_mode = 1
+stretch_mode = 5

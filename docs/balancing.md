@@ -86,6 +86,29 @@ Durations in seconds, in `data/resolution_playback.tres` (a `ResolutionPlaybackC
 
 Measured on PC with these values: a drop alone 0.19 s; a single merge, drop and fall included, 0.60 s; a chain of 4 links 1.67 s. Validated on a phone (2026-10-27). Particles, shake and combo messages validated on a phone (2026-10-28): steady 120 FPS during playbacks up to 1.35 s.
 
+## Game over effects
+
+`data/game_over_effects.tres` (a `GameOverEffectsConfig`). Durations in seconds, lengths in pixels at the base resolution (1080 wide). One confetti burst at each game over, larger when the record is beaten; it never loops. The crown halo turns and breathes while the panel shows, through its transform and opacity only, never redrawn.
+
+| Parameter | Default | Controls |
+|-----------|---------|----------|
+| `confetti_amount` | 36 | Confetti pieces of a game over |
+| `record_confetti_amount` | 64 | Confetti pieces when the game beat the record |
+| `max_confetti_amount` | 96 | Cap of both bursts, checked by the tests, so a modest phone keeps 60 FPS |
+| `confetti_lifetime` | 2.6 | Life of a piece |
+| `confetti_spread` | 80 | Pieces leave upward from the top edge of the panel, within this angle on each side, in degrees |
+| `confetti_min_speed`, `confetti_max_speed` | 220, 460 | Launch speed, in pixels per second; at most about 160 px high, so the pieces spread around the top of the panel, under the HUD, then fall along its sides |
+| `confetti_gravity` | 650 | Pull down, in pixels per second squared |
+| `confetti_min_size`, `confetti_max_size` | 26, 42 | Length of a piece, twice its width |
+| `confetti_max_spin` | 540 | Spin, either way, in degrees per second |
+| `appear_duration` | 0.22 | Fade in of the panel |
+| `appear_start_scale` | 0.92 | The panel grows from this scale to its size during the fade |
+| `halo_turn_duration` | 20 | One full turn of the halo rays |
+| `halo_breath_duration` | 2 | The halo fades from full opacity to `halo_min_opacity`, then back, each way in this time |
+| `halo_min_opacity` | 0.75 | Faintest point of the halo breathing |
+
+Not yet checked on a phone.
+
 ## Audio
 
 `data/audio_config.tres` (an `AudioConfig`). Each event has a `SoundEffect`: its `stream`, a `volume_offset_db`, and a random spread per play in percent (`pitch_variation_percent`, `volume_variation_percent`; 0 turns it off).

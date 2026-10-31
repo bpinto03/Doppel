@@ -74,6 +74,21 @@ const MODAL_CARD_BORDER_WIDTH: int = 3
 const MODAL_CARD_PADDING: int = 56
 const MODAL_TITLE_FONT_SIZE: int = 104
 const MODAL_TITLE_RULE_WIDTH: int = 3
+## Game over overlay: a smaller title, so "Partie terminée" fits, and three tinted stat rows.
+const GAME_OVER_TITLE_TYPE: StringName = &"GameOverTitle"
+const GAME_OVER_SCORE_ROW_TYPE: StringName = &"GameOverScoreRow"
+const GAME_OVER_RECORD_ROW_TYPE: StringName = &"GameOverRecordRow"
+const GAME_OVER_TILE_ROW_TYPE: StringName = &"GameOverTileRow"
+const GAME_OVER_STAT_CAPTION_TYPE: StringName = &"GameOverStatCaption"
+const GAME_OVER_RECORD_CAPTION_TYPE: StringName = &"GameOverRecordCaption"
+const GAME_OVER_STAT_VALUE_TYPE: StringName = &"GameOverStatValue"
+const GAME_OVER_TITLE_FONT_SIZE: int = 84
+const STAT_ROW_RADIUS: int = 28
+const STAT_ROW_BORDER_WIDTH: int = 2
+const STAT_ROW_HORIZONTAL_MARGIN: int = 32
+const STAT_ROW_VERTICAL_MARGIN: int = 14
+const STAT_CAPTION_FONT_SIZE: int = 40
+const STAT_VALUE_FONT_SIZE: int = 60
 ## Tile, mirror and next previews under the HUD.
 const PREVIEW_COLUMN_TYPE: StringName = &"PreviewColumn"
 const PREVIEW_CAPTION_TYPE: StringName = &"PreviewCaption"
@@ -92,6 +107,7 @@ static func build(palette: ThemePalette, base_theme: Theme) -> Theme:
 	_add_home_button_styles(theme, palette)
 	_add_glowing_label_style(theme, HOME_TITLE_TYPE, HOME_TITLE_FONT_SIZE, palette.title, palette.title_glow, TITLE_GLOW_SIZE)
 	_add_modal_styles(theme, palette)
+	_add_game_over_styles(theme, palette)
 	return theme
 
 
@@ -253,6 +269,28 @@ static func _add_modal_styles(theme: Theme, palette: ThemePalette) -> void:
 
 
 ## Hover looks like normal, since a tap on Android can leave a button hovered; a tap never shows a focus frame.
+static func _add_game_over_styles(theme: Theme, palette: ThemePalette) -> void:
+	theme.set_type_variation(GAME_OVER_TITLE_TYPE, MODAL_TITLE_TYPE)
+	theme.set_font_size(&"font_size", GAME_OVER_TITLE_TYPE, GAME_OVER_TITLE_FONT_SIZE)
+	_add_stat_row_style(theme, GAME_OVER_SCORE_ROW_TYPE, palette.game_over_score_row, palette.game_over_score_row_border, palette.game_over_score_row_glow)
+	_add_stat_row_style(theme, GAME_OVER_RECORD_ROW_TYPE, palette.game_over_record_row, palette.game_over_record_row_border, palette.game_over_record_row_glow)
+	_add_stat_row_style(theme, GAME_OVER_TILE_ROW_TYPE, palette.game_over_tile_row, palette.game_over_tile_row_border, palette.game_over_tile_row_glow)
+	theme.set_type_variation(GAME_OVER_STAT_CAPTION_TYPE, &"Label")
+	theme.set_font_size(&"font_size", GAME_OVER_STAT_CAPTION_TYPE, STAT_CAPTION_FONT_SIZE)
+	theme.set_color(&"font_color", GAME_OVER_STAT_CAPTION_TYPE, palette.game_over_stat_caption)
+	theme.set_type_variation(GAME_OVER_RECORD_CAPTION_TYPE, GAME_OVER_STAT_CAPTION_TYPE)
+	theme.set_color(&"font_color", GAME_OVER_RECORD_CAPTION_TYPE, palette.game_over_record_caption)
+	_add_glowing_label_style(theme, GAME_OVER_STAT_VALUE_TYPE, STAT_VALUE_FONT_SIZE, palette.game_over_stat_value, Color.TRANSPARENT, 0)
+
+
+static func _add_stat_row_style(theme: Theme, type: StringName, color: Color, border_color: Color, glow_color: Color) -> void:
+	theme.set_type_variation(type, &"PanelContainer")
+	var box: StyleBoxFlat = _create_bordered_box(color, border_color, STAT_ROW_BORDER_WIDTH, STAT_ROW_RADIUS)
+	_set_content_margins(box, STAT_ROW_HORIZONTAL_MARGIN, STAT_ROW_VERTICAL_MARGIN)
+	_add_glow(box, glow_color)
+	theme.set_stylebox(&"panel", type, box)
+
+
 static func _add_icon_button_box(theme: Theme, type: StringName, color: Color, border_color: Color, glow_color: Color) -> void:
 	theme.set_type_variation(type, &"Button")
 	theme.set_font_size(&"font_size", type, ICON_BUTTON_FONT_SIZE)

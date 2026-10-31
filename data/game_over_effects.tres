@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="GameOverEffectsConfig" format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/game_over_effects_config.gd" id="1_config"]
+
+[resource]
+script = ExtResource("1_config")
+confetti_amount = 36
+record_confetti_amount = 64
+max_confetti_amount = 96
+confetti_lifetime = 2.6
+confetti_spread = 80.0
+confetti_min_speed = 220.0
+confetti_max_speed = 460.0
+confetti_gravity = 650.0
+confetti_min_size = 26.0
+confetti_max_size = 42.0
+confetti_max_spin = 540.0
+appear_duration = 0.22
+appear_start_scale = 0.92
+halo_turn_duration = 20.0
+halo_breath_duration = 2.0
+halo_min_opacity = 0.75

@@ -237,6 +237,7 @@ func _refresh() -> void:
 func _apply_screen_palette(palette: ThemePalette) -> void:
 	(%ScoreIcon as TextureRect).texture = palette.score_icon
 	(%RecordIcon as TextureRect).texture = palette.record_icon
+	_game_over_panel.apply_palette(palette)
 	_combo_label.add_theme_color_override(&"font_outline_color", palette.background)
 	var tile_painter := TilePainter.new(palette, TILE_TEXT_CONFIG)
 	_board_view.tile_painter = tile_painter

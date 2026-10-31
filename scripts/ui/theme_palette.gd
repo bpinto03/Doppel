@@ -68,19 +68,38 @@ extends Resource
 @export var modal_panel_glow: Color
 ## Lines on both sides of the title; a transparent color hides them.
 @export var modal_title_rule: Color
-## Resume in the pause.
+## Resume in the pause, Play again on the game over screen.
 @export var modal_primary_button: Color
 @export var modal_primary_button_border: Color
 @export var modal_primary_button_glow: Color
 @export var modal_primary_badge: Color
 @export var modal_primary_icon: Color
 @export var modal_primary_text: Color
-## Menu, Restart, Settings and Back in the pause.
+## Menu, Restart, Settings and Back in the pause, Menu on the game over screen.
 @export var modal_secondary_button: Color
 @export var modal_secondary_button_border: Color
 @export var modal_secondary_badge: Color
 @export var modal_secondary_icon: Color
 @export var modal_secondary_text: Color
+
+@export_group("Game over")
+## Soft disc and rays behind the crown; a transparent color removes them.
+@export var game_over_halo: Color
+## Each stat row has its own tint; a transparent glow removes it.
+@export var game_over_score_row: Color
+@export var game_over_score_row_border: Color
+@export var game_over_score_row_glow: Color
+@export var game_over_record_row: Color
+@export var game_over_record_row_border: Color
+@export var game_over_record_row_glow: Color
+## Record caption, and the new record message.
+@export var game_over_record_caption: Color
+@export var game_over_tile_row: Color
+@export var game_over_tile_row_border: Color
+@export var game_over_tile_row_glow: Color
+@export var game_over_tile_icon: Color
+@export var game_over_stat_caption: Color
+@export var game_over_stat_value: Color
 
 @export_group("Board")
 ## Translucent fill of the board frame.

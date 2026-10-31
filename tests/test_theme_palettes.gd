@@ -24,6 +24,10 @@ const MODAL_COLOR_PROPERTIES: Array[StringName] = [
 	&"modal_scrim", &"modal_panel", &"modal_panel_border", &"modal_panel_glow", &"modal_title_rule",
 	&"modal_primary_button", &"modal_primary_button_border", &"modal_primary_button_glow", &"modal_primary_badge", &"modal_primary_icon", &"modal_primary_text",
 	&"modal_secondary_button", &"modal_secondary_button_border", &"modal_secondary_badge", &"modal_secondary_icon", &"modal_secondary_text",
+	&"game_over_halo", &"game_over_score_row", &"game_over_score_row_border", &"game_over_score_row_glow",
+	&"game_over_record_row", &"game_over_record_row_border", &"game_over_record_row_glow", &"game_over_record_caption",
+	&"game_over_tile_row", &"game_over_tile_row_border", &"game_over_tile_row_glow", &"game_over_tile_icon",
+	&"game_over_stat_caption", &"game_over_stat_value",
 ]
 
 

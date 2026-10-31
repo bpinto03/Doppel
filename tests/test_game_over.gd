@@ -6,6 +6,7 @@ const TEST_SAVE_PATH: String = "user://test_game_over_save.cfg"
 const SEED: int = 1234
 const PREVIOUS_BEST: int = 100
 const HIGH_SCORE: int = 500
+const EFFECTS_CONFIG: GameOverEffectsConfig = preload("res://data/game_over_effects.tres")
 
 var _save := SaveFixture.new(TEST_SAVE_PATH)
 
@@ -47,10 +48,10 @@ func test_finished_game_shows_the_game_over_panel_with_the_session_values() -> v
 	var panel: GameOverPanel = game.get_node("%GameOverPanel")
 	assert_true(panel.visible)
 	assert_true(panel.is_new_record_shown())
-	assert_eq((panel.get_node("%ScoreLabel") as Label).text, tr("UI_SCORE").format({"value": game.get_session().score}))
-	assert_eq((panel.get_node("%BestLabel") as Label).text, tr("UI_BEST").format({"value": RecordBook.get_best_score()}))
+	assert_eq((panel.get_node("%ScoreValue") as Label).text, str(game.get_session().score))
+	assert_eq((panel.get_node("%BestValue") as Label).text, str(RecordBook.get_best_score()))
 	var highest_tile_value: int = MergeScoring.calculate_tile_value(game.get_session().highest_level_reached)
-	assert_eq((panel.get_node("%MaxTileLabel") as Label).text, tr("UI_MAX_TILE").format({"value": highest_tile_value}))
+	assert_eq((panel.get_node("%MaxTileValue") as Label).text, str(highest_tile_value))
 	assert_eq(game.get_navigation_state(), ScreenNavigation.GameState.GAME_OVER)
 
 
@@ -75,6 +76,52 @@ func test_menu_asks_for_the_home_screen() -> void:
 	assert_signal_emitted(game, "home_requested")
 
 
+func test_every_game_over_shows_the_crown_its_halo_and_confetti() -> void:
+	for best_score_before_game: int in [0, PREVIOUS_BEST, HIGH_SCORE * 2]:
+		var game: GameScreen = _start_game_one_pair_from_end(best_score_before_game)
+		_finish_the_game(game)
+		await wait_seconds(EFFECTS_CONFIG.appear_duration)
+		await wait_process_frames(1)
+
+		var panel: GameOverPanel = game.get_node("%GameOverPanel")
+		var context: String = "record before: %d" % best_score_before_game
+		assert_true((panel.get_node("%Crown") as Control).is_visible_in_tree(), context)
+		assert_not_null((panel.get_node("%Crown") as TextureRect).texture, context)
+		assert_true((panel.get_node("%Halo") as Control).is_visible_in_tree(), context)
+		assert_gt((panel.get_node("%Halo") as CrownHalo).color.a, 0.0, context)
+		assert_true(panel.is_halo_animated(), context)
+		assert_true(_get_confetti(game).is_showing_confetti(), context)
+		var panel_rect: Rect2 = (panel.get_node("%Panel") as Control).get_global_rect()
+		assert_almost_eq(_get_confetti(game).get_line_origin(), Vector2(panel_rect.get_center().x, panel_rect.position.y), Vector2.ONE, "Confetti leave from the top edge of the panel, %s" % context)
+
+
+func test_the_record_burst_needs_a_beaten_record_above_zero() -> void:
+	var expected_amounts: Dictionary[int, int] = {
+		0: EFFECTS_CONFIG.confetti_amount,
+		PREVIOUS_BEST: EFFECTS_CONFIG.record_confetti_amount,
+		HIGH_SCORE * 2: EFFECTS_CONFIG.confetti_amount,
+	}
+	for best_score_before_game: int in expected_amounts:
+		var game: GameScreen = _start_game_one_pair_from_end(best_score_before_game)
+
+		_finish_the_game(game)
+		await wait_process_frames(1)
+
+		assert_eq(_get_confetti(game).get_amount(), expected_amounts[best_score_before_game], "record before: %d" % best_score_before_game)
+
+
+func test_play_again_removes_every_confetti_piece_and_stops_the_halo() -> void:
+	var game: GameScreen = _start_game_one_pair_from_end(PREVIOUS_BEST)
+	_finish_the_game(game)
+	await wait_process_frames(2)
+
+	(game.get_node("%GameOverPanel").get_node("%ReplayButton") as Button).pressed.emit()
+
+	assert_false(_get_confetti(game).is_showing_confetti())
+	assert_false((_get_confetti(game).get_child(0) as CanvasItem).is_visible_in_tree(), "No piece stays drawn over the new game")
+	assert_false((game.get_node("%GameOverPanel") as GameOverPanel).is_halo_animated(), "The halo stops with the panel")
+
+
 func test_record_before_the_game_survives_with_the_saved_game() -> void:
 	CurrentGameStore.store(_create_session_with_score(HIGH_SCORE), PREVIOUS_BEST)
 	SaveManager.flush()
@@ -87,6 +134,10 @@ func test_saved_game_without_the_record_before_it_uses_the_current_record() -> v
 	SaveManager.set_value(RecordBook.SECTION, RecordBook.BEST_SCORE_KEY, PREVIOUS_BEST)
 
 	assert_eq(CurrentGameStore.load_best_score_before_game(), PREVIOUS_BEST)
+
+
+func _get_confetti(game: GameScreen) -> ConfettiBurst:
+	return game.get_node("%GameOverPanel").get_node("Confetti")
 
 
 func _create_session_with_score(score: int) -> GameSession:

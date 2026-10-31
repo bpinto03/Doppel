@@ -1,9 +1,7 @@
 keys,en,fr
-UI_SCORE,Score: {value},Score : {value}
-UI_BEST,Best: {value},Record : {value}
-UI_MAX_TILE,Max tile: {value},Tuile max : {value}
 UI_HUD_SCORE,Score,Score
 UI_HUD_BEST,Best,Record
+UI_MAX_TILE_CAPTION,Max tile,Tuile max
 UI_CURRENT_TILE,Tile,Tuile
 UI_REFLECTION,Mirror,Reflet
 UI_NEXT_TILE,Next,Suivante
