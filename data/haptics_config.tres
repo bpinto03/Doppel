@@ -1,17 +1,7 @@
-[gd_resource type="Resource" script_class="HapticsConfig" format=3]
+[gd_resource type="Resource" script_class="HapticsConfig" format=3 uid="uid://qsnjq6g0ggx2"]
 
-[ext_resource type="Script" path="res://scripts/haptics/haptics_config.gd" id="1_config"]
-[ext_resource type="Script" path="res://scripts/haptics/haptic_pulse.gd" id="2_pulse"]
-
-[sub_resource type="Resource" id="Pulse_placement"]
-script = ExtResource("2_pulse")
-duration_ms = 20
-amplitude = 0.35
-
-[sub_resource type="Resource" id="Pulse_merge"]
-script = ExtResource("2_pulse")
-duration_ms = 30
-amplitude = 0.5
+[ext_resource type="Script" uid="uid://bqc1jvj8y4evm" path="res://scripts/haptics/haptics_config.gd" id="1_config"]
+[ext_resource type="Script" uid="uid://bh0t2p8510l7c" path="res://scripts/haptics/haptic_pulse.gd" id="2_pulse"]
 
 [sub_resource type="Resource" id="Pulse_big_combo"]
 script = ExtResource("2_pulse")
@@ -22,6 +12,16 @@ amplitude = 0.8
 script = ExtResource("2_pulse")
 duration_ms = 70
 amplitude = 0.6
+
+[sub_resource type="Resource" id="Pulse_merge"]
+script = ExtResource("2_pulse")
+duration_ms = 30
+amplitude = 0.5
+
+[sub_resource type="Resource" id="Pulse_placement"]
+script = ExtResource("2_pulse")
+duration_ms = 20
+amplitude = 0.35
 
 [resource]
 script = ExtResource("1_config")
