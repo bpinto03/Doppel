@@ -53,13 +53,20 @@ func test_overlays_fit_their_panel_in_every_language() -> void:
 		game.start_game(session, 1)
 		var game_over_panel: GameOverPanel = game.get_node("%GameOverPanel")
 		game_over_panel.show_summary(GameOverSummary.new(session, 1, LARGE_SCORE))
-		var pause_panel: Control = game.get_node("%PausePanel")
+		var pause_panel: PausePanel = game.get_node("%PausePanel")
 		pause_panel.visible = true
 		await wait_process_frames(1)
 
 		for overlay: Control in [game_over_panel, pause_panel]:
-			var panel: Control = overlay.get_node(PANEL_PATH)
-			assert_lte(panel.get_combined_minimum_size().x, panel.custom_minimum_size.x, "%s in %s" % [overlay.name, language])
+			_assert_panel_fits(overlay, language)
+		pause_panel.show_settings_page()
+		await wait_process_frames(1)
+		_assert_panel_fits(pause_panel, "%s, settings page" % language)
+
+
+func _assert_panel_fits(overlay: Control, context: String) -> void:
+	var panel: Control = overlay.get_node(PANEL_PATH)
+	assert_lte(panel.get_combined_minimum_size().x, panel.custom_minimum_size.x, "%s in %s" % [overlay.name, context])
 
 
 func _add_screen(scene: PackedScene) -> Control:

@@ -139,7 +139,7 @@ La partie se termine lorsque **le joueur n'a plus aucune colonne** où poser sa 
 ### 7.2 Écrans
 1. Écran titre / accueil (Jouer, Défi du jour, Boutique, Réglages)
 2. Tutoriel court (3 étapes max, jouable)
-3. Écran de jeu (score, record, tuile suivante, pause)
+3. Écran de jeu (score, record, tuile suivante, pause). La pause donne aussi accès aux réglages de sons, musique, vibration et tremblement d'écran, sans quitter la partie.
 4. Fin de partie (score, record, pièces gagnées, rejouer, pub récompensée)
 5. Défis et objectifs
 6. Boutique de thèmes

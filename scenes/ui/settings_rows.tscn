@@ -1,0 +1,139 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/settings_rows.gd" id="1_rows"]
+
+[node name="SettingsRows" type="VBoxContainer" unique_id=1302766450]
+size_flags_horizontal = 3
+theme_override_constants/separation = 32
+script = ExtResource("1_rows")
+
+[node name="Toggles" type="VBoxContainer" parent="." unique_id=1302766451]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="Language" type="VBoxContainer" parent="." unique_id=1302766452]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="Theme" type="VBoxContainer" parent="." unique_id=1302766453]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="SoundRow" type="HBoxContainer" parent="Toggles" unique_id=1302766409]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Toggles/SoundRow" unique_id=1302766410]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "UI_SOUND"
+
+[node name="SoundToggle" type="Button" parent="Toggles/SoundRow" unique_id=1302766411]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 120)
+layout_mode = 2
+theme_type_variation = &"ChoiceButton"
+toggle_mode = true
+text = "UI_ON"
+
+[node name="MusicRow" type="HBoxContainer" parent="Toggles" unique_id=1302766412]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Toggles/MusicRow" unique_id=1302766413]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "UI_MUSIC"
+
+[node name="MusicToggle" type="Button" parent="Toggles/MusicRow" unique_id=1302766414]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 120)
+layout_mode = 2
+theme_type_variation = &"ChoiceButton"
+toggle_mode = true
+text = "UI_ON"
+
+[node name="VibrationRow" type="HBoxContainer" parent="Toggles" unique_id=1302766415]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Toggles/VibrationRow" unique_id=1302766416]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "UI_VIBRATION"
+
+[node name="VibrationToggle" type="Button" parent="Toggles/VibrationRow" unique_id=1302766417]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 120)
+layout_mode = 2
+theme_type_variation = &"ChoiceButton"
+toggle_mode = true
+text = "UI_ON"
+
+[node name="ScreenShakeRow" type="HBoxContainer" parent="Toggles" unique_id=1302766418]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Toggles/ScreenShakeRow" unique_id=1302766419]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "UI_SCREEN_SHAKE"
+
+[node name="ScreenShakeToggle" type="Button" parent="Toggles/ScreenShakeRow" unique_id=1302766420]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 120)
+layout_mode = 2
+theme_type_variation = &"ChoiceButton"
+toggle_mode = true
+text = "UI_ON"
+
+[node name="LanguageLabel" type="Label" parent="Language" unique_id=1302766421]
+layout_mode = 2
+text = "UI_LANGUAGE"
+
+[node name="LanguageChoices" type="HBoxContainer" parent="Language" unique_id=1302766422]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="FrenchButton" type="Button" parent="Language/LanguageChoices" unique_id=1302766423]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ChoiceButton"
+toggle_mode = true
+text = "LANGUAGE_FRENCH"
+
+[node name="EnglishButton" type="Button" parent="Language/LanguageChoices" unique_id=1302766424]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ChoiceButton"
+toggle_mode = true
+text = "LANGUAGE_ENGLISH"
+
+[node name="ThemeLabel" type="Label" parent="Theme" unique_id=1302766425]
+layout_mode = 2
+text = "UI_THEME"
+
+[node name="ThemeChoices" type="HBoxContainer" parent="Theme" unique_id=1302766426]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="PaperButton" type="Button" parent="Theme/ThemeChoices" unique_id=1302766427]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ChoiceButton"
+toggle_mode = true
+text = "UI_THEME_PAPER"
+
+[node name="NightButton" type="Button" parent="Theme/ThemeChoices" unique_id=1302766428]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ChoiceButton"
+toggle_mode = true
+text = "UI_THEME_NIGHT"

@@ -5,8 +5,8 @@ extends RefCounted
 ## Main and GameScreen apply the answers; they never decide them. See docs/decisions/0006-back-button-and-overlays.md.
 
 enum Screen { HOME, GAME, SETTINGS }
-enum GameState { PLAYING, PAUSED, TUTORIAL, GAME_OVER }
-enum BackAction { QUIT, SHOW_HOME, OPEN_PAUSE, CLOSE_PAUSE }
+enum GameState { PLAYING, PAUSED, PAUSE_SETTINGS, TUTORIAL, GAME_OVER }
+enum BackAction { QUIT, SHOW_HOME, OPEN_PAUSE, CLOSE_PAUSE, CLOSE_PAUSE_SETTINGS }
 enum PlayAction { TUTORIAL, NEW_GAME }
 
 
@@ -21,6 +21,8 @@ static func resolve_back(screen: Screen, game_state: GameState) -> BackAction:
 			return BackAction.OPEN_PAUSE
 		GameState.PAUSED:
 			return BackAction.CLOSE_PAUSE
+		GameState.PAUSE_SETTINGS:
+			return BackAction.CLOSE_PAUSE_SETTINGS
 	return BackAction.SHOW_HOME
 
 

@@ -58,7 +58,7 @@ func _ready() -> void:
 	_pause_panel.resume_requested.connect(close_pause)
 	_pause_panel.restart_requested.connect(start_new_game)
 	_pause_panel.menu_requested.connect(home_requested.emit)
-	for button_signal: Signal in [_pause_button.pressed, _pause_panel.resume_requested, _pause_panel.restart_requested, _pause_panel.menu_requested]:
+	for button_signal: Signal in [_pause_button.pressed, _pause_panel.resume_requested, _pause_panel.restart_requested, _pause_panel.menu_requested, _pause_panel.page_button_pressed]:
 		button_signal.connect(_feedback.play_ui_click)
 	AppLifecycle.deactivated.connect(_on_app_deactivated)
 
@@ -107,7 +107,7 @@ func get_navigation_state() -> ScreenNavigation.GameState:
 	if _game_over_panel.visible:
 		return ScreenNavigation.GameState.GAME_OVER
 	if _pause_panel.visible:
-		return ScreenNavigation.GameState.PAUSED
+		return ScreenNavigation.GameState.PAUSE_SETTINGS if _pause_panel.is_showing_settings() else ScreenNavigation.GameState.PAUSED
 	return ScreenNavigation.GameState.PLAYING
 
 
@@ -117,8 +117,14 @@ func open_pause() -> void:
 	_playback.skip()
 	if get_navigation_state() != ScreenNavigation.GameState.PLAYING:
 		return
+	_pause_panel.show_main_page()
 	_pause_panel.visible = true
 	_set_input_enabled(false)
+
+
+## Back to the main page of the pause; the game stays paused.
+func close_pause_settings() -> void:
+	_pause_panel.show_main_page()
 
 
 func close_pause() -> void:

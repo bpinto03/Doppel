@@ -33,6 +33,8 @@ func go_back() -> void:
 			game.open_pause()
 		ScreenNavigation.BackAction.CLOSE_PAUSE:
 			game.close_pause()
+		ScreenNavigation.BackAction.CLOSE_PAUSE_SETTINGS:
+			game.close_pause_settings()
 
 
 func show_home() -> void:

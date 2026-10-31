@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/pause_panel.gd" id="1_panel"]
+[ext_resource type="PackedScene" path="res://scenes/ui/settings_rows.tscn" id="2_rows"]
 
 [node name="PausePanel" type="Control" unique_id=1960482201]
 visible = false
@@ -40,30 +41,63 @@ theme_override_constants/margin_top = 48
 theme_override_constants/margin_right = 48
 theme_override_constants/margin_bottom = 48
 
-[node name="Layout" type="VBoxContainer" parent="Center/Panel/Margin" unique_id=1960482206]
+[node name="Pages" type="VBoxContainer" parent="Center/Panel/Margin" unique_id=1960482206]
+layout_mode = 2
+
+[node name="MainPage" type="VBoxContainer" parent="Center/Panel/Margin/Pages" unique_id=1960482213]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 32
 
-[node name="TitleLabel" type="Label" parent="Center/Panel/Margin/Layout" unique_id=1960482207]
+[node name="TitleLabel" type="Label" parent="Center/Panel/Margin/Pages/MainPage" unique_id=1960482207]
 layout_mode = 2
 theme_override_font_sizes/font_size = 72
 text = "UI_PAUSE_TITLE"
 horizontal_alignment = 1
 
-[node name="MenuButton" type="Button" parent="Center/Panel/Margin/Layout" unique_id=1960482208]
+[node name="MenuButton" type="Button" parent="Center/Panel/Margin/Pages/MainPage" unique_id=1960482208]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 160)
 layout_mode = 2
 text = "UI_MENU"
 
-[node name="RestartButton" type="Button" parent="Center/Panel/Margin/Layout" unique_id=1960482209]
+[node name="RestartButton" type="Button" parent="Center/Panel/Margin/Pages/MainPage" unique_id=1960482209]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 160)
 layout_mode = 2
 text = "UI_RESTART"
 
-[node name="ResumeButton" type="Button" parent="Center/Panel/Margin/Layout" unique_id=1960482210]
+[node name="SettingsButton" type="Button" parent="Center/Panel/Margin/Pages/MainPage" unique_id=1960482214]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 160)
+layout_mode = 2
+text = "UI_SETTINGS"
+
+[node name="ResumeButton" type="Button" parent="Center/Panel/Margin/Pages/MainPage" unique_id=1960482210]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 180)
 layout_mode = 2
 text = "UI_RESUME"
+
+[node name="SettingsPage" type="VBoxContainer" parent="Center/Panel/Margin/Pages" unique_id=1960482215]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 48
+
+[node name="TitleLabel" type="Label" parent="Center/Panel/Margin/Pages/SettingsPage" unique_id=1960482216]
+layout_mode = 2
+theme_override_font_sizes/font_size = 72
+text = "UI_SETTINGS"
+horizontal_alignment = 1
+
+[node name="SettingsRows" parent="Center/Panel/Margin/Pages/SettingsPage" unique_id=1960482217 instance=ExtResource("2_rows")]
+unique_name_in_owner = true
+layout_mode = 2
+shown_groups = Array[int]([0])
+
+[node name="BackButton" type="Button" parent="Center/Panel/Margin/Pages/SettingsPage" unique_id=1960482218]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 180)
+layout_mode = 2
+text = "UI_BACK"

@@ -138,7 +138,7 @@ Outil : simulateur d'équilibrage (`./run_simulation.sh`, voir `docs/balancing.m
 ### 3.1 Navigation et écrans
 - [ ] Écran d'accueil : Jouer / Continuer (2.5) et Réglages (3.1) ; Défi du jour et Boutique viendront en 3.3 et 3.2
 - [ ] Écran de fin de partie (score, record, pièces gagnées, rejouer)
-- [ ] Écran de pause
+- [ ] Écran de pause (Reprendre, Recommencer, Menu) avec ses réglages : sons, musique, vibration, tremblement d'écran, sans quitter la partie
 - [ ] Écran de réglages (son, musique, vibration, langue, thème Papier / Nuit) ; retirer les boutons de debug « Thème », « Vib » et « Musique » du HUD et les logs de debug FPS (`FrameRateProbe`) et latence audio (`AudioLatencyProbe`).
 - [ ] **Tutoriel** : version finale (mémoriser qu'il a été vu, visuels soignés ; version simple faite en phase 1)
 - [ ] Décider avec le développeur s'il faut une palette à contraste renforcé globale (daltonisme), indépendante des thèmes de la boutique
