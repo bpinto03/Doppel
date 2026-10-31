@@ -49,6 +49,8 @@ func test_finished_game_shows_the_game_over_panel_with_the_session_values() -> v
 	assert_true(panel.is_new_record_shown())
 	assert_eq((panel.get_node("%ScoreLabel") as Label).text, tr("UI_SCORE").format({"value": game.get_session().score}))
 	assert_eq((panel.get_node("%BestLabel") as Label).text, tr("UI_BEST").format({"value": RecordBook.get_best_score()}))
+	var highest_tile_value: int = MergeScoring.calculate_tile_value(game.get_session().highest_level_reached)
+	assert_eq((panel.get_node("%MaxTileLabel") as Label).text, tr("UI_MAX_TILE").format({"value": highest_tile_value}))
 	assert_eq(game.get_navigation_state(), ScreenNavigation.GameState.GAME_OVER)
 
 

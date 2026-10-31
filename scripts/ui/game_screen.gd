@@ -12,8 +12,12 @@ const AUDIO_CONFIG: AudioConfig = preload("res://data/audio_config.tres")
 const HAPTICS_CONFIG: HapticsConfig = preload("res://data/haptics_config.tres")
 const TUTORIAL_HINT_CONFIG: TutorialHintConfig = preload("res://data/tutorial_hint.tres")
 const TILE_TEXT_CONFIG: TileTextConfig = preload("res://data/tile_text.tres")
-const NO_TILE_TEXT: String = "-"
 const NO_TUTORIAL_STEP: int = -1
+const HUD_ICON_SIZE := Vector2(72.0, 72.0)
+## The three preview columns share one width, so the mirror preview sits on the axis.
+const PREVIEW_COLUMN_WIDTH: float = 228.0
+const PREVIEW_TILE_SIZE := Vector2(176.0, 176.0)
+const NEXT_PREVIEW_TILE_SIZE := Vector2(140.0, 140.0)
 
 var _session: GameSession
 var _playback: ResolutionPlayback
@@ -25,11 +29,10 @@ var _best_score_before_game: int
 @onready var _board_view: BoardView = %BoardView
 @onready var _score_label: Label = %ScoreLabel
 @onready var _best_label: Label = %BestLabel
-@onready var _max_tile_label: Label = %MaxTileLabel
 @onready var _current_swatch: TileSwatch = %CurrentSwatch
 @onready var _reflection_swatch: TileSwatch = %ReflectionSwatch
 @onready var _next_swatch: TileSwatch = %NextSwatch
-@onready var _pause_button: Button = %PauseButton
+@onready var _pause_button: PauseButton = %PauseButton
 @onready var _combo_label: Label = %ComboLabel
 @onready var _tutorial_panel: TutorialPanel = %TutorialPanel
 @onready var _game_over_panel: GameOverPanel = %GameOverPanel
@@ -38,6 +41,7 @@ var _best_score_before_game: int
 
 func _ready() -> void:
 	super()
+	_apply_layout_sizes()
 	_playback = ResolutionPlayback.new(PLAYBACK_CONFIG, _board_view, _combo_label)
 	_playback.playback_finished.connect(_on_playback_finished)
 	_feedback = GameFeedback.new(AUDIO_CONFIG, HAPTICS_CONFIG, _playback, _board_view)
@@ -58,6 +62,16 @@ func _ready() -> void:
 	for button_signal: Signal in [_pause_button.pressed, _pause_panel.resume_requested, _pause_panel.restart_requested, _pause_panel.menu_requested, _pause_panel.page_button_pressed]:
 		button_signal.connect(_feedback.play_ui_click)
 	AppLifecycle.deactivated.connect(_on_app_deactivated)
+
+
+func _apply_layout_sizes() -> void:
+	for icon: TextureRect in [%ScoreIcon, %RecordIcon]:
+		icon.custom_minimum_size = HUD_ICON_SIZE
+	for swatch: TileSwatch in [_current_swatch, _reflection_swatch, _next_swatch]:
+		(swatch.get_parent() as Control).custom_minimum_size.x = PREVIEW_COLUMN_WIDTH
+	_current_swatch.custom_minimum_size = PREVIEW_TILE_SIZE
+	_reflection_swatch.custom_minimum_size = PREVIEW_TILE_SIZE
+	_next_swatch.custom_minimum_size = NEXT_PREVIEW_TILE_SIZE
 
 
 ## Replaces the saved game in progress, after counting it for the record.
@@ -213,9 +227,8 @@ func _set_input_enabled(is_enabled: bool) -> void:
 
 func _refresh() -> void:
 	_board_view.show_session(_session)
-	_score_label.text = tr("UI_SCORE").format({"value": _session.score})
-	_best_label.text = tr("UI_BEST").format({"value": RecordBook.get_best_score()})
-	_max_tile_label.text = tr("UI_MAX_TILE").format({"value": _format_highest_tile()})
+	_score_label.text = str(_session.score)
+	_best_label.text = str(RecordBook.get_best_score())
 	_current_swatch.level = _session.tile_generator.current_level
 	_reflection_swatch.level = _session.get_next_reflection_level()
 	_next_swatch.level = _session.tile_generator.next_level
@@ -227,9 +240,3 @@ func _apply_screen_palette(palette: ThemePalette) -> void:
 	_board_view.tile_painter = tile_painter
 	for swatch: TileSwatch in [_current_swatch, _reflection_swatch, _next_swatch]:
 		swatch.tile_painter = tile_painter
-
-
-func _format_highest_tile() -> String:
-	if _session.highest_level_reached == BoardState.EMPTY_CELL:
-		return NO_TILE_TEXT
-	return str(MergeScoring.calculate_tile_value(_session.highest_level_reached))

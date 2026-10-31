@@ -68,9 +68,10 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 | `combo_text.gd` | `ComboText`: combo message text, with the decimal separator of the current language |
 | `tile_swatch.gd` | Draws one tile (current, reflection, next previews) |
 | `tile_painter.gd` | Draws a tile with the active palette: a rounded `StyleBoxFlat` with a darker bottom relief, and its value sized with `TileTextConfig`. Empty cells use the same shape, sunken (darker top border). `draw_tile_shape()` draws the same rounded shape, filled or outlined, for merge pulses and tutorial highlights |
-| `theme_palette.gd` | `ThemePalette`: colors of one theme, for the interface, board and tiles |
+| `theme_palette.gd` | `ThemePalette`: colors of one theme, for the interface, the HUD, the board and tiles, and the opacity of the HUD glows (`glow_opacity`, 0 removes them) |
 | `tile_text_config.gd` | Font and size limits of tile values, loaded from `data/tile_text.tres` |
-| `ui_theme_builder.gd` | Builds the interface `Theme` (label color, panels, buttons, and the `SecondaryButton` variation, outlined, for secondary actions, and `ChoiceButton`, based on it, for settings toggles and choices, filled when on) of a palette on top of `assets/themes/base_theme.tres` |
+| `ui_theme_builder.gd` | Builds the interface `Theme` (label color, panels, buttons, and the `SecondaryButton` variation, outlined, for secondary actions, and `ChoiceButton`, based on it, for settings toggles and choices, filled when on) of a palette on top of `assets/themes/base_theme.tres`. Also the HUD variations (see HUD); every HUD radius, border, margin, font size and glow is a named constant there |
+| `pause_button.gd` | `PauseButton`: square HUD button that draws its pause symbol, two rounded bars in the font color |
 | `safe_area_margin.gd` | `MarginContainer` whose scene margins are measured from the safe area (notch, system bars), on mobile only |
 
 ### `tools/simulation/` — balance simulator (not exported)
@@ -127,7 +128,7 @@ The ambient music is `assets/audio/music/musical_ambiance.ogg`, one track for ev
 - `scenes/ui/home_screen.tscn`: title, the Play / Continue buttons, then the Tutorial / Settings buttons.
 - `scenes/ui/settings_screen.tscn`: `SettingsRows` and Back.
 - `scenes/ui/settings_rows.tscn`: the setting rows, by group.
-- `scenes/game/game_screen.tscn`: HUD with score, record, highest tile and the pause ("II") button, previews, board with the centered combo label, tutorial panel, pause and game over overlays.
+- `scenes/game/game_screen.tscn`: HUD (see HUD), previews, board with the centered combo label, tutorial panel, pause and game over overlays.
 - `scenes/game/tutorial_panel.tscn`: tutorial message and buttons.
 - `scenes/game/game_over_panel.tscn`, `scenes/game/pause_panel.tscn`: game over and pause overlays of the game screen.
 
@@ -168,6 +169,28 @@ The ambient music is `assets/audio/music/musical_ambiance.ogg`, one track for ev
 - Groups of the same chain link merge at the same time: their `GroupMergedEvent`s follow each other with the same `chain_link`.
 - `TilesFellEvent.chain_link` is always 1 or more. A placed tile lands directly on top of its column, so gravity never runs before the first merge. The drop from the top of the board is not an event: the presentation animates it from `TilesPlacedEvent`.
 - `ResolutionEvent.apply_to(board)` replays one step. Applying every event, in order, to a copy of the board taken before the turn (`BoardState.duplicate_board()`) gives the final board. Tests check this, and that the events' points add up to the score gained.
+
+## HUD
+
+The HUD above the board holds only the score, the record and the pause button; the highest tile shows on the game over screen. Its look follows the visual reference in `docs/maquettes/`. Values are plain integers, without thousands separator, and seven digits fit their half at the base width in every language (`tests/test_game_hud.gd`).
+
+```
+HudRow (HBoxContainer, HudRow)
+├ Capsule (PanelContainer, HudCapsule: translucent, score_accent border and glow)
+│ └ Halves (HBoxContainer)
+│   ├ ScoreMargin (HudScoreMargin: inset from the capsule) → ScorePanel (HudScorePanel: faint score_accent border)
+│   │   └ Row (HudPanelRow) [ScoreIcon, Stack [Caption (HudScoreCaption), ScoreLabel (HudScoreValue)]]
+│   ├ Separator (VSeparator, HudSeparator)
+│   └ RecordPanel (HudRecordPanel: record_accent border and glow, flush with the capsule)
+│       └ Row (HudPanelRow) [RecordIcon, Stack [Caption (HudRecordCaption), BestLabel (HudRecordValue)]]
+└ PauseButton (PauseButton)
+```
+
+- Both halves expand equally. The record panel has the capsule's corners and covers its right edge, so the capsule border turns from the score color to the record color at the record panel (the reference shows a gradient, which a `StyleBoxFlat` cannot draw).
+- Glows are `StyleBoxFlat` shadows without offset; value glows are label shadows widened by `shadow_outline_size` (no blur), fainter than the panel glows. Nothing is redrawn while the values do not change.
+- Icons: `assets/icons/icon_score_crown.svg` and `icon_record_trophy.svg`, imported at 0.75 scale (96 px) and shown at `GameScreen.HUD_ICON_SIZE`.
+
+Under the HUD, the tile, mirror and next previews (`TileSwatch`) sit in three columns of the same width (`GameScreen.PREVIEW_COLUMN_WIDTH`, `PreviewColumn` variation), so the mirror preview is centered on the screen, above the axis. The next tile is smaller and aligned on the bottom of the others. Captions use the `PreviewCaption` variation (Fredoka Bold).
 
 ## Board layout
 

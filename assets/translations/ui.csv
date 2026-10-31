@@ -2,6 +2,8 @@ keys,en,fr
 UI_SCORE,Score: {value},Score : {value}
 UI_BEST,Best: {value},Record : {value}
 UI_MAX_TILE,Max tile: {value},Tuile max : {value}
+UI_HUD_SCORE,Score,Score
+UI_HUD_BEST,Best,Record
 UI_CURRENT_TILE,Tile,Tuile
 UI_REFLECTION,Reflection,Reflet
 UI_NEXT_TILE,Next,Suivante
@@ -9,7 +11,6 @@ UI_GAME_OVER,Game over,Partie terminée
 UI_NEW_RECORD,New record!,Nouveau record !
 UI_REPLAY,Play again,Rejouer
 UI_MENU,Menu,Menu
-UI_PAUSE,II,II
 UI_PAUSE_TITLE,Pause,Pause
 UI_RESUME,Resume,Reprendre
 UI_SETTINGS,Settings,Réglages

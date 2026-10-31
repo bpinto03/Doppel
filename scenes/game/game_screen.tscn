@@ -8,6 +8,9 @@
 [ext_resource type="Script" uid="uid://c0a5hkffmvw0b" path="res://scripts/ui/safe_area_margin.gd" id="6_safe_area"]
 [ext_resource type="PackedScene" path="res://scenes/game/game_over_panel.tscn" id="7_game_over_panel"]
 [ext_resource type="PackedScene" path="res://scenes/game/pause_panel.tscn" id="8_pause_panel"]
+[ext_resource type="Script" path="res://scripts/ui/pause_button.gd" id="9_pause_button"]
+[ext_resource type="Texture2D" uid="uid://d3py061abhtja" path="res://assets/icons/icon_score_crown.svg" id="10_crown"]
+[ext_resource type="Texture2D" uid="uid://dw8o2w1du56h5" path="res://assets/icons/icon_record_trophy.svg" id="11_trophy"]
 
 [node name="GameScreen" type="Control" unique_id=1464355714]
 layout_mode = 3
@@ -57,78 +60,155 @@ script = ExtResource("6_safe_area")
 layout_mode = 2
 theme_override_constants/separation = 40
 
-[node name="Stats" type="HBoxContainer" parent="Margin/Layout" unique_id=675507204]
+[node name="HudRow" type="HBoxContainer" parent="Margin/Layout"]
 layout_mode = 2
+theme_type_variation = &"HudRow"
 
-[node name="ScoreLabel" type="Label" parent="Margin/Layout/Stats" unique_id=972789181]
+[node name="Capsule" type="PanelContainer" parent="Margin/Layout/HudRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"HudCapsule"
+
+[node name="Halves" type="HBoxContainer" parent="Margin/Layout/HudRow/Capsule"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="ScoreMargin" type="MarginContainer" parent="Margin/Layout/HudRow/Capsule/Halves"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"HudScoreMargin"
+
+[node name="ScorePanel" type="PanelContainer" parent="Margin/Layout/HudRow/Capsule/Halves/ScoreMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudScorePanel"
+
+[node name="Row" type="HBoxContainer" parent="Margin/Layout/HudRow/Capsule/Halves/ScoreMargin/ScorePanel"]
+layout_mode = 2
+theme_type_variation = &"HudPanelRow"
+alignment = 1
+
+[node name="ScoreIcon" type="TextureRect" parent="Margin/Layout/HudRow/Capsule/Halves/ScoreMargin/ScorePanel/Row"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("10_crown")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Stack" type="VBoxContainer" parent="Margin/Layout/HudRow/Capsule/Halves/ScoreMargin/ScorePanel/Row"]
+layout_mode = 2
+alignment = 1
+
+[node name="Caption" type="Label" parent="Margin/Layout/HudRow/Capsule/Halves/ScoreMargin/ScorePanel/Row/Stack"]
+layout_mode = 2
+theme_type_variation = &"HudScoreCaption"
+text = "UI_HUD_SCORE"
+
+[node name="ScoreLabel" type="Label" parent="Margin/Layout/HudRow/Capsule/Halves/ScoreMargin/ScorePanel/Row/Stack"]
+unique_name_in_owner = true
+layout_mode = 2
+auto_translate_mode = 2
+theme_type_variation = &"HudScoreValue"
+
+[node name="Separator" type="VSeparator" parent="Margin/Layout/HudRow/Capsule/Halves"]
+layout_mode = 2
+theme_type_variation = &"HudSeparator"
+
+[node name="RecordPanel" type="PanelContainer" parent="Margin/Layout/HudRow/Capsule/Halves"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+theme_type_variation = &"HudRecordPanel"
 
-[node name="BestLabel" type="Label" parent="Margin/Layout/Stats" unique_id=1216252639]
+[node name="Row" type="HBoxContainer" parent="Margin/Layout/HudRow/Capsule/Halves/RecordPanel"]
+layout_mode = 2
+theme_type_variation = &"HudPanelRow"
+alignment = 1
+
+[node name="RecordIcon" type="TextureRect" parent="Margin/Layout/HudRow/Capsule/Halves/RecordPanel/Row"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
-horizontal_alignment = 1
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("11_trophy")
+expand_mode = 1
+stretch_mode = 5
 
-[node name="MaxTileLabel" type="Label" parent="Margin/Layout/Stats" unique_id=1935503722]
+[node name="Stack" type="VBoxContainer" parent="Margin/Layout/HudRow/Capsule/Halves/RecordPanel/Row"]
+layout_mode = 2
+alignment = 1
+
+[node name="Caption" type="Label" parent="Margin/Layout/HudRow/Capsule/Halves/RecordPanel/Row/Stack"]
+layout_mode = 2
+theme_type_variation = &"HudRecordCaption"
+text = "UI_HUD_BEST"
+
+[node name="BestLabel" type="Label" parent="Margin/Layout/HudRow/Capsule/Halves/RecordPanel/Row/Stack"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
-horizontal_alignment = 2
+auto_translate_mode = 2
+theme_type_variation = &"HudRecordValue"
 
-[node name="PauseButton" type="Button" parent="Margin/Layout/Stats" unique_id=1960482211]
+[node name="PauseButton" type="Button" parent="Margin/Layout/HudRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(100, 100)
 layout_mode = 2
-text = "UI_PAUSE"
+size_flags_vertical = 4
+theme_type_variation = &"PauseButton"
+script = ExtResource("9_pause_button")
 
 [node name="Upcoming" type="HBoxContainer" parent="Margin/Layout" unique_id=162302845]
 layout_mode = 2
-theme_override_constants/separation = 64
+theme_override_constants/separation = 0
 alignment = 1
 
 [node name="Current" type="VBoxContainer" parent="Margin/Layout/Upcoming" unique_id=1217558339]
 layout_mode = 2
+theme_type_variation = &"PreviewColumn"
 
 [node name="Caption" type="Label" parent="Margin/Layout/Upcoming/Current" unique_id=1650518714]
 layout_mode = 2
+theme_type_variation = &"PreviewCaption"
 text = "UI_CURRENT_TILE"
 horizontal_alignment = 1
 
 [node name="CurrentSwatch" type="Control" parent="Margin/Layout/Upcoming/Current" unique_id=582440814]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(160, 160)
 layout_mode = 2
+size_flags_horizontal = 4
 mouse_filter = 2
 script = ExtResource("3_swatch")
 
 [node name="Reflection" type="VBoxContainer" parent="Margin/Layout/Upcoming" unique_id=818535714]
 layout_mode = 2
+theme_type_variation = &"PreviewColumn"
 
 [node name="Caption" type="Label" parent="Margin/Layout/Upcoming/Reflection" unique_id=1018058647]
 layout_mode = 2
+theme_type_variation = &"PreviewCaption"
 text = "UI_REFLECTION"
 horizontal_alignment = 1
 
 [node name="ReflectionSwatch" type="Control" parent="Margin/Layout/Upcoming/Reflection" unique_id=409183404]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(160, 160)
 layout_mode = 2
+size_flags_horizontal = 4
 mouse_filter = 2
 script = ExtResource("3_swatch")
 
 [node name="Next" type="VBoxContainer" parent="Margin/Layout/Upcoming" unique_id=948607689]
 layout_mode = 2
+theme_type_variation = &"PreviewColumn"
 
 [node name="Caption" type="Label" parent="Margin/Layout/Upcoming/Next" unique_id=508156847]
 layout_mode = 2
+theme_type_variation = &"PreviewCaption"
 text = "UI_NEXT_TILE"
 horizontal_alignment = 1
 
 [node name="NextSwatch" type="Control" parent="Margin/Layout/Upcoming/Next" unique_id=1710999585]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(110, 110)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 10

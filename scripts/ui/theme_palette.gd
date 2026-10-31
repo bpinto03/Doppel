@@ -11,6 +11,22 @@ extends Resource
 @export var panel: Color
 @export var button: Color
 @export var button_text: Color
+## Border of the pause button.
+@export var panel_border: Color
+## Opacity of the glows around the HUD panels and values; 0 removes them.
+@export var glow_opacity: float
+
+@export_group("HUD")
+## Translucent fill of the capsule holding the score and record panels.
+@export var hud_capsule: Color
+## Fill of the score and record panels and of the pause button.
+@export var hud_panel: Color
+## Capsule border and score glow.
+@export var score_accent: Color
+## Record panel border and record glow.
+@export var record_accent: Color
+@export var score_caption: Color
+@export var record_caption: Color
 
 @export_group("Board")
 @export var empty_cell: Color
