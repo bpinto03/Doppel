@@ -143,6 +143,28 @@ func test_a_new_pause_opens_on_its_main_page() -> void:
 	assert_eq(game.get_navigation_state(), ScreenNavigation.GameState.PAUSED)
 
 
+func test_main_page_lists_resume_menu_restart_then_settings() -> void:
+	var game: GameScreen = _create_game_screen()
+
+	var main_page: Control = game.get_node("%PausePanel").get_node("%MainPage")
+
+	assert_eq(main_page.get_children().map(func(button: Node) -> String: return button.name), ["ResumeButton", "MenuButton", "RestartButton", "SettingsButton"])
+
+
+func test_title_names_the_shown_page() -> void:
+	var game: GameScreen = _create_game_screen()
+	game.start_new_game()
+	game.open_pause()
+	var title_label: Label = game.get_node("%PausePanel").get_node("%TitleLabel")
+	assert_eq(title_label.text, PausePanel.MAIN_PAGE_TITLE)
+
+	_press_pause_button(game, "%SettingsButton")
+	assert_eq(title_label.text, PausePanel.SETTINGS_PAGE_TITLE)
+	_press_pause_button(game, "%BackButton")
+
+	assert_eq(title_label.text, PausePanel.MAIN_PAGE_TITLE)
+
+
 func _create_game_screen() -> GameScreen:
 	var game: GameScreen = GAME_SCREEN_SCENE.instantiate()
 	add_child_autofree(game)

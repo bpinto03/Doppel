@@ -52,15 +52,29 @@ const HUD_VALUE_FONT_SIZE: int = 60
 const HUD_VALUE_GLOW_SIZE: int = 6
 const PAUSE_BUTTON_RADIUS: int = 26
 const PAUSE_BUTTON_BORDER_WIDTH: int = 3
-## Tile, mirror and next previews under the HUD.
 const HOME_TITLE_TYPE: StringName = &"HomeTitle"
 const HOME_TITLE_FONT_SIZE: int = 168
-const HOME_TITLE_GLOW_SIZE: int = 12
+## Glow of the home and pause titles.
+const TITLE_GLOW_SIZE: int = 12
 const HOME_PRIMARY_BUTTON_TYPE: StringName = &"HomePrimaryButton"
 const HOME_SECONDARY_BUTTON_TYPE: StringName = &"HomeSecondaryButton"
-const HOME_BUTTON_RADIUS: int = 36
-const HOME_BUTTON_BORDER_WIDTH: int = 3
-const HOME_BUTTON_FONT_SIZE: int = 44
+## Every IconActionButton variation: home and pause buttons.
+const ICON_BUTTON_RADIUS: int = 36
+const ICON_BUTTON_BORDER_WIDTH: int = 3
+const ICON_BUTTON_FONT_SIZE: int = 44
+## Pause overlay: scrim, panel, title between two rules, then its buttons.
+const PAUSE_SCRIM_TYPE: StringName = &"PauseScrim"
+const PAUSE_CARD_TYPE: StringName = &"PauseCard"
+const PAUSE_TITLE_TYPE: StringName = &"PauseTitle"
+const PAUSE_TITLE_RULE_TYPE: StringName = &"PauseTitleRule"
+const PAUSE_RESUME_BUTTON_TYPE: StringName = &"PauseResumeButton"
+const PAUSE_SECONDARY_BUTTON_TYPE: StringName = &"PauseSecondaryButton"
+const PAUSE_CARD_RADIUS: int = 56
+const PAUSE_CARD_BORDER_WIDTH: int = 3
+const PAUSE_CARD_PADDING: int = 56
+const PAUSE_TITLE_FONT_SIZE: int = 104
+const PAUSE_TITLE_RULE_WIDTH: int = 3
+## Tile, mirror and next previews under the HUD.
 const PREVIEW_COLUMN_TYPE: StringName = &"PreviewColumn"
 const PREVIEW_CAPTION_TYPE: StringName = &"PreviewCaption"
 const PREVIEW_CAPTION_FONT_SIZE: int = 40
@@ -76,7 +90,8 @@ static func build(palette: ThemePalette, base_theme: Theme) -> Theme:
 	_add_hud_styles(theme, palette)
 	_add_preview_styles(theme)
 	_add_home_button_styles(theme, palette)
-	_add_glowing_label_style(theme, HOME_TITLE_TYPE, HOME_TITLE_FONT_SIZE, palette.title, palette.title_glow, HOME_TITLE_GLOW_SIZE)
+	_add_glowing_label_style(theme, HOME_TITLE_TYPE, HOME_TITLE_FONT_SIZE, palette.title, palette.title_glow, TITLE_GLOW_SIZE)
+	_add_pause_styles(theme, palette)
 	return theme
 
 
@@ -208,17 +223,40 @@ static func _add_preview_styles(theme: Theme) -> void:
 
 
 static func _add_home_button_styles(theme: Theme, palette: ThemePalette) -> void:
-	_add_home_button_box(theme, HOME_PRIMARY_BUTTON_TYPE, palette.home_primary_button, palette.home_primary_button_border, palette.home_primary_button_glow)
-	_add_home_button_badge(theme, HOME_PRIMARY_BUTTON_TYPE, palette.home_primary_badge, palette.home_primary_icon, palette.home_primary_text)
-	_add_home_button_box(theme, HOME_SECONDARY_BUTTON_TYPE, palette.home_secondary_button, palette.home_secondary_button_border, Color.TRANSPARENT)
-	_add_home_button_badge(theme, HOME_SECONDARY_BUTTON_TYPE, palette.home_secondary_badge, palette.home_secondary_icon, palette.home_secondary_text)
+	_add_icon_button_box(theme, HOME_PRIMARY_BUTTON_TYPE, palette.home_primary_button, palette.home_primary_button_border, palette.home_primary_button_glow)
+	_add_icon_button_badge(theme, HOME_PRIMARY_BUTTON_TYPE, palette.home_primary_badge, palette.home_primary_icon, palette.home_primary_text)
+	_add_icon_button_box(theme, HOME_SECONDARY_BUTTON_TYPE, palette.home_secondary_button, palette.home_secondary_button_border, Color.TRANSPARENT)
+	_add_icon_button_badge(theme, HOME_SECONDARY_BUTTON_TYPE, palette.home_secondary_badge, palette.home_secondary_icon, palette.home_secondary_text)
+
+
+static func _add_pause_styles(theme: Theme, palette: ThemePalette) -> void:
+	theme.set_type_variation(PAUSE_SCRIM_TYPE, &"Panel")
+	var scrim_box := StyleBoxFlat.new()
+	scrim_box.bg_color = palette.pause_scrim
+	theme.set_stylebox(&"panel", PAUSE_SCRIM_TYPE, scrim_box)
+	theme.set_type_variation(PAUSE_CARD_TYPE, &"PanelContainer")
+	var card_box: StyleBoxFlat = _create_bordered_box(palette.pause_panel, palette.pause_panel_border, PAUSE_CARD_BORDER_WIDTH, PAUSE_CARD_RADIUS)
+	_set_content_margins(card_box, PAUSE_CARD_PADDING, PAUSE_CARD_PADDING)
+	_add_glow(card_box, palette.pause_panel_glow)
+	theme.set_stylebox(&"panel", PAUSE_CARD_TYPE, card_box)
+	_add_glowing_label_style(theme, PAUSE_TITLE_TYPE, PAUSE_TITLE_FONT_SIZE, palette.title, palette.title_glow, TITLE_GLOW_SIZE)
+	theme.set_type_variation(PAUSE_TITLE_RULE_TYPE, &"HSeparator")
+	var rule := StyleBoxLine.new()
+	rule.color = palette.pause_title_rule
+	rule.thickness = PAUSE_TITLE_RULE_WIDTH
+	theme.set_stylebox(&"separator", PAUSE_TITLE_RULE_TYPE, rule)
+	theme.set_constant(&"separation", PAUSE_TITLE_RULE_TYPE, PAUSE_TITLE_RULE_WIDTH)
+	_add_icon_button_box(theme, PAUSE_RESUME_BUTTON_TYPE, palette.pause_resume_button, palette.pause_resume_button_border, palette.pause_resume_button_glow)
+	_add_icon_button_badge(theme, PAUSE_RESUME_BUTTON_TYPE, palette.pause_resume_badge, palette.pause_resume_icon, palette.pause_resume_text)
+	_add_icon_button_box(theme, PAUSE_SECONDARY_BUTTON_TYPE, palette.pause_secondary_button, palette.pause_secondary_button_border, Color.TRANSPARENT)
+	_add_icon_button_badge(theme, PAUSE_SECONDARY_BUTTON_TYPE, palette.pause_secondary_badge, palette.pause_secondary_icon, palette.pause_secondary_text)
 
 
 ## Hover looks like normal, since a tap on Android can leave a button hovered; a tap never shows a focus frame.
-static func _add_home_button_box(theme: Theme, type: StringName, color: Color, border_color: Color, glow_color: Color) -> void:
+static func _add_icon_button_box(theme: Theme, type: StringName, color: Color, border_color: Color, glow_color: Color) -> void:
 	theme.set_type_variation(type, &"Button")
-	theme.set_font_size(&"font_size", type, HOME_BUTTON_FONT_SIZE)
-	var normal_box: StyleBoxFlat = _create_bordered_box(color, border_color, HOME_BUTTON_BORDER_WIDTH, HOME_BUTTON_RADIUS)
+	theme.set_font_size(&"font_size", type, ICON_BUTTON_FONT_SIZE)
+	var normal_box: StyleBoxFlat = _create_bordered_box(color, border_color, ICON_BUTTON_BORDER_WIDTH, ICON_BUTTON_RADIUS)
 	_add_glow(normal_box, glow_color)
 	normal_box.content_margin_left = IconActionButton.TEXT_LEFT_MARGIN
 	normal_box.content_margin_right = IconActionButton.TEXT_RIGHT_MARGIN
@@ -231,7 +269,7 @@ static func _add_home_button_box(theme: Theme, type: StringName, color: Color, b
 	theme.set_stylebox(&"focus", type, StyleBoxEmpty.new())
 
 
-static func _add_home_button_badge(theme: Theme, type: StringName, badge_color: Color, icon_color: Color, text_color: Color) -> void:
+static func _add_icon_button_badge(theme: Theme, type: StringName, badge_color: Color, icon_color: Color, text_color: Color) -> void:
 	for state: StringName in BUTTON_FONT_STATES:
 		theme.set_color(state, type, text_color)
 	var badge_box := StyleBoxFlat.new()

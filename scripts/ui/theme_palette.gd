@@ -60,6 +60,27 @@ extends Resource
 @export var home_secondary_icon: Color
 @export var home_secondary_text: Color
 
+@export_group("Pause")
+## Covers the paused game behind the panel. The pause title takes the home title colors.
+@export var pause_scrim: Color
+@export var pause_panel: Color
+@export var pause_panel_border: Color
+@export var pause_panel_glow: Color
+## Lines on both sides of the title; a transparent color hides them.
+@export var pause_title_rule: Color
+@export var pause_resume_button: Color
+@export var pause_resume_button_border: Color
+@export var pause_resume_button_glow: Color
+@export var pause_resume_badge: Color
+@export var pause_resume_icon: Color
+@export var pause_resume_text: Color
+## Menu, Restart, Settings and Back.
+@export var pause_secondary_button: Color
+@export var pause_secondary_button_border: Color
+@export var pause_secondary_badge: Color
+@export var pause_secondary_icon: Color
+@export var pause_secondary_text: Color
+
 @export_group("Board")
 ## Translucent fill of the board frame.
 @export var frame_fill: Color

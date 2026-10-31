@@ -1,7 +1,14 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://cdfasb3dnafc"]
 
-[ext_resource type="Script" path="res://scripts/ui/pause_panel.gd" id="1_panel"]
+[ext_resource type="Script" uid="uid://dit45bhl3rtip" path="res://scripts/ui/pause_panel.gd" id="1_panel"]
 [ext_resource type="PackedScene" path="res://scenes/ui/settings_rows.tscn" id="2_rows"]
+[ext_resource type="Script" uid="uid://c0a5hkffmvw0b" path="res://scripts/ui/safe_area_margin.gd" id="3_safe_area"]
+[ext_resource type="PackedScene" path="res://scenes/ui/icon_action_button.tscn" id="4_button"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_play.svg" id="5_resume"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_home.svg" id="6_menu"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_restart.svg" id="7_restart"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_gear.svg" id="8_settings"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_back.svg" id="9_back"]
 
 [node name="PausePanel" type="Control" unique_id=1960482201]
 visible = false
@@ -13,91 +20,112 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_panel")
 
-[node name="Dimmer" type="ColorRect" parent="." unique_id=1960482202]
+[node name="Scrim" type="Panel" parent="." unique_id=1960482202]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.5)
+theme_type_variation = &"PauseScrim"
 
-[node name="Center" type="CenterContainer" parent="." unique_id=1960482203]
+[node name="Margin" type="MarginContainer" parent="." unique_id=1960482219]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-
-[node name="Panel" type="PanelContainer" parent="Center" unique_id=1960482204]
-custom_minimum_size = Vector2(860, 0)
-layout_mode = 2
-
-[node name="Margin" type="MarginContainer" parent="Center/Panel" unique_id=1960482205]
-layout_mode = 2
-theme_override_constants/margin_left = 48
+theme_override_constants/margin_left = 0
 theme_override_constants/margin_top = 48
-theme_override_constants/margin_right = 48
+theme_override_constants/margin_right = 0
 theme_override_constants/margin_bottom = 48
+script = ExtResource("3_safe_area")
 
-[node name="Pages" type="VBoxContainer" parent="Center/Panel/Margin" unique_id=1960482206]
-layout_mode = 2
-
-[node name="MainPage" type="VBoxContainer" parent="Center/Panel/Margin/Pages" unique_id=1960482213]
+[node name="Center" type="CenterContainer" parent="Margin" unique_id=1960482203]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/separation = 32
 
-[node name="TitleLabel" type="Label" parent="Center/Panel/Margin/Pages/MainPage" unique_id=1960482207]
+[node name="Panel" type="PanelContainer" parent="Margin/Center" unique_id=1960482204]
+unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 72
+theme_type_variation = &"PauseCard"
+
+[node name="Layout" type="VBoxContainer" parent="Margin/Center/Panel" unique_id=1960482205]
+layout_mode = 2
+theme_override_constants/separation = 56
+
+[node name="TitleRow" type="HBoxContainer" parent="Margin/Center/Panel/Layout" unique_id=1960482206]
+layout_mode = 2
+theme_override_constants/separation = 40
+
+[node name="LeftRule" type="HSeparator" parent="Margin/Center/Panel/Layout/TitleRow" unique_id=1960482220]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_type_variation = &"PauseTitleRule"
+
+[node name="TitleLabel" type="Label" parent="Margin/Center/Panel/Layout/TitleRow" unique_id=1960482207]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"PauseTitle"
 text = "UI_PAUSE_TITLE"
 horizontal_alignment = 1
 
-[node name="MenuButton" type="Button" parent="Center/Panel/Margin/Pages/MainPage" unique_id=1960482208]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 160)
+[node name="RightRule" type="HSeparator" parent="Margin/Center/Panel/Layout/TitleRow" unique_id=1960482221]
 layout_mode = 2
-text = "UI_MENU"
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_type_variation = &"PauseTitleRule"
 
-[node name="RestartButton" type="Button" parent="Center/Panel/Margin/Pages/MainPage" unique_id=1960482209]
+[node name="MainPage" type="VBoxContainer" parent="Margin/Center/Panel/Layout" unique_id=1960482213]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 160)
 layout_mode = 2
-text = "UI_RESTART"
+theme_override_constants/separation = 36
 
-[node name="SettingsButton" type="Button" parent="Center/Panel/Margin/Pages/MainPage" unique_id=1960482214]
+[node name="ResumeButton" parent="Margin/Center/Panel/Layout/MainPage" unique_id=1960482210 instance=ExtResource("4_button")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 160)
 layout_mode = 2
-text = "UI_SETTINGS"
-
-[node name="ResumeButton" type="Button" parent="Center/Panel/Margin/Pages/MainPage" unique_id=1960482210]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 180)
-layout_mode = 2
+theme_type_variation = &"PauseResumeButton"
 text = "UI_RESUME"
+badge_icon = ExtResource("5_resume")
 
-[node name="SettingsPage" type="VBoxContainer" parent="Center/Panel/Margin/Pages" unique_id=1960482215]
+[node name="MenuButton" parent="Margin/Center/Panel/Layout/MainPage" unique_id=1960482208 instance=ExtResource("4_button")]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"PauseSecondaryButton"
+text = "UI_MENU"
+badge_icon = ExtResource("6_menu")
+
+[node name="RestartButton" parent="Margin/Center/Panel/Layout/MainPage" unique_id=1960482209 instance=ExtResource("4_button")]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"PauseSecondaryButton"
+text = "UI_RESTART"
+badge_icon = ExtResource("7_restart")
+
+[node name="SettingsButton" parent="Margin/Center/Panel/Layout/MainPage" unique_id=1960482214 instance=ExtResource("4_button")]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"PauseSecondaryButton"
+text = "UI_SETTINGS"
+badge_icon = ExtResource("8_settings")
+
+[node name="SettingsPage" type="VBoxContainer" parent="Margin/Center/Panel/Layout" unique_id=1960482215]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
-theme_override_constants/separation = 48
+theme_override_constants/separation = 56
 
-[node name="TitleLabel" type="Label" parent="Center/Panel/Margin/Pages/SettingsPage" unique_id=1960482216]
-layout_mode = 2
-theme_override_font_sizes/font_size = 72
-text = "UI_SETTINGS"
-horizontal_alignment = 1
-
-[node name="SettingsRows" parent="Center/Panel/Margin/Pages/SettingsPage" unique_id=1960482217 instance=ExtResource("2_rows")]
+[node name="SettingsRows" parent="Margin/Center/Panel/Layout/SettingsPage" unique_id=1960482217 instance=ExtResource("2_rows")]
 unique_name_in_owner = true
 layout_mode = 2
 shown_groups = Array[int]([0])
 
-[node name="BackButton" type="Button" parent="Center/Panel/Margin/Pages/SettingsPage" unique_id=1960482218]
+[node name="BackButton" parent="Margin/Center/Panel/Layout/SettingsPage" unique_id=1960482218 instance=ExtResource("4_button")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 180)
 layout_mode = 2
+theme_type_variation = &"PauseSecondaryButton"
 text = "UI_BACK"
+badge_icon = ExtResource("9_back")

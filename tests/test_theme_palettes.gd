@@ -19,6 +19,12 @@ const HOME_COLOR_PROPERTIES: Array[StringName] = [
 	&"home_primary_button", &"home_primary_button_border", &"home_primary_button_glow", &"home_primary_badge", &"home_primary_icon", &"home_primary_text",
 	&"home_secondary_button", &"home_secondary_button_border", &"home_secondary_badge", &"home_secondary_icon", &"home_secondary_text",
 ]
+## Pause colors every palette sets itself, for the same reason.
+const PAUSE_COLOR_PROPERTIES: Array[StringName] = [
+	&"pause_scrim", &"pause_panel", &"pause_panel_border", &"pause_panel_glow", &"pause_title_rule",
+	&"pause_resume_button", &"pause_resume_button_border", &"pause_resume_button_glow", &"pause_resume_badge", &"pause_resume_icon", &"pause_resume_text",
+	&"pause_secondary_button", &"pause_secondary_button_border", &"pause_secondary_badge", &"pause_secondary_icon", &"pause_secondary_text",
+]
 
 
 func test_every_palette_has_one_color_per_level() -> void:
@@ -51,10 +57,10 @@ func test_every_tile_or_its_outline_stands_out_from_the_board() -> void:
 				assert_gte(ColorContrast.calculate_ratio(visible_edge, backdrop), painter.palette.min_tile_edge_contrast, "%s level %d" % [palette_name, level])
 
 
-func test_every_palette_sets_every_home_color() -> void:
+func test_every_palette_sets_every_home_and_pause_color() -> void:
 	for palette_name: String in Settings.PALETTES:
 		var saved_palette: String = FileAccess.get_file_as_string(Settings.PALETTES[palette_name].resource_path)
-		for property: StringName in HOME_COLOR_PROPERTIES:
+		for property: StringName in HOME_COLOR_PROPERTIES + PAUSE_COLOR_PROPERTIES:
 			assert_true(saved_palette.contains("\n%s = " % property), "%s %s" % [palette_name, property])
 
 

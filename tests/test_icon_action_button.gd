@@ -2,7 +2,10 @@ extends GutTest
 
 const BUTTON_SCENE: PackedScene = preload("res://scenes/ui/icon_action_button.tscn")
 const BASE_THEME: Theme = preload("res://assets/themes/base_theme.tres")
-const VARIATIONS: Array[StringName] = [UiThemeBuilder.HOME_PRIMARY_BUTTON_TYPE, UiThemeBuilder.HOME_SECONDARY_BUTTON_TYPE]
+const VARIATIONS: Array[StringName] = [
+	UiThemeBuilder.HOME_PRIMARY_BUTTON_TYPE, UiThemeBuilder.HOME_SECONDARY_BUTTON_TYPE,
+	UiThemeBuilder.PAUSE_RESUME_BUTTON_TYPE, UiThemeBuilder.PAUSE_SECONDARY_BUTTON_TYPE,
+]
 
 var _button: IconActionButton
 

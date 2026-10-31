@@ -23,7 +23,7 @@ Step 3.1 adds a pause screen and a game over screen. Until then, the Android bac
 | Settings screen (from home) | home |
 
 - When the app becomes inactive during a game in progress (not the tutorial, not the game over screen), the game opens the pause after jumping the playback to its final state. The player resumes on purpose, and no turn is played by surprise. Ads (phase 4) only show outside a game in progress, so they never trigger it.
-- Pause: Resume; Restart abandons the game (it counts for the record, as Play does) and starts a new one at once; Menu goes home and keeps the game for Continue; Settings switches the pause to its settings page.
+- Pause, in this order: Resume; Menu goes home and keeps the game for Continue; Restart abandons the game (it counts for the record, as Play does) and starts a new one at once; Settings switches the pause to its settings page.
 - The settings page of the pause shows the sound, music, vibration and screen shake toggles of `SettingsRows`, saved and applied at once, then Back. It stays inside the pause overlay: the game screen is not freed and `Main` is not involved. Language and theme stay on the home settings screen, since a new theme would recolor the board mid-game.
 
 ## Consequences

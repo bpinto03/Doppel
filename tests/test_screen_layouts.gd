@@ -14,6 +14,7 @@ const LARGE_SCORE: int = 9999999
 
 var _save := SaveFixture.new(TEST_SAVE_PATH)
 var _viewport_width: float = ProjectSettings.get_setting("display/window/size/viewport_width")
+var _base_size := Vector2(_viewport_width, ProjectSettings.get_setting("display/window/size/viewport_height"))
 
 
 func before_each() -> void:
@@ -53,20 +54,39 @@ func test_overlays_fit_their_panel_in_every_language() -> void:
 		game.start_game(session, 1)
 		var game_over_panel: GameOverPanel = game.get_node("%GameOverPanel")
 		game_over_panel.show_summary(GameOverSummary.new(session, 1, LARGE_SCORE))
+		await wait_process_frames(1)
+
+		var panel: Control = game_over_panel.get_node(PANEL_PATH)
+		assert_lte(panel.get_combined_minimum_size().x, panel.custom_minimum_size.x, "%s in %s" % [game_over_panel.name, language])
+
+
+## The panel width is set from the screen; content wider than it would push the texts past it.
+func test_both_pause_pages_fit_the_safe_area_at_the_base_size_in_every_language() -> void:
+	for language: String in I18n.SUPPORTED_LANGUAGES:
+		TranslationServer.set_locale(language)
+		var game: GameScreen = await _add_screen(GAME_SCREEN_SCENE)
+		game.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
+		game.size = _base_size
+		game.start_game(GameSession.new(BALANCING_CONFIG, BalancingFixture.create_seeded_rng(SEED)), 0)
+		game.open_pause()
 		var pause_panel: PausePanel = game.get_node("%PausePanel")
-		pause_panel.visible = true
-		await wait_process_frames(1)
+		for page: String in ["main", "settings"]:
+			if page == "main":
+				pause_panel.show_main_page()
+			else:
+				pause_panel.show_settings_page()
+			await wait_process_frames(2)
 
-		for overlay: Control in [game_over_panel, pause_panel]:
-			_assert_panel_fits(overlay, language)
-		pause_panel.show_settings_page()
-		await wait_process_frames(1)
-		_assert_panel_fits(pause_panel, "%s, settings page" % language)
+			var panel: Control = pause_panel.get_node("%Panel")
+			var context: String = "%s page in %s" % [page, language]
+			assert_lte(panel.get_minimum_size().x, panel.custom_minimum_size.x, context)
+			assert_true(_get_safe_rect(pause_panel.get_node("%Margin")).encloses(panel.get_global_rect()), context)
 
 
-func _assert_panel_fits(overlay: Control, context: String) -> void:
-	var panel: Control = overlay.get_node(PANEL_PATH)
-	assert_lte(panel.get_combined_minimum_size().x, panel.custom_minimum_size.x, "%s in %s" % [overlay.name, context])
+func _get_safe_rect(margin: MarginContainer) -> Rect2:
+	var top_left := Vector2(margin.get_theme_constant(&"margin_left"), margin.get_theme_constant(&"margin_top"))
+	var bottom_right := Vector2(margin.get_theme_constant(&"margin_right"), margin.get_theme_constant(&"margin_bottom"))
+	return Rect2(margin.global_position + top_left, margin.size - top_left - bottom_right)
 
 
 func _add_screen(scene: PackedScene) -> Control:
