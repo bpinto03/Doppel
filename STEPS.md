@@ -144,6 +144,7 @@ Outil : simulateur d'équilibrage (`./run_simulation.sh`, voir `docs/balancing.m
 - [ ] Tutoriel : visuels soignés (version simple faite en phase 1) : doigt qui tapote la colonne cible (asset `assets/tutorial/tutorial_pointer.svg` à fournir) ou flèche dessinée en code
 - [ ] Décider avec le développeur s'il faut une palette à contraste renforcé globale (daltonisme), indépendante des thèmes de la boutique
 - [ ] Écran de jeu fidèle aux maquettes (`docs/maquettes/`) : HUD en capsule (score, record, pause), rangée Tuile / Reflet / Suivante centrée sur l'axe, cadre de grille, cellules et axe lumineux, couleurs de tuiles Nuit (Papier à valider) ; vérifié sur téléphone en français et en anglais, thèmes Nuit et Papier, 60 FPS ressentis, sans régression (pause, reflet animé, retour Android)
+- [ ] Écran d'accueil fidèle aux maquettes (`docs/maquettes/`) : logo, titre, boutons principaux et secondaires avec icônes ; vérifié sur téléphone en français et en anglais, thèmes Nuit et Papier
 
 ### 3.2 Pièces et boutique
 - [ ] Définir la formule des pièces gagnées par partie

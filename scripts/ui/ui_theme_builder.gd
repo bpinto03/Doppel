@@ -28,7 +28,7 @@ const HUD_RECORD_CAPTION_TYPE: StringName = &"HudRecordCaption"
 const HUD_SCORE_VALUE_TYPE: StringName = &"HudScoreValue"
 const HUD_RECORD_VALUE_TYPE: StringName = &"HudRecordValue"
 const PAUSE_BUTTON_TYPE: StringName = &"PauseButton"
-const HUD_VALUE_FONT: Font = preload("res://assets/fonts/fredoka_bold.ttf")
+const BOLD_FONT: Font = preload("res://assets/fonts/fredoka_bold.ttf")
 const HUD_ROW_SEPARATION: int = 32
 const HUD_CAPSULE_RADIUS: int = 40
 const HUD_PANEL_RADIUS: int = 28
@@ -53,6 +53,14 @@ const HUD_VALUE_GLOW_SIZE: int = 6
 const PAUSE_BUTTON_RADIUS: int = 26
 const PAUSE_BUTTON_BORDER_WIDTH: int = 3
 ## Tile, mirror and next previews under the HUD.
+const HOME_TITLE_TYPE: StringName = &"HomeTitle"
+const HOME_TITLE_FONT_SIZE: int = 168
+const HOME_TITLE_GLOW_SIZE: int = 12
+const HOME_PRIMARY_BUTTON_TYPE: StringName = &"HomePrimaryButton"
+const HOME_SECONDARY_BUTTON_TYPE: StringName = &"HomeSecondaryButton"
+const HOME_BUTTON_RADIUS: int = 36
+const HOME_BUTTON_BORDER_WIDTH: int = 3
+const HOME_BUTTON_FONT_SIZE: int = 44
 const PREVIEW_COLUMN_TYPE: StringName = &"PreviewColumn"
 const PREVIEW_CAPTION_TYPE: StringName = &"PreviewCaption"
 const PREVIEW_CAPTION_FONT_SIZE: int = 40
@@ -67,6 +75,8 @@ static func build(palette: ThemePalette, base_theme: Theme) -> Theme:
 	_add_secondary_button_styles(theme, palette)
 	_add_hud_styles(theme, palette)
 	_add_preview_styles(theme)
+	_add_home_button_styles(theme, palette)
+	_add_glowing_label_style(theme, HOME_TITLE_TYPE, HOME_TITLE_FONT_SIZE, palette.title, palette.title_glow, HOME_TITLE_GLOW_SIZE)
 	return theme
 
 
@@ -158,16 +168,20 @@ static func _add_hud_caption_style(theme: Theme, type: StringName, color: Color)
 	theme.set_font_size(&"font_size", type, HUD_CAPTION_FONT_SIZE)
 
 
-## The glow is the label shadow, centered and widened by its outline.
 static func _add_hud_value_style(theme: Theme, type: StringName, color: Color, glow_color: Color) -> void:
+	_add_glowing_label_style(theme, type, HUD_VALUE_FONT_SIZE, color, glow_color, HUD_VALUE_GLOW_SIZE)
+
+
+## Bold text whose glow is the label shadow, centered and widened by its outline; a transparent color removes it.
+static func _add_glowing_label_style(theme: Theme, type: StringName, font_size: int, color: Color, glow_color: Color, glow_size: int) -> void:
 	theme.set_type_variation(type, &"Label")
-	theme.set_font(&"font", type, HUD_VALUE_FONT)
-	theme.set_font_size(&"font_size", type, HUD_VALUE_FONT_SIZE)
+	theme.set_font(&"font", type, BOLD_FONT)
+	theme.set_font_size(&"font_size", type, font_size)
 	theme.set_color(&"font_color", type, color)
 	theme.set_color(&"font_shadow_color", type, glow_color)
 	theme.set_constant(&"shadow_offset_x", type, 0)
 	theme.set_constant(&"shadow_offset_y", type, 0)
-	theme.set_constant(&"shadow_outline_size", type, HUD_VALUE_GLOW_SIZE if glow_color.a > 0.0 else 0)
+	theme.set_constant(&"shadow_outline_size", type, glow_size if glow_color.a > 0.0 else 0)
 
 
 ## The pause symbol is drawn by PauseButton in the font color.
@@ -189,8 +203,42 @@ static func _add_preview_styles(theme: Theme) -> void:
 	theme.set_type_variation(PREVIEW_COLUMN_TYPE, &"VBoxContainer")
 	theme.set_constant(&"separation", PREVIEW_COLUMN_TYPE, PREVIEW_CAPTION_SPACE)
 	theme.set_type_variation(PREVIEW_CAPTION_TYPE, &"Label")
-	theme.set_font(&"font", PREVIEW_CAPTION_TYPE, HUD_VALUE_FONT)
+	theme.set_font(&"font", PREVIEW_CAPTION_TYPE, BOLD_FONT)
 	theme.set_font_size(&"font_size", PREVIEW_CAPTION_TYPE, PREVIEW_CAPTION_FONT_SIZE)
+
+
+static func _add_home_button_styles(theme: Theme, palette: ThemePalette) -> void:
+	_add_home_button_box(theme, HOME_PRIMARY_BUTTON_TYPE, palette.home_primary_button, palette.home_primary_button_border, palette.home_primary_button_glow)
+	_add_home_button_badge(theme, HOME_PRIMARY_BUTTON_TYPE, palette.home_primary_badge, palette.home_primary_icon, palette.home_primary_text)
+	_add_home_button_box(theme, HOME_SECONDARY_BUTTON_TYPE, palette.home_secondary_button, palette.home_secondary_button_border, Color.TRANSPARENT)
+	_add_home_button_badge(theme, HOME_SECONDARY_BUTTON_TYPE, palette.home_secondary_badge, palette.home_secondary_icon, palette.home_secondary_text)
+
+
+## Hover looks like normal, since a tap on Android can leave a button hovered; a tap never shows a focus frame.
+static func _add_home_button_box(theme: Theme, type: StringName, color: Color, border_color: Color, glow_color: Color) -> void:
+	theme.set_type_variation(type, &"Button")
+	theme.set_font_size(&"font_size", type, HOME_BUTTON_FONT_SIZE)
+	var normal_box: StyleBoxFlat = _create_bordered_box(color, border_color, HOME_BUTTON_BORDER_WIDTH, HOME_BUTTON_RADIUS)
+	_add_glow(normal_box, glow_color)
+	normal_box.content_margin_left = HomeActionButton.TEXT_LEFT_MARGIN
+	normal_box.content_margin_right = HomeActionButton.TEXT_RIGHT_MARGIN
+	var pressed_box: StyleBoxFlat = normal_box.duplicate()
+	pressed_box.bg_color = color.darkened(PRESSED_DARKENING)
+	theme.set_stylebox(&"normal", type, normal_box)
+	theme.set_stylebox(&"hover", type, normal_box)
+	theme.set_stylebox(&"pressed", type, pressed_box)
+	theme.set_stylebox(&"hover_pressed", type, pressed_box)
+	theme.set_stylebox(&"focus", type, StyleBoxEmpty.new())
+
+
+static func _add_home_button_badge(theme: Theme, type: StringName, badge_color: Color, icon_color: Color, text_color: Color) -> void:
+	for state: StringName in BUTTON_FONT_STATES:
+		theme.set_color(state, type, text_color)
+	var badge_box := StyleBoxFlat.new()
+	badge_box.bg_color = badge_color
+	badge_box.set_corner_radius_all(ceili(HomeActionButton.BADGE_SIZE / 2.0))
+	theme.set_stylebox(&"badge", type, badge_box)
+	theme.set_color(&"badge_icon_color", type, icon_color)
 
 
 static func _create_bordered_box(color: Color, border_color: Color, border_width: int, corner_radius: int) -> StyleBoxFlat:

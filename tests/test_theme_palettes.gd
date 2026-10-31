@@ -13,6 +13,12 @@ const NIGHT_TILE_COLORS: Array[Color] = [
 	Color(1, 0.6392, 0.5608, 1), Color(0.8235, 0.4627, 0.102, 1), Color(0.8863, 1, 0.5412, 1),
 ]
 const NIGHT_MIN_TILE_EDGE_CONTRAST: float = 3.0
+## Home screen colors every palette sets itself: a color left out would silently fall back to opaque black.
+const HOME_COLOR_PROPERTIES: Array[StringName] = [
+	&"logo_left_fill", &"logo_left_outline", &"logo_right_fill", &"logo_right_outline", &"logo_accent", &"logo_glow", &"title", &"title_glow",
+	&"home_primary_button", &"home_primary_button_border", &"home_primary_button_glow", &"home_primary_badge", &"home_primary_icon", &"home_primary_text",
+	&"home_secondary_button", &"home_secondary_button_border", &"home_secondary_badge", &"home_secondary_icon", &"home_secondary_text",
+]
 
 
 func test_every_palette_has_one_color_per_level() -> void:
@@ -43,6 +49,13 @@ func test_every_tile_or_its_outline_stands_out_from_the_board() -> void:
 			var visible_edge: Color = painter.get_edge_color(level) if painter.is_outlined(level) else tile_color
 			for backdrop: Color in painter.get_board_backdrops():
 				assert_gte(ColorContrast.calculate_ratio(visible_edge, backdrop), painter.palette.min_tile_edge_contrast, "%s level %d" % [palette_name, level])
+
+
+func test_every_palette_sets_every_home_color() -> void:
+	for palette_name: String in Settings.PALETTES:
+		var saved_palette: String = FileAccess.get_file_as_string(Settings.PALETTES[palette_name].resource_path)
+		for property: StringName in HOME_COLOR_PROPERTIES:
+			assert_true(saved_palette.contains("\n%s = " % property), "%s %s" % [palette_name, property])
 
 
 func test_night_tile_colors_do_not_change() -> void:

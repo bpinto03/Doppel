@@ -34,6 +34,32 @@ extends Resource
 @export var pause_button_border: Color
 @export var pause_symbol: Color
 
+@export_group("Home")
+## Logo fills are translucent, so their overlap shows through.
+@export var logo_left_fill: Color
+@export var logo_left_outline: Color
+@export var logo_right_fill: Color
+@export var logo_right_outline: Color
+## Stars and dashes around the logo circles.
+@export var logo_accent: Color
+@export var logo_glow: Color
+@export var title: Color
+@export var title_glow: Color
+## Play and Continue. A transparent glow removes it; a dark one makes a soft shadow.
+@export var home_primary_button: Color
+@export var home_primary_button_border: Color
+@export var home_primary_button_glow: Color
+@export var home_primary_badge: Color
+@export var home_primary_icon: Color
+## Also the chevron color, at lower opacity.
+@export var home_primary_text: Color
+## Tutorial and Settings.
+@export var home_secondary_button: Color
+@export var home_secondary_button_border: Color
+@export var home_secondary_badge: Color
+@export var home_secondary_icon: Color
+@export var home_secondary_text: Color
+
 @export_group("Board")
 ## Translucent fill of the board frame.
 @export var frame_fill: Color

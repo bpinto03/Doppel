@@ -1,7 +1,7 @@
 class_name HomeScreen
 extends PaletteScreen
 
-## Entry screen: Play, and Continue when a game in progress is saved; below them, Tutorial and Settings.
+## Entry screen: logo and title, then Play, and Continue when a game in progress is saved; below them, Tutorial and Settings.
 ## The daily challenge (3.3) and the shop (3.2) will join the secondary buttons.
 
 signal play_requested
@@ -9,19 +9,28 @@ signal continue_requested
 signal tutorial_requested
 signal settings_requested
 
+const AUDIO_CONFIG: AudioConfig = preload("res://data/audio_config.tres")
+const LOGO_SIZE := Vector2(480.0, 364.0)
+const PRIMARY_BUTTON_HEIGHT: float = 196.0
+const SECONDARY_BUTTON_HEIGHT: float = 171.0
+
 var _choices: Array[HomeMenu.Choice] = [HomeMenu.Choice.PLAY]
 
 @onready var _layout: VBoxContainer = %Layout
+@onready var _logo: LogoMark = %Logo
 @onready var _choice_buttons: BoxContainer = %ChoiceButtons
-@onready var _play_button: Button = %PlayButton
-@onready var _continue_button: Button = %ContinueButton
+@onready var _play_button: HomeActionButton = %PlayButton
+@onready var _continue_button: HomeActionButton = %ContinueButton
 @onready var _secondary_buttons: BoxContainer = %SecondaryButtons
-@onready var _tutorial_button: Button = %TutorialButton
-@onready var _settings_button: Button = %SettingsButton
+@onready var _tutorial_button: HomeActionButton = %TutorialButton
+@onready var _settings_button: HomeActionButton = %SettingsButton
 
 
 func _ready() -> void:
 	super()
+	_apply_layout_sizes()
+	for button: HomeActionButton in [_play_button, _continue_button, _tutorial_button, _settings_button]:
+		button.pressed.connect(_play_click)
 	_play_button.pressed.connect(play_requested.emit)
 	_continue_button.pressed.connect(continue_requested.emit)
 	_tutorial_button.pressed.connect(tutorial_requested.emit)
@@ -48,6 +57,18 @@ func is_stacked() -> bool:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready():
 		_arrange_buttons.call_deferred()
+
+
+func _apply_layout_sizes() -> void:
+	_logo.custom_minimum_size = LOGO_SIZE
+	for button: HomeActionButton in [_play_button, _continue_button]:
+		button.custom_minimum_size.y = PRIMARY_BUTTON_HEIGHT
+	for button: HomeActionButton in [_tutorial_button, _settings_button]:
+		button.custom_minimum_size.y = SECONDARY_BUTTON_HEIGHT
+
+
+func _play_click() -> void:
+	AudioManager.play_effect(AUDIO_CONFIG.ui_click)
 
 
 func _arrange_buttons() -> void:
