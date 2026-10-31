@@ -46,8 +46,3 @@ TUTORIAL_NEXT,Next,Suivant
 TUTORIAL_PLAY,Play,Jouer
 TUTORIAL_SKIP,Skip,Passer
 UI_HELP,?,?
-DEBUG_THEME,Theme,Thème
-DEBUG_VIBRATION_ON,Vib on,Vib oui
-DEBUG_VIBRATION_OFF,Vib off,Vib non
-DEBUG_MUSIC_ON,Music on,Musique oui
-DEBUG_MUSIC_OFF,Music off,Musique non

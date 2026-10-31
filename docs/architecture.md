@@ -56,7 +56,7 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 | `screen_navigation.gd` | `ScreenNavigation`: pure decisions of where the back button leads, per screen and game state (`PLAYING`, `PAUSED`, `TUTORIAL`, `GAME_OVER`), and whether an inactive app pauses the game |
 | `pause_panel.gd` | `PausePanel`: overlay over the paused game, with Resume, Restart (abandons the game, which counts for the record) and Menu (keeps it for Continue) |
 | `home_menu.gd` | `HomeMenu`: pure decisions of the home screen: choices offered, their order, and whether to stack them from the buttons' real minimum widths |
-| `game_screen.gd` | `GameScreen`: owns the `GameSession` (`start_new_game()`, `start_tutorial()`, or `start_game()` with a given session and the record before it), forwards released columns, saves each real turn (see Save flow), starts the playback of each turn, refreshes the HUD when it ends and shows the game over overlay when the game is over, opens and closes the pause (`open_pause()`, `close_pause()`; the HUD pause button shows outside the tutorial), emits `turn_playback_finished` and `home_requested`, reports its state to `ScreenNavigation` (`get_navigation_state()`), redraws the tiles and combo outline with the palette; in debug builds, shows the debug row (theme, vibration and music switches) and logs `DisplayServer.is_dark_mode()` |
+| `game_screen.gd` | `GameScreen`: owns the `GameSession` (`start_new_game()`, `start_tutorial()`, or `start_game()` with a given session and the record before it), forwards released columns, saves each real turn (see Save flow), starts the playback of each turn, refreshes the HUD when it ends and shows the game over overlay when the game is over, opens and closes the pause (`open_pause()`, `close_pause()`; the HUD pause button shows outside the tutorial), emits `turn_playback_finished` and `home_requested`, reports its state to `ScreenNavigation` (`get_navigation_state()`), redraws the tiles and combo outline with the palette |
 | `board_view.gd` | Draws the board frame (`StyleBoxFlat`, palette `panel` color), the displayed board, moving tiles, merge pulses and the placement ghost, dims unplayable columns, maps a touched column to the played left column (`find_played_column`), emits `column_released`, `pressed_while_locked`, and `unplayable_column_released` on a release over a column that cannot take the pair. The mirror axis (a `ColorRect`, placed when the board or the view size changes) and board effects such as particles sit in a child effects layer |
 | `merge_particles.gd` | `MergeParticles`: fixed pool of one-shot `CPUParticles2D` emitters with a generated disc texture; bursts never exceed the live particle cap |
 | `board_style.gd` | `BoardStyle`: frame padding and corner radius, cell gap, axis width, loaded from `data/board_style.tres` |
@@ -87,13 +87,6 @@ Command line tool run by `./run_simulation.sh` (see [balancing.md](balancing.md#
 | `simulation_scenario.gd`, `scenarios.json` | `SimulationScenario`: a name and overrides applied to a copy of the balancing config |
 | `simulation_report.gd` | Console table and CSV text |
 
-### `scripts/debug/` — debug builds only
-
-| Script | Responsibility |
-|--------|----------------|
-| `frame_rate_probe.gd` | `FrameRateProbe`: logs the average and lowest frame rate of each playback (`Playback FPS: …`, read with `adb logcat -s godot`). Added by `game_screen.gd` in debug builds; removed in step 3.1 |
-| `audio_latency_probe.gd` | `AudioLatencyProbe`: logs the audio driver, mix rate and output latency at startup, then `Audio latency: output=… next_mix=… frame=…` for every sound played. Added by `game_screen.gd` in debug builds; removed in step 3.1 |
-
 ### `scripts/autoload/` — platform services
 
 Loaded in this order; each one may use the ones above it.
@@ -104,8 +97,8 @@ Loaded in this order; each one may use the ones above it.
 | `SaveManager` | Versioned local save in `user://save.cfg` (see [0002](decisions/0002-save-format.md)). `get_value` / `set_value` by section and key. Changes made in the same frame make one write at the end of the frame, and an unchanged save is not written again; `flush()` writes at once, and runs on `AppLifecycle.deactivated`. Each write goes through a checked temporary file and keeps the previous save as a backup; a missing, empty, unreadable or newer save falls back to the backup, then to an empty save (see [0005](decisions/0005-save-writing.md)) |
 | `Settings` | Sound, music, vibration, screen shake, language, theme (`palette_name`: `paper` or `night`) and linear volume per audio bus (`get_bus_volume` / `set_bus_volume`, 0 to 1), stored in the `settings` section. Emits `changed`, and `palette_changed` for the theme |
 | `I18n` | Sets the locale: chosen language, else the device language if supported (en, fr), else English |
-| `AudioManager` | Applies the saved sound, music and volume settings to the buses at startup and on every change: a disabled sound or a volume of zero mutes its bus. `play_effect()` plays a `SoundEffect` on the `SFX` bus with a pool of reused players; a missing sound plays nothing. `start_music()` / `stop_music()` fade the looping ambient music in and out on the `Music` bus; the fades belong to the autoload. A `MusicState` decides from the music setting, the app request (`Main` asks once at launch) and the app state: play, pause while `AppLifecycle` reports the app inactive, or stop and release the stream (music disabled or no longer requested). A missing music file logs a warning and the game plays without music. Until the settings screen (step 3.1), debug builds switch music with the temporary "Music" HUD button |
-| `HapticsManager` | The only caller of `Input.vibrate_handheld()`. `request()` keeps the strongest `HapticPulse` of the frame and sends it on the next `_process`; nothing is sent while `Settings.is_vibration_enabled` is off. A pulse closer than `min_interval_ms` to the last one sent is dropped unless it is stronger. `take_pending_pulse()` makes the decision without the device call, for tests. `pulse_sent` reports every pulse sent. Until the settings screen (step 3.1), debug builds switch vibration with the temporary "Vib" HUD button. On desktop, or on a phone without a vibrator, the call does nothing |
+| `AudioManager` | Applies the saved sound, music and volume settings to the buses at startup and on every change: a disabled sound or a volume of zero mutes its bus. `play_effect()` plays a `SoundEffect` on the `SFX` bus with a pool of reused players; a missing sound plays nothing. `start_music()` / `stop_music()` fade the looping ambient music in and out on the `Music` bus; the fades belong to the autoload. A `MusicState` decides from the music setting, the app request (`Main` asks once at launch) and the app state: play, pause while `AppLifecycle` reports the app inactive, or stop and release the stream (music disabled or no longer requested). A missing music file logs a warning and the game plays without music. |
+| `HapticsManager` | The only caller of `Input.vibrate_handheld()`. `request()` keeps the strongest `HapticPulse` of the frame and sends it on the next `_process`; nothing is sent while `Settings.is_vibration_enabled` is off. A pulse closer than `min_interval_ms` to the last one sent is dropped unless it is stronger. `take_pending_pulse()` makes the decision without the device call, for tests. `pulse_sent` reports every pulse sent. On desktop, or on a phone without a vibrator, the call does nothing |
 
 Audio buses (`default_bus_layout.tres`): `SFX` and `Music`, both sent to `Master`.
 
@@ -133,7 +126,7 @@ The ambient music is `assets/audio/music/musical_ambiance.ogg`, one track for ev
 - `scenes/main.tscn`: entry point, `Main` (see above).
 - `scenes/ui/home_screen.tscn`: title, the Play / Continue buttons and Settings.
 - `scenes/ui/settings_screen.tscn`: settings rows and Back.
-- `scenes/game/game_screen.tscn`: HUD with "?" and pause ("II") buttons, a `DebugTools` row under it (hidden outside debug builds, so the debug buttons never widen the HUD), previews, board with the centered combo label, tutorial panel, pause and game over overlays.
+- `scenes/game/game_screen.tscn`: HUD with "?" and pause ("II") buttons, previews, board with the centered combo label, tutorial panel, pause and game over overlays.
 - `scenes/game/tutorial_panel.tscn`: tutorial message and buttons.
 - `scenes/game/game_over_panel.tscn`, `scenes/game/pause_panel.tscn`: game over and pause overlays of the game screen.
 

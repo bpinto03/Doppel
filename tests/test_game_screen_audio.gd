@@ -60,27 +60,6 @@ func test_game_over_vibrates() -> void:
 	assert_signal_emitted_with_parameters(HapticsManager, "pulse_sent", [HAPTICS_CONFIG.game_over])
 
 
-func test_vibration_debug_button_switches_the_setting() -> void:
-	var button: Button = _screen.get_node("%VibrationDebugButton")
-
-	button.pressed.emit()
-
-	assert_false(Settings.is_vibration_enabled)
-	assert_eq(button.text, "DEBUG_VIBRATION_OFF")
-
-
-func test_music_debug_button_switches_the_setting() -> void:
-	var button: Button = _screen.get_node("%MusicDebugButton")
-	# Unrequested first, so switching the setting on plays nothing in the test.
-	AudioManager.stop_music()
-
-	button.pressed.emit()
-
-	assert_true(Settings.is_music_enabled)
-	assert_eq(button.text, "DEBUG_MUSIC_ON")
-	assert_false(AudioManager.is_music_loaded())
-
-
 func _create_session(board: BoardState) -> GameSession:
 	return GameSession.new(BalancingFixture.create_config_always_drawing(1), BalancingFixture.create_seeded_rng(SEED), board)
 

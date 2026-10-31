@@ -89,30 +89,6 @@ custom_minimum_size = Vector2(100, 100)
 layout_mode = 2
 text = "UI_PAUSE"
 
-[node name="DebugTools" type="HBoxContainer" parent="Margin/Layout" unique_id=1820376442]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-alignment = 1
-
-[node name="ThemeDebugButton" type="Button" parent="Margin/Layout/DebugTools" unique_id=539175145]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(100, 100)
-layout_mode = 2
-text = "DEBUG_THEME"
-
-[node name="VibrationDebugButton" type="Button" parent="Margin/Layout/DebugTools" unique_id=1873402519]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(100, 100)
-layout_mode = 2
-text = "DEBUG_VIBRATION_ON"
-
-[node name="MusicDebugButton" type="Button" parent="Margin/Layout/DebugTools" unique_id=1462093851]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(100, 100)
-layout_mode = 2
-text = "DEBUG_MUSIC_ON"
-
 [node name="Upcoming" type="HBoxContainer" parent="Margin/Layout" unique_id=162302845]
 layout_mode = 2
 theme_override_constants/separation = 64

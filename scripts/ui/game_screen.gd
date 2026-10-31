@@ -35,10 +35,6 @@ var _best_score_before_game: int
 @onready var _tutorial_panel: TutorialPanel = %TutorialPanel
 @onready var _game_over_panel: GameOverPanel = %GameOverPanel
 @onready var _pause_panel: PausePanel = %PausePanel
-@onready var _debug_tools: HBoxContainer = %DebugTools
-@onready var _theme_debug_button: Button = %ThemeDebugButton
-@onready var _vibration_debug_button: Button = %VibrationDebugButton
-@onready var _music_debug_button: Button = %MusicDebugButton
 
 
 func _ready() -> void:
@@ -65,7 +61,6 @@ func _ready() -> void:
 	for button_signal: Signal in [_pause_button.pressed, _pause_panel.resume_requested, _pause_panel.restart_requested, _pause_panel.menu_requested]:
 		button_signal.connect(_feedback.play_ui_click)
 	AppLifecycle.deactivated.connect(_on_app_deactivated)
-	_set_up_debug_tools()
 
 
 ## Replaces the saved game in progress, after counting it for the record.
@@ -237,46 +232,6 @@ func _apply_screen_palette(palette: ThemePalette) -> void:
 	_board_view.tile_painter = tile_painter
 	for swatch: TileSwatch in [_current_swatch, _reflection_swatch, _next_swatch]:
 		swatch.tile_painter = tile_painter
-
-
-## Debug builds only, to compare themes, switch vibration and music, and measure playback frame rate and audio latency on a phone until the settings screen exists (step 3.1).
-func _set_up_debug_tools() -> void:
-	if not OS.is_debug_build():
-		return
-	print("System dark mode: %s" % DisplayServer.is_dark_mode())
-	add_child(FrameRateProbe.new(_playback))
-	add_child(AudioLatencyProbe.new())
-	_debug_tools.visible = true
-	_theme_debug_button.pressed.connect(_switch_to_next_palette)
-	_vibration_debug_button.pressed.connect(_switch_vibration)
-	_show_vibration_setting()
-	_music_debug_button.pressed.connect(_switch_music)
-	_show_music_setting()
-
-
-func _switch_to_next_palette() -> void:
-	var palette_names: Array[String] = []
-	palette_names.assign(Settings.PALETTES.keys())
-	var next_index: int = (palette_names.find(Settings.palette_name) + 1) % palette_names.size()
-	Settings.palette_name = palette_names[next_index]
-
-
-func _switch_vibration() -> void:
-	Settings.is_vibration_enabled = not Settings.is_vibration_enabled
-	_show_vibration_setting()
-
-
-func _show_vibration_setting() -> void:
-	_vibration_debug_button.text = "DEBUG_VIBRATION_ON" if Settings.is_vibration_enabled else "DEBUG_VIBRATION_OFF"
-
-
-func _switch_music() -> void:
-	Settings.is_music_enabled = not Settings.is_music_enabled
-	_show_music_setting()
-
-
-func _show_music_setting() -> void:
-	_music_debug_button.text = "DEBUG_MUSIC_ON" if Settings.is_music_enabled else "DEBUG_MUSIC_OFF"
 
 
 func _format_highest_tile() -> String:

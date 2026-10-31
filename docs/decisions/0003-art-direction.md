@@ -19,7 +19,7 @@ Step 2.2 needs a visual identity readable on a small screen, in sunlight and for
 - **Tiles show only their value**, centered. A theme is only a palette.
 - **Backgrounds**: one image per theme (`ThemePalette.background_image`), generated with ChatGPT then picked among variants: calm, low-contrast center close to the palette background color, soft mirrored shapes near the top and bottom. Shown scaled to cover the screen, so taller or wider screens crop the edges.
 - **Tile base**: a `StyleBoxFlat` drawn by `TilePainter`, no image asset. Rounded corners and a darker bottom border as relief, both relative to the shorter side of the cell; like a 9-slice, corners keep their shape on stretched cells. The relief color is the tile color darkened, so it follows any palette.
-- No automatic theme following the system for now. Godot 4.7 has `DisplayServer.is_dark_mode()`; debug builds log it at launch to check Android support.
+- No automatic theme following the system for now. Godot 4.7 has `DisplayServer.is_dark_mode()`; its Android support is still to check. The launch log that reported it was removed with the other debug tools in step 3.1.
 
 ## Abandoned: level symbols
 
