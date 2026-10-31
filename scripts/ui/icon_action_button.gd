@@ -1,7 +1,7 @@
-class_name HomeActionButton
+class_name IconActionButton
 extends Button
 
-## A home menu button: a round badge holding an icon, the text, then a chevron.
+## A menu button: a round badge holding an icon, the text, then a chevron.
 ## The badge and the chevron sit in the style's content margins, so the minimum width counts them.
 ## Theme items of its variation: the `badge` style box and the `badge_icon_color` color.
 

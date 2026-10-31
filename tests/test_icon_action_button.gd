@@ -1,10 +1,10 @@
 extends GutTest
 
-const BUTTON_SCENE: PackedScene = preload("res://scenes/ui/home_action_button.tscn")
+const BUTTON_SCENE: PackedScene = preload("res://scenes/ui/icon_action_button.tscn")
 const BASE_THEME: Theme = preload("res://assets/themes/base_theme.tres")
 const VARIATIONS: Array[StringName] = [UiThemeBuilder.HOME_PRIMARY_BUTTON_TYPE, UiThemeBuilder.HOME_SECONDARY_BUTTON_TYPE]
 
-var _button: HomeActionButton
+var _button: IconActionButton
 
 
 func before_each() -> void:
@@ -27,5 +27,5 @@ func test_minimum_width_counts_the_badge_and_the_chevron() -> void:
 	var font: Font = _button.get_theme_font(&"font")
 	var text_width: float = font.get_string_size(_button.text, HORIZONTAL_ALIGNMENT_LEFT, -1, _button.get_theme_font_size(&"font_size")).x
 
-	var margins: float = HomeActionButton.TEXT_LEFT_MARGIN + HomeActionButton.TEXT_RIGHT_MARGIN
+	var margins: float = IconActionButton.TEXT_LEFT_MARGIN + IconActionButton.TEXT_RIGHT_MARGIN
 	assert_almost_eq(_button.get_combined_minimum_size().x, text_width + margins, 1.0)

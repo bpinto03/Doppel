@@ -19,17 +19,17 @@ var _choices: Array[HomeMenu.Choice] = [HomeMenu.Choice.PLAY]
 @onready var _layout: VBoxContainer = %Layout
 @onready var _logo: LogoMark = %Logo
 @onready var _choice_buttons: BoxContainer = %ChoiceButtons
-@onready var _play_button: HomeActionButton = %PlayButton
-@onready var _continue_button: HomeActionButton = %ContinueButton
+@onready var _play_button: IconActionButton = %PlayButton
+@onready var _continue_button: IconActionButton = %ContinueButton
 @onready var _secondary_buttons: BoxContainer = %SecondaryButtons
-@onready var _tutorial_button: HomeActionButton = %TutorialButton
-@onready var _settings_button: HomeActionButton = %SettingsButton
+@onready var _tutorial_button: IconActionButton = %TutorialButton
+@onready var _settings_button: IconActionButton = %SettingsButton
 
 
 func _ready() -> void:
 	super()
 	_apply_layout_sizes()
-	for button: HomeActionButton in [_play_button, _continue_button, _tutorial_button, _settings_button]:
+	for button: IconActionButton in [_play_button, _continue_button, _tutorial_button, _settings_button]:
 		button.pressed.connect(_play_click)
 	_play_button.pressed.connect(play_requested.emit)
 	_continue_button.pressed.connect(continue_requested.emit)
@@ -61,9 +61,9 @@ func _notification(what: int) -> void:
 
 func _apply_layout_sizes() -> void:
 	_logo.custom_minimum_size = LOGO_SIZE
-	for button: HomeActionButton in [_play_button, _continue_button]:
+	for button: IconActionButton in [_play_button, _continue_button]:
 		button.custom_minimum_size.y = PRIMARY_BUTTON_HEIGHT
-	for button: HomeActionButton in [_tutorial_button, _settings_button]:
+	for button: IconActionButton in [_tutorial_button, _settings_button]:
 		button.custom_minimum_size.y = SECONDARY_BUTTON_HEIGHT
 
 

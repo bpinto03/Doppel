@@ -4,7 +4,7 @@
 [ext_resource type="Theme" path="res://assets/themes/base_theme.tres" id="2_theme"]
 [ext_resource type="Script" uid="uid://c0a5hkffmvw0b" path="res://scripts/ui/safe_area_margin.gd" id="3_safe_area"]
 [ext_resource type="Script" path="res://scripts/ui/logo_mark.gd" id="4_logo"]
-[ext_resource type="PackedScene" path="res://scenes/ui/home_action_button.tscn" id="5_button"]
+[ext_resource type="PackedScene" path="res://scenes/ui/icon_action_button.tscn" id="5_button"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_play.svg" id="6_play"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_resume.svg" id="7_resume"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_graduation_cap.svg" id="8_tutorial"]

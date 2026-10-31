@@ -220,8 +220,8 @@ static func _add_home_button_box(theme: Theme, type: StringName, color: Color, b
 	theme.set_font_size(&"font_size", type, HOME_BUTTON_FONT_SIZE)
 	var normal_box: StyleBoxFlat = _create_bordered_box(color, border_color, HOME_BUTTON_BORDER_WIDTH, HOME_BUTTON_RADIUS)
 	_add_glow(normal_box, glow_color)
-	normal_box.content_margin_left = HomeActionButton.TEXT_LEFT_MARGIN
-	normal_box.content_margin_right = HomeActionButton.TEXT_RIGHT_MARGIN
+	normal_box.content_margin_left = IconActionButton.TEXT_LEFT_MARGIN
+	normal_box.content_margin_right = IconActionButton.TEXT_RIGHT_MARGIN
 	var pressed_box: StyleBoxFlat = normal_box.duplicate()
 	pressed_box.bg_color = color.darkened(PRESSED_DARKENING)
 	theme.set_stylebox(&"normal", type, normal_box)
@@ -236,7 +236,7 @@ static func _add_home_button_badge(theme: Theme, type: StringName, badge_color: 
 		theme.set_color(state, type, text_color)
 	var badge_box := StyleBoxFlat.new()
 	badge_box.bg_color = badge_color
-	badge_box.set_corner_radius_all(ceili(HomeActionButton.BADGE_SIZE / 2.0))
+	badge_box.set_corner_radius_all(ceili(IconActionButton.BADGE_SIZE / 2.0))
 	theme.set_stylebox(&"badge", type, badge_box)
 	theme.set_color(&"badge_icon_color", type, icon_color)
 

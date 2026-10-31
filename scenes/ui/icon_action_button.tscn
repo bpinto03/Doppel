@@ -1,8 +1,8 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scripts/ui/home_action_button.gd" id="1_button"]
+[ext_resource type="Script" path="res://scripts/ui/icon_action_button.gd" id="1_button"]
 
-[node name="HomeActionButton" type="Button"]
+[node name="IconActionButton" type="Button"]
 size_flags_horizontal = 3
 theme_type_variation = &"HomePrimaryButton"
 alignment = 0
