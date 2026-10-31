@@ -63,17 +63,17 @@ const ICON_BUTTON_RADIUS: int = 36
 const ICON_BUTTON_BORDER_WIDTH: int = 3
 const ICON_BUTTON_FONT_SIZE: int = 44
 ## Pause overlay: scrim, panel, title between two rules, then its buttons.
-const PAUSE_SCRIM_TYPE: StringName = &"PauseScrim"
-const PAUSE_CARD_TYPE: StringName = &"PauseCard"
-const PAUSE_TITLE_TYPE: StringName = &"PauseTitle"
-const PAUSE_TITLE_RULE_TYPE: StringName = &"PauseTitleRule"
-const PAUSE_RESUME_BUTTON_TYPE: StringName = &"PauseResumeButton"
-const PAUSE_SECONDARY_BUTTON_TYPE: StringName = &"PauseSecondaryButton"
-const PAUSE_CARD_RADIUS: int = 56
-const PAUSE_CARD_BORDER_WIDTH: int = 3
-const PAUSE_CARD_PADDING: int = 56
-const PAUSE_TITLE_FONT_SIZE: int = 104
-const PAUSE_TITLE_RULE_WIDTH: int = 3
+const MODAL_SCRIM_TYPE: StringName = &"ModalScrim"
+const MODAL_CARD_TYPE: StringName = &"ModalCard"
+const MODAL_TITLE_TYPE: StringName = &"ModalTitle"
+const MODAL_TITLE_RULE_TYPE: StringName = &"ModalTitleRule"
+const MODAL_PRIMARY_BUTTON_TYPE: StringName = &"ModalPrimaryButton"
+const MODAL_SECONDARY_BUTTON_TYPE: StringName = &"ModalSecondaryButton"
+const MODAL_CARD_RADIUS: int = 56
+const MODAL_CARD_BORDER_WIDTH: int = 3
+const MODAL_CARD_PADDING: int = 56
+const MODAL_TITLE_FONT_SIZE: int = 104
+const MODAL_TITLE_RULE_WIDTH: int = 3
 ## Tile, mirror and next previews under the HUD.
 const PREVIEW_COLUMN_TYPE: StringName = &"PreviewColumn"
 const PREVIEW_CAPTION_TYPE: StringName = &"PreviewCaption"
@@ -91,7 +91,7 @@ static func build(palette: ThemePalette, base_theme: Theme) -> Theme:
 	_add_preview_styles(theme)
 	_add_home_button_styles(theme, palette)
 	_add_glowing_label_style(theme, HOME_TITLE_TYPE, HOME_TITLE_FONT_SIZE, palette.title, palette.title_glow, TITLE_GLOW_SIZE)
-	_add_pause_styles(theme, palette)
+	_add_modal_styles(theme, palette)
 	return theme
 
 
@@ -229,27 +229,27 @@ static func _add_home_button_styles(theme: Theme, palette: ThemePalette) -> void
 	_add_icon_button_badge(theme, HOME_SECONDARY_BUTTON_TYPE, palette.home_secondary_badge, palette.home_secondary_icon, palette.home_secondary_text)
 
 
-static func _add_pause_styles(theme: Theme, palette: ThemePalette) -> void:
-	theme.set_type_variation(PAUSE_SCRIM_TYPE, &"Panel")
+static func _add_modal_styles(theme: Theme, palette: ThemePalette) -> void:
+	theme.set_type_variation(MODAL_SCRIM_TYPE, &"Panel")
 	var scrim_box := StyleBoxFlat.new()
-	scrim_box.bg_color = palette.pause_scrim
-	theme.set_stylebox(&"panel", PAUSE_SCRIM_TYPE, scrim_box)
-	theme.set_type_variation(PAUSE_CARD_TYPE, &"PanelContainer")
-	var card_box: StyleBoxFlat = _create_bordered_box(palette.pause_panel, palette.pause_panel_border, PAUSE_CARD_BORDER_WIDTH, PAUSE_CARD_RADIUS)
-	_set_content_margins(card_box, PAUSE_CARD_PADDING, PAUSE_CARD_PADDING)
-	_add_glow(card_box, palette.pause_panel_glow)
-	theme.set_stylebox(&"panel", PAUSE_CARD_TYPE, card_box)
-	_add_glowing_label_style(theme, PAUSE_TITLE_TYPE, PAUSE_TITLE_FONT_SIZE, palette.title, palette.title_glow, TITLE_GLOW_SIZE)
-	theme.set_type_variation(PAUSE_TITLE_RULE_TYPE, &"HSeparator")
+	scrim_box.bg_color = palette.modal_scrim
+	theme.set_stylebox(&"panel", MODAL_SCRIM_TYPE, scrim_box)
+	theme.set_type_variation(MODAL_CARD_TYPE, &"PanelContainer")
+	var card_box: StyleBoxFlat = _create_bordered_box(palette.modal_panel, palette.modal_panel_border, MODAL_CARD_BORDER_WIDTH, MODAL_CARD_RADIUS)
+	_set_content_margins(card_box, MODAL_CARD_PADDING, MODAL_CARD_PADDING)
+	_add_glow(card_box, palette.modal_panel_glow)
+	theme.set_stylebox(&"panel", MODAL_CARD_TYPE, card_box)
+	_add_glowing_label_style(theme, MODAL_TITLE_TYPE, MODAL_TITLE_FONT_SIZE, palette.title, palette.title_glow, TITLE_GLOW_SIZE)
+	theme.set_type_variation(MODAL_TITLE_RULE_TYPE, &"HSeparator")
 	var rule := StyleBoxLine.new()
-	rule.color = palette.pause_title_rule
-	rule.thickness = PAUSE_TITLE_RULE_WIDTH
-	theme.set_stylebox(&"separator", PAUSE_TITLE_RULE_TYPE, rule)
-	theme.set_constant(&"separation", PAUSE_TITLE_RULE_TYPE, PAUSE_TITLE_RULE_WIDTH)
-	_add_icon_button_box(theme, PAUSE_RESUME_BUTTON_TYPE, palette.pause_resume_button, palette.pause_resume_button_border, palette.pause_resume_button_glow)
-	_add_icon_button_badge(theme, PAUSE_RESUME_BUTTON_TYPE, palette.pause_resume_badge, palette.pause_resume_icon, palette.pause_resume_text)
-	_add_icon_button_box(theme, PAUSE_SECONDARY_BUTTON_TYPE, palette.pause_secondary_button, palette.pause_secondary_button_border, Color.TRANSPARENT)
-	_add_icon_button_badge(theme, PAUSE_SECONDARY_BUTTON_TYPE, palette.pause_secondary_badge, palette.pause_secondary_icon, palette.pause_secondary_text)
+	rule.color = palette.modal_title_rule
+	rule.thickness = MODAL_TITLE_RULE_WIDTH
+	theme.set_stylebox(&"separator", MODAL_TITLE_RULE_TYPE, rule)
+	theme.set_constant(&"separation", MODAL_TITLE_RULE_TYPE, MODAL_TITLE_RULE_WIDTH)
+	_add_icon_button_box(theme, MODAL_PRIMARY_BUTTON_TYPE, palette.modal_primary_button, palette.modal_primary_button_border, palette.modal_primary_button_glow)
+	_add_icon_button_badge(theme, MODAL_PRIMARY_BUTTON_TYPE, palette.modal_primary_badge, palette.modal_primary_icon, palette.modal_primary_text)
+	_add_icon_button_box(theme, MODAL_SECONDARY_BUTTON_TYPE, palette.modal_secondary_button, palette.modal_secondary_button_border, Color.TRANSPARENT)
+	_add_icon_button_badge(theme, MODAL_SECONDARY_BUTTON_TYPE, palette.modal_secondary_badge, palette.modal_secondary_icon, palette.modal_secondary_text)
 
 
 ## Hover looks like normal, since a tap on Android can leave a button hovered; a tap never shows a focus frame.

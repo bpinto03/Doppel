@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" path="res://assets/icons/icon_restart.svg" id="7_restart"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_gear.svg" id="8_settings"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_back.svg" id="9_back"]
+[ext_resource type="Script" path="res://scripts/ui/modal_card.gd" id="10_card"]
 
 [node name="PausePanel" type="Control" unique_id=1960482201]
 visible = false
@@ -27,7 +28,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_type_variation = &"PauseScrim"
+theme_type_variation = &"ModalScrim"
 
 [node name="Margin" type="MarginContainer" parent="." unique_id=1960482219]
 unique_name_in_owner = true
@@ -44,13 +45,13 @@ theme_override_constants/margin_bottom = 48
 script = ExtResource("3_safe_area")
 
 [node name="Center" type="CenterContainer" parent="Margin" unique_id=1960482203]
-unique_name_in_owner = true
 layout_mode = 2
 
 [node name="Panel" type="PanelContainer" parent="Margin/Center" unique_id=1960482204]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"PauseCard"
+theme_type_variation = &"ModalCard"
+script = ExtResource("10_card")
 
 [node name="Layout" type="VBoxContainer" parent="Margin/Center/Panel" unique_id=1960482205]
 layout_mode = 2
@@ -64,12 +65,12 @@ theme_override_constants/separation = 40
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
-theme_type_variation = &"PauseTitleRule"
+theme_type_variation = &"ModalTitleRule"
 
 [node name="TitleLabel" type="Label" parent="Margin/Center/Panel/Layout/TitleRow" unique_id=1960482207]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"PauseTitle"
+theme_type_variation = &"ModalTitle"
 text = "UI_PAUSE_TITLE"
 horizontal_alignment = 1
 
@@ -77,7 +78,7 @@ horizontal_alignment = 1
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
-theme_type_variation = &"PauseTitleRule"
+theme_type_variation = &"ModalTitleRule"
 
 [node name="MainPage" type="VBoxContainer" parent="Margin/Center/Panel/Layout" unique_id=1960482213]
 unique_name_in_owner = true
@@ -87,28 +88,28 @@ theme_override_constants/separation = 36
 [node name="ResumeButton" parent="Margin/Center/Panel/Layout/MainPage" unique_id=1960482210 instance=ExtResource("4_button")]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"PauseResumeButton"
+theme_type_variation = &"ModalPrimaryButton"
 text = "UI_RESUME"
 badge_icon = ExtResource("5_resume")
 
 [node name="MenuButton" parent="Margin/Center/Panel/Layout/MainPage" unique_id=1960482208 instance=ExtResource("4_button")]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"PauseSecondaryButton"
+theme_type_variation = &"ModalSecondaryButton"
 text = "UI_MENU"
 badge_icon = ExtResource("6_menu")
 
 [node name="RestartButton" parent="Margin/Center/Panel/Layout/MainPage" unique_id=1960482209 instance=ExtResource("4_button")]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"PauseSecondaryButton"
+theme_type_variation = &"ModalSecondaryButton"
 text = "UI_RESTART"
 badge_icon = ExtResource("7_restart")
 
 [node name="SettingsButton" parent="Margin/Center/Panel/Layout/MainPage" unique_id=1960482214 instance=ExtResource("4_button")]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"PauseSecondaryButton"
+theme_type_variation = &"ModalSecondaryButton"
 text = "UI_SETTINGS"
 badge_icon = ExtResource("8_settings")
 
@@ -126,6 +127,6 @@ shown_groups = Array[int]([0])
 [node name="BackButton" parent="Margin/Center/Panel/Layout/SettingsPage" unique_id=1960482218 instance=ExtResource("4_button")]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"PauseSecondaryButton"
+theme_type_variation = &"ModalSecondaryButton"
 text = "UI_BACK"
 badge_icon = ExtResource("9_back")
