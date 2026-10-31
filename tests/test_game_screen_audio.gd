@@ -28,7 +28,7 @@ func after_each() -> void:
 
 
 func test_new_turn_plays_its_placement_sound_after_a_skip() -> void:
-	_screen.start_game(_create_session(BoardState.new(3, 6)))
+	_screen.start_game(_create_session(BoardState.new(3, 6)), RecordBook.get_best_score())
 	_board_view.column_released.emit(0)
 	_board_view.pressed_while_locked.emit()
 	var placements_before: int = _count_played(AUDIO_CONFIG.placement)
@@ -41,7 +41,7 @@ func test_new_turn_plays_its_placement_sound_after_a_skip() -> void:
 
 ## Filling the last free pair ends the game, even when the turn is skipped.
 func test_game_over_plays_when_the_game_ends_during_a_skipped_turn() -> void:
-	_screen.start_game(_create_session(_create_board_one_pair_from_full()))
+	_screen.start_game(_create_session(_create_board_one_pair_from_full()), RecordBook.get_best_score())
 
 	_board_view.column_released.emit(0)
 	_board_view.pressed_while_locked.emit()
@@ -50,7 +50,7 @@ func test_game_over_plays_when_the_game_ends_during_a_skipped_turn() -> void:
 
 
 func test_game_over_vibrates() -> void:
-	_screen.start_game(_create_session(_create_board_one_pair_from_full()))
+	_screen.start_game(_create_session(_create_board_one_pair_from_full()), RecordBook.get_best_score())
 	watch_signals(HapticsManager)
 
 	_board_view.column_released.emit(0)

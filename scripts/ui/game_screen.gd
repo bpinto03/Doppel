@@ -4,6 +4,7 @@ extends PaletteScreen
 ## One game, or the tutorial. Main starts it with start_new_game(), start_tutorial() or start_game().
 
 signal turn_playback_finished
+signal home_requested
 
 const BALANCING_CONFIG: BalancingConfig = preload("res://data/balancing.tres")
 const PLAYBACK_CONFIG: ResolutionPlaybackConfig = preload("res://data/resolution_playback.tres")
@@ -19,6 +20,7 @@ var _playback: ResolutionPlayback
 var _feedback: GameFeedback
 var _tutorial_steps: Array[TutorialStep] = []
 var _tutorial_step_index: int = NO_TUTORIAL_STEP
+var _best_score_before_game: int
 
 @onready var _board_view: BoardView = %BoardView
 @onready var _score_label: Label = %ScoreLabel
@@ -27,11 +29,11 @@ var _tutorial_step_index: int = NO_TUTORIAL_STEP
 @onready var _current_swatch: TileSwatch = %CurrentSwatch
 @onready var _reflection_swatch: TileSwatch = %ReflectionSwatch
 @onready var _next_swatch: TileSwatch = %NextSwatch
-@onready var _game_over_label: Label = %GameOverLabel
 @onready var _restart_button: Button = %RestartButton
 @onready var _help_button: Button = %HelpButton
 @onready var _combo_label: Label = %ComboLabel
 @onready var _tutorial_panel: TutorialPanel = %TutorialPanel
+@onready var _game_over_panel: GameOverPanel = %GameOverPanel
 @onready var _debug_tools: HBoxContainer = %DebugTools
 @onready var _theme_debug_button: Button = %ThemeDebugButton
 @onready var _vibration_debug_button: Button = %VibrationDebugButton
@@ -53,6 +55,10 @@ func _ready() -> void:
 	_help_button.pressed.connect(_feedback.play_ui_click)
 	_tutorial_panel.next_requested.connect(_feedback.play_ui_click)
 	_tutorial_panel.skip_requested.connect(_feedback.play_ui_click)
+	_game_over_panel.replay_requested.connect(start_new_game)
+	_game_over_panel.menu_requested.connect(home_requested.emit)
+	_game_over_panel.replay_requested.connect(_feedback.play_ui_click)
+	_game_over_panel.menu_requested.connect(_feedback.play_ui_click)
 	AppLifecycle.deactivated.connect(_on_app_deactivated)
 	_set_up_debug_tools()
 
@@ -64,14 +70,17 @@ func start_new_game() -> void:
 		RecordBook.submit(abandoned_session)
 	var rng := RandomNumberGenerator.new()
 	rng.randomize()
-	start_game(GameSession.new(BALANCING_CONFIG, rng))
-	CurrentGameStore.store(_session)
+	start_game(GameSession.new(BALANCING_CONFIG, rng), RecordBook.get_best_score())
+	CurrentGameStore.store(_session, _best_score_before_game)
 
 
 ## Plays the given game outside the tutorial, as it is: a resumed game shows its board without animation.
-func start_game(session: GameSession) -> void:
+## best_score_before_game tells the game over screen whether this game beat the record.
+func start_game(session: GameSession, best_score_before_game: int) -> void:
 	_stop_tutorial()
+	_game_over_panel.visible = false
 	_session = session
+	_best_score_before_game = best_score_before_game
 	_set_input_enabled(true)
 	_refresh()
 
@@ -91,7 +100,11 @@ func is_tutorial_running() -> bool:
 
 
 func get_navigation_state() -> ScreenNavigation.GameState:
-	return ScreenNavigation.GameState.TUTORIAL if is_tutorial_running() else ScreenNavigation.GameState.PLAYING
+	if is_tutorial_running():
+		return ScreenNavigation.GameState.TUTORIAL
+	if _game_over_panel.visible:
+		return ScreenNavigation.GameState.GAME_OVER
+	return ScreenNavigation.GameState.PLAYING
 
 
 func get_tutorial_step_index() -> int:
@@ -147,7 +160,7 @@ func _save_turn() -> void:
 	if _session.is_game_over:
 		CurrentGameStore.erase()
 	else:
-		CurrentGameStore.store(_session)
+		CurrentGameStore.store(_session, _best_score_before_game)
 
 
 ## In the tutorial, the board stays locked until the player moves to the next step.
@@ -155,6 +168,7 @@ func _on_playback_finished() -> void:
 	_refresh()
 	if _session.is_game_over:
 		_feedback.play_game_over()
+		_game_over_panel.show_summary(GameOverSummary.new(_session, _best_score_before_game, RecordBook.get_best_score()))
 	if is_tutorial_running():
 		_restart_button.disabled = false
 		_help_button.disabled = false
@@ -182,7 +196,6 @@ func _refresh() -> void:
 	_current_swatch.level = _session.tile_generator.current_level
 	_reflection_swatch.level = _session.get_next_reflection_level()
 	_next_swatch.level = _session.tile_generator.next_level
-	_game_over_label.visible = _session.is_game_over
 
 
 func _apply_screen_palette(palette: ThemePalette) -> void:

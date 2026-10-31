@@ -81,7 +81,7 @@ func test_press_made_before_an_interruption_plays_nothing_on_release() -> void:
 func _create_game_screen() -> GameScreen:
 	var game: GameScreen = GAME_SCREEN_SCENE.instantiate()
 	add_child_autofree(game)
-	game.start_game(GameSession.new(BALANCING_CONFIG, BalancingFixture.create_seeded_rng(SEED)))
+	game.start_game(GameSession.new(BALANCING_CONFIG, BalancingFixture.create_seeded_rng(SEED)), RecordBook.get_best_score())
 	return game
 
 

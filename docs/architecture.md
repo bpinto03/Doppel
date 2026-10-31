@@ -32,14 +32,14 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 
 - At launch, the home screen, never a game directly. Its choices come from `CurrentGameStore.load_session()`.
 - Play opens the tutorial on the first Play of each launch (not remembered between launches until step 3.1), then a new game. Continue resumes the saved game with `GameScreen.start_game()`, with no drop or merge animation.
-- The Android back button (`NOTIFICATION_WM_GO_BACK_REQUEST`, with `application/config/quit_on_go_back` off) is resolved by `ScreenNavigation.resolve_back()` from the current screen and the game state (`GameScreen.get_navigation_state()`); `Main` applies the answer. It goes from a game or the tutorial back to the home screen, and quits from the home screen.
+- The Android back button (`NOTIFICATION_WM_GO_BACK_REQUEST`, with `application/config/quit_on_go_back` off) is resolved by `ScreenNavigation.resolve_back()` from the current screen and the game state (`GameScreen.get_navigation_state()`); `Main` applies the answer. It goes from a game, the tutorial or the game over screen back to the home screen, and quits from the home screen.
 - It asks `AudioManager.start_music()` once at launch, so the music never restarts between screens.
 
 ### `scripts/save/` — saved game data
 
 | Script | Responsibility |
 |--------|----------------|
-| `current_game_store.gd` | `CurrentGameStore`: the game in progress in the `current_game` save section. `load_session()` returns null when none is saved, and discards (with a warning) a saved game that `GameSession.create_from_data()` rejects, keeping the rest of the save. `store()` replaces the section, `erase()` removes it |
+| `current_game_store.gd` | `CurrentGameStore`: the game in progress in the `current_game` save section, with the record before that game (`best_score_before_game`), so a resumed game still knows whether it beat the record. `load_session()` returns null when none is saved, and discards (with a warning) a saved game that `GameSession.create_from_data()` rejects, keeping the rest of the save. `store()` replaces the section, `erase()` removes it |
 | `record_book.gd` | `RecordBook`: best score and highest tile level over every real game, in the `record` section; `submit()` only raises them |
 
 ### `scripts/ui/` — presentation
@@ -48,9 +48,11 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 |--------|----------------|
 | `palette_screen.gd` | `PaletteScreen`: base of full screens. Applies the active palette (interface theme, background color and image) and rebuilds it on `Settings.palette_changed`; `_apply_screen_palette()` adds what a screen draws itself |
 | `home_screen.gd` | `HomeScreen`: title, Play, and Continue when a game is saved; emits `play_requested`, `continue_requested`. Lays the buttons side by side (Play left, Continue right, same width) when twice the widest button's minimum width fits, else stacks them (Continue on top), checked again on resize and language change |
+| `game_over_summary.gd` | `GameOverSummary`: pure values of the game over screen (score, record, highest tile) and whether the record was just beaten, against the record before the game; a previous record of 0 is never announced as beaten |
+| `game_over_panel.gd` | `GameOverPanel`: overlay over the finished game, with Play again (new game in one tap) and Menu (`menu_requested`, which `GameScreen` turns into `home_requested`). `RewardSlot` stays hidden until coins (3.2) and rewarded ads (phase 4) |
 | `screen_navigation.gd` | `ScreenNavigation`: pure decisions of where the back button leads, per screen and game state |
 | `home_menu.gd` | `HomeMenu`: pure decisions of the home screen: choices offered, their order, and whether to stack them from the buttons' real minimum widths |
-| `game_screen.gd` | `GameScreen`: owns the `GameSession` (`start_new_game()`, `start_tutorial()`, or `start_game()` with a given session), forwards released columns, saves each real turn (see Save flow), starts the playback of each turn, refreshes the HUD when it ends, emits `turn_playback_finished`, redraws the tiles and combo outline with the palette; in debug builds, shows the debug row (theme, vibration and music switches) and logs `DisplayServer.is_dark_mode()` |
+| `game_screen.gd` | `GameScreen`: owns the `GameSession` (`start_new_game()`, `start_tutorial()`, or `start_game()` with a given session and the record before it), forwards released columns, saves each real turn (see Save flow), starts the playback of each turn, refreshes the HUD when it ends and shows the game over overlay when the game is over, emits `turn_playback_finished` and `home_requested`, reports its state to `ScreenNavigation` (`get_navigation_state()`), redraws the tiles and combo outline with the palette; in debug builds, shows the debug row (theme, vibration and music switches) and logs `DisplayServer.is_dark_mode()` |
 | `board_view.gd` | Draws the board frame (`StyleBoxFlat`, palette `panel` color), the displayed board, moving tiles, merge pulses and the placement ghost, dims unplayable columns, maps a touched column to the played left column (`find_played_column`), emits `column_released`, `pressed_while_locked`, and `unplayable_column_released` on a release over a column that cannot take the pair. The mirror axis (a `ColorRect`, placed when the board or the view size changes) and board effects such as particles sit in a child effects layer |
 | `merge_particles.gd` | `MergeParticles`: fixed pool of one-shot `CPUParticles2D` emitters with a generated disc texture; bursts never exceed the live particle cap |
 | `board_style.gd` | `BoardStyle`: frame padding and corner radius, cell gap, axis width, loaded from `data/board_style.tres` |
@@ -128,6 +130,7 @@ The ambient music is `assets/audio/music/musical_ambiance.ogg`, one track for ev
 - `scenes/ui/home_screen.tscn`: title and the Play / Continue buttons.
 - `scenes/game/game_screen.tscn`: HUD with "?" button, a `DebugTools` row under it (hidden outside debug builds, so the debug buttons never widen the HUD), previews, board with the centered combo label, tutorial panel, restart button.
 - `scenes/game/tutorial_panel.tscn`: tutorial message and buttons.
+- `scenes/game/game_over_panel.tscn`: game over overlay of the game screen.
 
 ### Data and assets
 
@@ -207,7 +210,7 @@ What is saved, in `user://save.cfg` (format: [0002](decisions/0002-save-format.m
 
 - `record`: best score and highest tile level (`RecordBook`).
 - `settings`: every `Settings` value, written on each change.
-- `current_game`: the game in progress, `GameSession.to_data()` (`CurrentGameStore`). Never the tutorial.
+- `current_game`: the game in progress, `GameSession.to_data()`, and the record before it (`CurrentGameStore`). Never the tutorial.
 
 When:
 

@@ -59,12 +59,13 @@ func _on_continue_requested() -> void:
 	if session == null:
 		show_home()
 		return
-	_show_game().start_game(session)
+	_show_game().start_game(session, CurrentGameStore.load_best_score_before_game())
 
 
 func _show_game() -> GameScreen:
 	var game: GameScreen = GAME_SCREEN_SCENE.instantiate()
 	_replace_screen(game)
+	game.home_requested.connect(show_home)
 	return game
 
 

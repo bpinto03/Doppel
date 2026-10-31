@@ -18,3 +18,10 @@ func test_back_from_a_game_shows_home() -> void:
 		ScreenNavigation.resolve_back(ScreenNavigation.Screen.GAME, ScreenNavigation.GameState.PLAYING),
 		ScreenNavigation.BackAction.SHOW_HOME
 	)
+
+
+func test_back_from_the_game_over_screen_shows_home() -> void:
+	assert_eq(
+		ScreenNavigation.resolve_back(ScreenNavigation.Screen.GAME, ScreenNavigation.GameState.GAME_OVER),
+		ScreenNavigation.BackAction.SHOW_HOME
+	)

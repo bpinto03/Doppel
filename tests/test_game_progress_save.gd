@@ -29,13 +29,13 @@ func test_each_turn_saves_the_game_before_its_playback() -> void:
 	_release_first_playable_column(game)
 
 	assert_false((game.get_node("%BoardView") as BoardView).is_input_enabled, "The playback must still be running")
-	assert_eq(SaveManager.get_section(CurrentGameStore.SECTION), game.get_session().to_data())
+	assert_eq(_get_saved_game_data(), game.get_session().to_data())
 
 
 func test_saved_game_survives_a_reload_and_draws_the_same_tiles() -> void:
 	var session := GameSession.new(BALANCING_CONFIG, BalancingFixture.create_seeded_rng(SEED))
 	session.play_column(0)
-	CurrentGameStore.store(session)
+	CurrentGameStore.store(session, RecordBook.get_best_score())
 	SaveManager.flush()
 
 	SaveManager.load_save()
@@ -51,8 +51,8 @@ func test_game_over_erases_the_saved_game_and_keeps_the_record() -> void:
 	var game: GameScreen = _create_game_screen()
 	var session := GameSession.new(BALANCING_CONFIG, BalancingFixture.create_seeded_rng(SEED), _create_board_one_pair_from_full())
 	session.score = HIGH_SCORE
-	CurrentGameStore.store(session)
-	game.start_game(session)
+	CurrentGameStore.store(session, RecordBook.get_best_score())
+	game.start_game(session, RecordBook.get_best_score())
 
 	game.get_node("%BoardView").column_released.emit(0)
 
@@ -82,8 +82,8 @@ func test_new_game_counts_a_better_abandoned_game_for_the_record_and_replaces_it
 	game.start_new_game()
 
 	assert_eq(RecordBook.get_best_score(), HIGH_SCORE)
-	assert_eq(SaveManager.get_section(CurrentGameStore.SECTION), game.get_session().to_data())
-	assert_ne(SaveManager.get_section(CurrentGameStore.SECTION), abandoned.to_data())
+	assert_eq(_get_saved_game_data(), game.get_session().to_data())
+	assert_ne(_get_saved_game_data(), abandoned.to_data())
 
 
 func test_new_game_keeps_a_better_record_than_the_abandoned_game() -> void:
@@ -102,10 +102,10 @@ func test_tutorial_leaves_the_saved_game_untouched_until_the_new_game_starts() -
 	var game := main.get_current_screen() as GameScreen
 
 	_release_first_playable_column(game)
-	assert_eq(SaveManager.get_section(CurrentGameStore.SECTION), saved_game.to_data())
+	assert_eq(_get_saved_game_data(), saved_game.to_data())
 
 	game.get_node("%TutorialPanel").skip_requested.emit()
-	assert_eq(SaveManager.get_section(CurrentGameStore.SECTION), game.get_session().to_data())
+	assert_eq(_get_saved_game_data(), game.get_session().to_data())
 
 
 func test_back_from_the_tutorial_keeps_the_saved_game() -> void:
@@ -115,7 +115,7 @@ func test_back_from_the_tutorial_keeps_the_saved_game() -> void:
 
 	main.go_back()
 
-	assert_eq(SaveManager.get_section(CurrentGameStore.SECTION), saved_game.to_data())
+	assert_eq(_get_saved_game_data(), saved_game.to_data())
 	assert_true((main.get_current_screen() as HomeScreen).is_choice_shown(HomeMenu.Choice.CONTINUE))
 
 
@@ -148,7 +148,7 @@ func _store_game_in_progress(score: int) -> GameSession:
 	var session := GameSession.new(BALANCING_CONFIG, BalancingFixture.create_seeded_rng(SEED))
 	session.play_column(0)
 	session.score = score
-	CurrentGameStore.store(session)
+	CurrentGameStore.store(session, RecordBook.get_best_score())
 	return session
 
 
@@ -170,3 +170,9 @@ func _create_board_one_pair_from_full() -> BoardState:
 		"3 2 3 | 2 3 2",
 		"2 3 2 | 3 2 3",
 	])
+
+## The saved game without the record kept beside it, to compare with GameSession.to_data().
+func _get_saved_game_data() -> Dictionary[String, Variant]:
+	var data: Dictionary[String, Variant] = SaveManager.get_section(CurrentGameStore.SECTION)
+	data.erase(CurrentGameStore.BEST_SCORE_BEFORE_GAME_KEY)
+	return data

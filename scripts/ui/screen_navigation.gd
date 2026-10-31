@@ -4,7 +4,7 @@ extends RefCounted
 ## Where the Android back button leads from each screen and game state. Main and GameScreen apply the answer; they never decide it.
 
 enum Screen { HOME, GAME }
-enum GameState { PLAYING, TUTORIAL }
+enum GameState { PLAYING, TUTORIAL, GAME_OVER }
 enum BackAction { QUIT, SHOW_HOME }
 
 
