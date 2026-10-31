@@ -32,7 +32,7 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 
 - At launch, the home screen, never a game directly. Its choices come from `CurrentGameStore.load_session()`.
 - Play opens the tutorial on the first Play of each launch (not remembered between launches until step 3.1), then a new game. Continue resumes the saved game with `GameScreen.start_game()`, with no drop or merge animation.
-- The Android back button (`NOTIFICATION_WM_GO_BACK_REQUEST`, with `application/config/quit_on_go_back` off) goes from the game, the tutorial or the game over screen back to the home screen, and quits from the home screen.
+- The Android back button (`NOTIFICATION_WM_GO_BACK_REQUEST`, with `application/config/quit_on_go_back` off) is resolved by `ScreenNavigation.resolve_back()` from the current screen and the game state (`GameScreen.get_navigation_state()`); `Main` applies the answer. It goes from a game or the tutorial back to the home screen, and quits from the home screen.
 - It asks `AudioManager.start_music()` once at launch, so the music never restarts between screens.
 
 ### `scripts/save/` — saved game data
@@ -48,6 +48,7 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 |--------|----------------|
 | `palette_screen.gd` | `PaletteScreen`: base of full screens. Applies the active palette (interface theme, background color and image) and rebuilds it on `Settings.palette_changed`; `_apply_screen_palette()` adds what a screen draws itself |
 | `home_screen.gd` | `HomeScreen`: title, Play, and Continue when a game is saved; emits `play_requested`, `continue_requested`. Lays the buttons side by side (Play left, Continue right, same width) when twice the widest button's minimum width fits, else stacks them (Continue on top), checked again on resize and language change |
+| `screen_navigation.gd` | `ScreenNavigation`: pure decisions of where the back button leads, per screen and game state |
 | `home_menu.gd` | `HomeMenu`: pure decisions of the home screen: choices offered, their order, and whether to stack them from the buttons' real minimum widths |
 | `game_screen.gd` | `GameScreen`: owns the `GameSession` (`start_new_game()`, `start_tutorial()`, or `start_game()` with a given session), forwards released columns, saves each real turn (see Save flow), starts the playback of each turn, refreshes the HUD when it ends, emits `turn_playback_finished`, redraws the tiles and combo outline with the palette; in debug builds, shows the debug row (theme, vibration and music switches) and logs `DisplayServer.is_dark_mode()` |
 | `board_view.gd` | Draws the board frame (`StyleBoxFlat`, palette `panel` color), the displayed board, moving tiles, merge pulses and the placement ghost, dims unplayable columns, maps a touched column to the played left column (`find_played_column`), emits `column_released`, `pressed_while_locked`, and `unplayable_column_released` on a release over a column that cannot take the pair. The mirror axis (a `ColorRect`, placed when the board or the view size changes) and board effects such as particles sit in a child effects layer |

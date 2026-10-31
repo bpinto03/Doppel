@@ -90,6 +90,10 @@ func is_tutorial_running() -> bool:
 	return _tutorial_step_index != NO_TUTORIAL_STEP
 
 
+func get_navigation_state() -> ScreenNavigation.GameState:
+	return ScreenNavigation.GameState.TUTORIAL if is_tutorial_running() else ScreenNavigation.GameState.PLAYING
+
+
 func get_tutorial_step_index() -> int:
 	return _tutorial_step_index
 

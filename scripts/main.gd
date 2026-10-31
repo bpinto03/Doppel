@@ -1,7 +1,7 @@
 extends Node
 
-## Owns the navigation: one screen at a time, the home screen at launch. Handles the Android back button
-## (application/config/quit_on_go_back is off) and keeps the music playing across screens.
+## Owns the screens: one at a time, the home screen at launch. Applies the Android back button as ScreenNavigation
+## decides (application/config/quit_on_go_back is off), and keeps the music playing across screens.
 
 const HOME_SCREEN_SCENE: PackedScene = preload("res://scenes/ui/home_screen.tscn")
 const GAME_SCREEN_SCENE: PackedScene = preload("res://scenes/game/game_screen.tscn")
@@ -22,12 +22,15 @@ func _notification(what: int) -> void:
 		go_back()
 
 
-## From a game, the tutorial or the game over screen, back to the home screen; from the home screen, quits.
 func go_back() -> void:
-	if _current_screen is HomeScreen:
-		get_tree().quit()
-	else:
-		show_home()
+	var game := _current_screen as GameScreen
+	var screen: ScreenNavigation.Screen = ScreenNavigation.Screen.GAME if game != null else ScreenNavigation.Screen.HOME
+	var game_state: ScreenNavigation.GameState = game.get_navigation_state() if game != null else ScreenNavigation.GameState.PLAYING
+	match ScreenNavigation.resolve_back(screen, game_state):
+		ScreenNavigation.BackAction.QUIT:
+			get_tree().quit()
+		ScreenNavigation.BackAction.SHOW_HOME:
+			show_home()
 
 
 func show_home() -> void:
