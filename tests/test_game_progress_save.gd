@@ -120,9 +120,8 @@ func test_back_from_the_tutorial_keeps_the_saved_game() -> void:
 
 
 func test_back_from_a_game_offers_to_continue_it() -> void:
+	PlayerProgress.mark_tutorial_seen()
 	var main: Node = _start_main()
-	(main.get_current_screen() as HomeScreen).play_requested.emit()
-	main.go_back()
 	(main.get_current_screen() as HomeScreen).play_requested.emit()
 	var game := main.get_current_screen() as GameScreen
 	var played_game: GameSession = game.get_session()

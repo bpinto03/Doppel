@@ -64,15 +64,21 @@ func test_finished_saved_game_is_not_offered() -> void:
 	assert_false(home.is_choice_shown(HomeMenu.Choice.CONTINUE))
 
 
-func test_first_play_opens_the_tutorial_and_the_next_one_a_game() -> void:
+func test_tutorial_opens_on_play_until_finished_or_skipped_then_never_again() -> void:
 	var main: Node = _start_main()
 
 	(main.get_current_screen() as HomeScreen).play_requested.emit()
 	assert_true((main.get_current_screen() as GameScreen).is_tutorial_running())
 	main.go_back()
 	(main.get_current_screen() as HomeScreen).play_requested.emit()
+	assert_true((main.get_current_screen() as GameScreen).is_tutorial_running(), "Back does not count as seen")
+	(main.get_current_screen().get_node("%TutorialPanel") as TutorialPanel).skip_requested.emit()
+	main.go_back()
+	(main.get_current_screen().get_node("%PausePanel").get_node("%MenuButton") as Button).pressed.emit()
+	(main.get_current_screen() as HomeScreen).play_requested.emit()
 
 	assert_false((main.get_current_screen() as GameScreen).is_tutorial_running())
+	assert_true(PlayerProgress.has_seen_tutorial())
 
 
 func test_continue_resumes_the_saved_game() -> void:

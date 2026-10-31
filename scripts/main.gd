@@ -9,8 +9,6 @@ const SETTINGS_SCREEN_SCENE: PackedScene = preload("res://scenes/ui/settings_scr
 const BALANCING_CONFIG: BalancingConfig = preload("res://data/balancing.tres")
 
 var _current_screen: Control
-## The tutorial opens the first Play of each launch; it is not remembered between launches yet (step 3.1).
-var _has_shown_tutorial: bool
 
 
 func _ready() -> void:
@@ -52,11 +50,11 @@ func get_current_screen() -> Control:
 
 func _on_play_requested() -> void:
 	var game: GameScreen = _show_game()
-	if _has_shown_tutorial:
-		game.start_new_game()
-	else:
-		_has_shown_tutorial = true
-		game.start_tutorial()
+	match ScreenNavigation.resolve_play(PlayerProgress.has_seen_tutorial()):
+		ScreenNavigation.PlayAction.TUTORIAL:
+			game.start_tutorial()
+		ScreenNavigation.PlayAction.NEW_GAME:
+			game.start_new_game()
 
 
 func _on_continue_requested() -> void:

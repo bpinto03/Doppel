@@ -32,7 +32,7 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 
 - At launch, the home screen, never a game directly. Its choices come from `CurrentGameStore.load_session()`.
 - Settings opens the settings screen from the home screen only; its Back button and the back button return home.
-- Play opens the tutorial on the first Play of each launch (not remembered between launches until step 3.1), then a new game. Continue resumes the saved game with `GameScreen.start_game()`, with no drop or merge animation.
+- Play opens the tutorial until the player finished or skipped it once (`ScreenNavigation.resolve_play()`, `PlayerProgress.has_seen_tutorial()`), then a new game. Continue resumes the saved game with `GameScreen.start_game()`, with no drop or merge animation.
 - The Android back button (`NOTIFICATION_WM_GO_BACK_REQUEST`, with `application/config/quit_on_go_back` off) is resolved by `ScreenNavigation.resolve_back()` from the current screen and the game state (`GameScreen.get_navigation_state()`); `Main` applies the answer: quit from home, pause from a game in progress, resume from the pause, home from the tutorial, the game over screen and the settings (see [0006](decisions/0006-back-button-and-overlays.md)).
 - It asks `AudioManager.start_music()` once at launch, so the music never restarts between screens.
 
@@ -42,6 +42,7 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 |--------|----------------|
 | `current_game_store.gd` | `CurrentGameStore`: the game in progress in the `current_game` save section, with the record before that game (`best_score_before_game`), so a resumed game still knows whether it beat the record. `load_session()` returns null when none is saved, and discards (with a warning) a saved game that `GameSession.create_from_data()` rejects, keeping the rest of the save. `store()` replaces the section, `erase()` removes it |
 | `record_book.gd` | `RecordBook`: best score and highest tile level over every real game, in the `record` section; `submit()` only raises them |
+| `player_progress.gd` | `PlayerProgress`: what the player did once and for all, in the `progress` section: `has_seen_tutorial()` (false when the key is missing), `mark_tutorial_seen()` |
 
 ### `scripts/ui/` — presentation
 
@@ -203,16 +204,17 @@ Both playback signals are tween callbacks: a skip kills the tween, so the remain
 
 ## Tutorial flow
 
-1. `GameScreen.start_tutorial()` runs on the first Play of each launch and from the "?" button. It replaces the displayed session with the step's `TutorialStep.create_session()`; the saved game in progress is left untouched.
+1. `GameScreen.start_tutorial()` runs on Play until the tutorial was seen, and from the "?" button. It replaces the displayed session with the step's `TutorialStep.create_session()`; the saved game in progress is left untouched.
 2. `BoardView.show_tutorial_hint()` pulses the target column, its mirror, the step's cells and the axis, and sets `restricted_column` so only the target column (or its mirror) can be played.
 3. On release, `GameScreen` plays the turn like any other, through `ResolutionPlayback`. The hint is cleared.
-4. On `playback_finished`, the board stays locked and `TutorialPanel` shows the explanation. Next loads the following step; after the last one, or on Skip, `start_new_game()` starts a real game, which replaces the saved one.
+4. On `playback_finished`, the board stays locked and `TutorialPanel` shows the explanation. Next loads the following step; after the last one, or on Skip, the tutorial is marked as seen (`PlayerProgress.mark_tutorial_seen()`) and `start_new_game()` starts a real game, which replaces the saved one.
 
 ## Save flow
 
 What is saved, in `user://save.cfg` (format: [0002](decisions/0002-save-format.md), writing: [0005](decisions/0005-save-writing.md)):
 
 - `record`: best score and highest tile level (`RecordBook`).
+- `progress`: whether the tutorial was seen (`PlayerProgress`).
 - `settings`: every `Settings` value, written on each change.
 - `current_game`: the game in progress, `GameSession.to_data()`, and the record before it (`CurrentGameStore`). Never the tutorial.
 
