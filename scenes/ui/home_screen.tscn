@@ -79,3 +79,9 @@ custom_minimum_size = Vector2(0, 180)
 layout_mode = 2
 size_flags_horizontal = 3
 text = "UI_CONTINUE"
+
+[node name="SettingsButton" type="Button" parent="Margin/Layout" unique_id=1170235908]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 140)
+layout_mode = 2
+text = "UI_SETTINGS"

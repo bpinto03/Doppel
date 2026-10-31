@@ -136,7 +136,7 @@ Outil : simulateur d'équilibrage (`./run_simulation.sh`, voir `docs/balancing.m
 ## Phase 3 — Méta-jeu : menus, pièces, thèmes, défis
 
 ### 3.1 Navigation et écrans
-- [ ] Écran d'accueil : Jouer / Continuer existent déjà (2.5) ; reste à ajouter Défi du jour, Boutique et Réglages
+- [ ] Écran d'accueil : Jouer / Continuer (2.5) et Réglages (3.1) ; Défi du jour et Boutique viendront en 3.3 et 3.2
 - [ ] Écran de fin de partie (score, record, pièces gagnées, rejouer)
 - [ ] Écran de pause
 - [ ] Écran de réglages (son, musique, vibration, langue, thème Papier / Nuit) ; retirer les boutons de debug « Thème », « Vib » et « Musique » du HUD et les logs de debug FPS (`FrameRateProbe`) et latence audio (`AudioLatencyProbe`).

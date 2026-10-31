@@ -1,10 +1,12 @@
 class_name HomeScreen
 extends PaletteScreen
 
-## Entry screen: Play, and Continue when a game in progress is saved. Step 3.1 adds its other entries to the choice buttons.
+## Entry screen: Play, and Continue when a game in progress is saved, then Settings.
+## The daily challenge (3.3) and the shop (3.2) will join Settings below the choice buttons.
 
 signal play_requested
 signal continue_requested
+signal settings_requested
 
 var _choices: Array[HomeMenu.Choice] = [HomeMenu.Choice.PLAY]
 
@@ -12,12 +14,14 @@ var _choices: Array[HomeMenu.Choice] = [HomeMenu.Choice.PLAY]
 @onready var _choice_buttons: BoxContainer = %ChoiceButtons
 @onready var _play_button: Button = %PlayButton
 @onready var _continue_button: Button = %ContinueButton
+@onready var _settings_button: Button = %SettingsButton
 
 
 func _ready() -> void:
 	super()
 	_play_button.pressed.connect(play_requested.emit)
 	_continue_button.pressed.connect(continue_requested.emit)
+	_settings_button.pressed.connect(settings_requested.emit)
 	_layout.resized.connect(_arrange_choice_buttons)
 	show_choices(_choices)
 

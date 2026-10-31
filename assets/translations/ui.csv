@@ -12,6 +12,20 @@ UI_MENU,Menu,Menu
 UI_PAUSE,II,II
 UI_PAUSE_TITLE,Pause,Pause
 UI_RESUME,Resume,Reprendre
+UI_SETTINGS,Settings,Réglages
+UI_SOUND,Sounds,Sons
+UI_MUSIC,Music,Musique
+UI_VIBRATION,Vibration,Vibration
+UI_SCREEN_SHAKE,Screen shake,Tremblement d'écran
+UI_LANGUAGE,Language,Langue
+UI_THEME,Theme,Thème
+UI_THEME_PAPER,Paper,Papier
+UI_THEME_NIGHT,Night,Nuit
+UI_ON,On,Oui
+UI_OFF,Off,Non
+UI_BACK,Back,Retour
+LANGUAGE_FRENCH,Français,Français
+LANGUAGE_ENGLISH,English,English
 UI_RESTART,Restart,Recommencer
 UI_GAME_TITLE,Doppel,Doppel
 UI_PLAY,Play,Jouer

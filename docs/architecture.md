@@ -31,8 +31,9 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 `Main` (`scenes/main.tscn`) owns the navigation and shows one screen at a time, freeing the previous one:
 
 - At launch, the home screen, never a game directly. Its choices come from `CurrentGameStore.load_session()`.
+- Settings opens the settings screen from the home screen only; its Back button and the back button return home.
 - Play opens the tutorial on the first Play of each launch (not remembered between launches until step 3.1), then a new game. Continue resumes the saved game with `GameScreen.start_game()`, with no drop or merge animation.
-- The Android back button (`NOTIFICATION_WM_GO_BACK_REQUEST`, with `application/config/quit_on_go_back` off) is resolved by `ScreenNavigation.resolve_back()` from the current screen and the game state (`GameScreen.get_navigation_state()`); `Main` applies the answer: quit from home, pause from a game in progress, resume from the pause, home from the tutorial and the game over screen (see [0006](decisions/0006-back-button-and-overlays.md)).
+- The Android back button (`NOTIFICATION_WM_GO_BACK_REQUEST`, with `application/config/quit_on_go_back` off) is resolved by `ScreenNavigation.resolve_back()` from the current screen and the game state (`GameScreen.get_navigation_state()`); `Main` applies the answer: quit from home, pause from a game in progress, resume from the pause, home from the tutorial, the game over screen and the settings (see [0006](decisions/0006-back-button-and-overlays.md)).
 - It asks `AudioManager.start_music()` once at launch, so the music never restarts between screens.
 
 ### `scripts/save/` — saved game data
@@ -47,7 +48,8 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 | Script | Responsibility |
 |--------|----------------|
 | `palette_screen.gd` | `PaletteScreen`: base of full screens. Applies the active palette (interface theme, background color and image) and rebuilds it on `Settings.palette_changed`; `_apply_screen_palette()` adds what a screen draws itself |
-| `home_screen.gd` | `HomeScreen`: title, Play, and Continue when a game is saved; emits `play_requested`, `continue_requested`. Lays the buttons side by side (Play left, Continue right, same width) when twice the widest button's minimum width fits, else stacks them (Continue on top), checked again on resize and language change |
+| `settings_screen.gd` | `SettingsScreen`: sound, music, vibration and screen shake toggles, language (French, English) and theme (Paper, Night) choices, each written to `Settings` at once; emits `back_requested`. Later rows (phase 4) go in `%Rows`, inside a scroll container |
+| `home_screen.gd` | `HomeScreen`: title, Play, and Continue when a game is saved, then Settings; emits `play_requested`, `continue_requested`, `settings_requested`. Lays the buttons side by side (Play left, Continue right, same width) when twice the widest button's minimum width fits, else stacks them (Continue on top), checked again on resize and language change |
 | `game_over_summary.gd` | `GameOverSummary`: pure values of the game over screen (score, record, highest tile) and whether the record was just beaten, against the record before the game; a previous record of 0 is never announced as beaten |
 | `game_over_panel.gd` | `GameOverPanel`: overlay over the finished game, with Play again (new game in one tap) and Menu (`menu_requested`, which `GameScreen` turns into `home_requested`). `RewardSlot` stays hidden until coins (3.2) and rewarded ads (phase 4) |
 | `screen_navigation.gd` | `ScreenNavigation`: pure decisions of where the back button leads, per screen and game state (`PLAYING`, `PAUSED`, `TUTORIAL`, `GAME_OVER`), and whether an inactive app pauses the game |
@@ -67,7 +69,7 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 | `tile_painter.gd` | Draws a tile with the active palette: a rounded `StyleBoxFlat` with a darker bottom relief, and its value sized with `TileTextConfig`. Empty cells use the same shape, sunken (darker top border). `draw_tile_shape()` draws the same rounded shape, filled or outlined, for merge pulses and tutorial highlights |
 | `theme_palette.gd` | `ThemePalette`: colors of one theme, for the interface, board and tiles |
 | `tile_text_config.gd` | Font and size limits of tile values, loaded from `data/tile_text.tres` |
-| `ui_theme_builder.gd` | Builds the interface `Theme` (label color, panels, buttons) of a palette on top of `assets/themes/base_theme.tres` |
+| `ui_theme_builder.gd` | Builds the interface `Theme` (label color, panels, buttons, and the `ChoiceButton` variation of settings toggles and choices: outlined when off, filled when on) of a palette on top of `assets/themes/base_theme.tres` |
 | `safe_area_margin.gd` | `MarginContainer` whose scene margins are measured from the safe area (notch, system bars), on mobile only |
 
 ### `tools/simulation/` — balance simulator (not exported)
@@ -128,7 +130,8 @@ The ambient music is `assets/audio/music/musical_ambiance.ogg`, one track for ev
 ### Scenes
 
 - `scenes/main.tscn`: entry point, `Main` (see above).
-- `scenes/ui/home_screen.tscn`: title and the Play / Continue buttons.
+- `scenes/ui/home_screen.tscn`: title, the Play / Continue buttons and Settings.
+- `scenes/ui/settings_screen.tscn`: settings rows and Back.
 - `scenes/game/game_screen.tscn`: HUD with "?" and pause ("II") buttons, a `DebugTools` row under it (hidden outside debug builds, so the debug buttons never widen the HUD), previews, board with the centered combo label, tutorial panel, pause and game over overlays.
 - `scenes/game/tutorial_panel.tscn`: tutorial message and buttons.
 - `scenes/game/game_over_panel.tscn`, `scenes/game/pause_panel.tscn`: game over and pause overlays of the game screen.

@@ -1,0 +1,192 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/settings_screen.gd" id="1_screen"]
+[ext_resource type="Theme" path="res://assets/themes/base_theme.tres" id="2_theme"]
+[ext_resource type="Script" uid="uid://c0a5hkffmvw0b" path="res://scripts/ui/safe_area_margin.gd" id="3_safe_area"]
+
+[node name="SettingsScreen" type="Control" unique_id=1302766401]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_screen")
+
+[node name="Background" type="ColorRect" parent="." unique_id=1302766402]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BackgroundImage" type="TextureRect" parent="." unique_id=1302766403]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Margin" type="MarginContainer" parent="." unique_id=1302766404]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_top = 120
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 120
+script = ExtResource("3_safe_area")
+
+[node name="Layout" type="VBoxContainer" parent="Margin" unique_id=1302766405]
+layout_mode = 2
+theme_override_constants/separation = 48
+
+[node name="TitleLabel" type="Label" parent="Margin/Layout" unique_id=1302766406]
+layout_mode = 2
+theme_override_font_sizes/font_size = 96
+text = "UI_SETTINGS"
+horizontal_alignment = 1
+
+[node name="Scroll" type="ScrollContainer" parent="Margin/Layout" unique_id=1302766407]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Rows" type="VBoxContainer" parent="Margin/Layout/Scroll" unique_id=1302766408]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 32
+
+[node name="SoundRow" type="HBoxContainer" parent="Margin/Layout/Scroll/Rows" unique_id=1302766409]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Margin/Layout/Scroll/Rows/SoundRow" unique_id=1302766410]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "UI_SOUND"
+
+[node name="SoundToggle" type="Button" parent="Margin/Layout/Scroll/Rows/SoundRow" unique_id=1302766411]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 120)
+layout_mode = 2
+theme_type_variation = &"ChoiceButton"
+toggle_mode = true
+text = "UI_ON"
+
+[node name="MusicRow" type="HBoxContainer" parent="Margin/Layout/Scroll/Rows" unique_id=1302766412]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Margin/Layout/Scroll/Rows/MusicRow" unique_id=1302766413]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "UI_MUSIC"
+
+[node name="MusicToggle" type="Button" parent="Margin/Layout/Scroll/Rows/MusicRow" unique_id=1302766414]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 120)
+layout_mode = 2
+theme_type_variation = &"ChoiceButton"
+toggle_mode = true
+text = "UI_ON"
+
+[node name="VibrationRow" type="HBoxContainer" parent="Margin/Layout/Scroll/Rows" unique_id=1302766415]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Margin/Layout/Scroll/Rows/VibrationRow" unique_id=1302766416]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "UI_VIBRATION"
+
+[node name="VibrationToggle" type="Button" parent="Margin/Layout/Scroll/Rows/VibrationRow" unique_id=1302766417]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 120)
+layout_mode = 2
+theme_type_variation = &"ChoiceButton"
+toggle_mode = true
+text = "UI_ON"
+
+[node name="ScreenShakeRow" type="HBoxContainer" parent="Margin/Layout/Scroll/Rows" unique_id=1302766418]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Margin/Layout/Scroll/Rows/ScreenShakeRow" unique_id=1302766419]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "UI_SCREEN_SHAKE"
+
+[node name="ScreenShakeToggle" type="Button" parent="Margin/Layout/Scroll/Rows/ScreenShakeRow" unique_id=1302766420]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 120)
+layout_mode = 2
+theme_type_variation = &"ChoiceButton"
+toggle_mode = true
+text = "UI_ON"
+
+[node name="LanguageLabel" type="Label" parent="Margin/Layout/Scroll/Rows" unique_id=1302766421]
+layout_mode = 2
+text = "UI_LANGUAGE"
+
+[node name="LanguageChoices" type="HBoxContainer" parent="Margin/Layout/Scroll/Rows" unique_id=1302766422]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="FrenchButton" type="Button" parent="Margin/Layout/Scroll/Rows/LanguageChoices" unique_id=1302766423]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ChoiceButton"
+toggle_mode = true
+text = "LANGUAGE_FRENCH"
+
+[node name="EnglishButton" type="Button" parent="Margin/Layout/Scroll/Rows/LanguageChoices" unique_id=1302766424]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ChoiceButton"
+toggle_mode = true
+text = "LANGUAGE_ENGLISH"
+
+[node name="ThemeLabel" type="Label" parent="Margin/Layout/Scroll/Rows" unique_id=1302766425]
+layout_mode = 2
+text = "UI_THEME"
+
+[node name="ThemeChoices" type="HBoxContainer" parent="Margin/Layout/Scroll/Rows" unique_id=1302766426]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="PaperButton" type="Button" parent="Margin/Layout/Scroll/Rows/ThemeChoices" unique_id=1302766427]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ChoiceButton"
+toggle_mode = true
+text = "UI_THEME_PAPER"
+
+[node name="NightButton" type="Button" parent="Margin/Layout/Scroll/Rows/ThemeChoices" unique_id=1302766428]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ChoiceButton"
+toggle_mode = true
+text = "UI_THEME_NIGHT"
+
+[node name="BackButton" type="Button" parent="Margin/Layout" unique_id=1302766429]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 160)
+layout_mode = 2
+text = "UI_BACK"
