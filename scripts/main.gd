@@ -43,6 +43,7 @@ func show_home() -> void:
 	home.show_choices(HomeMenu.get_choices(CurrentGameStore.load_session(BALANCING_CONFIG) != null))
 	home.play_requested.connect(_on_play_requested)
 	home.continue_requested.connect(_on_continue_requested)
+	home.tutorial_requested.connect(_on_tutorial_requested)
 	home.settings_requested.connect(_show_settings)
 
 
@@ -51,12 +52,11 @@ func get_current_screen() -> Control:
 
 
 func _on_play_requested() -> void:
-	var game: GameScreen = _show_game()
-	match ScreenNavigation.resolve_play(PlayerProgress.has_seen_tutorial()):
-		ScreenNavigation.PlayAction.TUTORIAL:
-			game.start_tutorial()
-		ScreenNavigation.PlayAction.NEW_GAME:
-			game.start_new_game()
+	_show_game().start_new_game()
+
+
+func _on_tutorial_requested() -> void:
+	_show_game().start_tutorial()
 
 
 func _on_continue_requested() -> void:

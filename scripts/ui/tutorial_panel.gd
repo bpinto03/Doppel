@@ -22,7 +22,7 @@ func show_instruction(text_key: StringName) -> void:
 
 func show_explanation(text_key: StringName, is_last_step: bool) -> void:
 	_message_label.text = tr(text_key)
-	_next_button.text = tr(&"TUTORIAL_PLAY") if is_last_step else tr(&"TUTORIAL_NEXT")
+	_next_button.text = tr(&"TUTORIAL_DONE") if is_last_step else tr(&"TUTORIAL_NEXT")
 	_next_button.visible = true
 	visible = true
 

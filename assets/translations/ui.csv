@@ -13,6 +13,7 @@ UI_PAUSE,II,II
 UI_PAUSE_TITLE,Pause,Pause
 UI_RESUME,Resume,Reprendre
 UI_SETTINGS,Settings,Réglages
+UI_TUTORIAL,Tutorial,Tutoriel
 UI_SOUND,Sounds,Sons
 UI_MUSIC,Music,Musique
 UI_VIBRATION,Vibration,Vibration
@@ -43,6 +44,5 @@ UI_COMBO_GOOD,Nice!,Bien !
 UI_COMBO_GREAT,Great!,Super !
 UI_COMBO_AMAZING,Amazing!,Incroyable !
 TUTORIAL_NEXT,Next,Suivant
-TUTORIAL_PLAY,Play,Jouer
+TUTORIAL_DONE,Done,Terminer
 TUTORIAL_SKIP,Skip,Passer
-UI_HELP,?,?

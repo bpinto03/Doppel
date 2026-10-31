@@ -27,3 +27,17 @@ func _calculate_contrast(first: Color, second: Color) -> float:
 func _calculate_relative_luminance(color: Color) -> float:
 	var linear: Color = color.srgb_to_linear()
 	return 0.2126 * linear.r + 0.7152 * linear.g + 0.0722 * linear.b
+
+
+func test_secondary_and_choice_buttons_are_outlined() -> void:
+	for palette: ThemePalette in Settings.PALETTES.values():
+		var theme: Theme = UiThemeBuilder.build(palette, load("res://assets/themes/base_theme.tres"))
+		var button := Button.new()
+		button.theme = theme
+		add_child_autofree(button)
+		for variation: StringName in [UiThemeBuilder.SECONDARY_BUTTON_TYPE, UiThemeBuilder.CHOICE_BUTTON_TYPE]:
+			button.theme_type_variation = variation
+			var normal_box := button.get_theme_stylebox(&"normal") as StyleBoxFlat
+			assert_eq(normal_box.border_width_top, UiThemeBuilder.SECONDARY_BORDER_WIDTH, String(variation))
+			assert_eq(normal_box.bg_color, palette.panel, String(variation))
+

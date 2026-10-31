@@ -62,7 +62,6 @@ func test_menu_keeps_the_game_to_continue() -> void:
 	add_child_autofree(main)
 	(main.get_current_screen() as HomeScreen).play_requested.emit()
 	var game := main.get_current_screen() as GameScreen
-	game.start_new_game()
 	game.open_pause()
 
 	_press_pause_button(game, "%MenuButton")
@@ -122,7 +121,6 @@ func test_back_in_the_pause_settings_returns_to_the_pause_then_resumes() -> void
 	add_child_autofree(main)
 	(main.get_current_screen() as HomeScreen).play_requested.emit()
 	var game := main.get_current_screen() as GameScreen
-	game.start_new_game()
 	game.open_pause()
 	_press_pause_button(game, "%SettingsButton")
 

@@ -95,23 +95,23 @@ func test_new_game_keeps_a_better_record_than_the_abandoned_game() -> void:
 	assert_eq(RecordBook.get_best_score(), HIGH_SCORE)
 
 
-func test_tutorial_leaves_the_saved_game_untouched_until_the_new_game_starts() -> void:
+func test_tutorial_ends_on_the_home_screen_with_the_saved_game_untouched() -> void:
 	var saved_game: GameSession = _store_game_in_progress(LOW_SCORE)
 	var main: Node = _start_main()
-	(main.get_current_screen() as HomeScreen).play_requested.emit()
+	(main.get_current_screen() as HomeScreen).tutorial_requested.emit()
 	var game := main.get_current_screen() as GameScreen
 
 	_release_first_playable_column(game)
-	assert_eq(_get_saved_game_data(), saved_game.to_data())
-
 	game.get_node("%TutorialPanel").skip_requested.emit()
-	assert_eq(_get_saved_game_data(), game.get_session().to_data())
+
+	assert_eq(_get_saved_game_data(), saved_game.to_data())
+	assert_true((main.get_current_screen() as HomeScreen).is_choice_shown(HomeMenu.Choice.CONTINUE))
 
 
 func test_back_from_the_tutorial_keeps_the_saved_game() -> void:
 	var saved_game: GameSession = _store_game_in_progress(LOW_SCORE)
 	var main: Node = _start_main()
-	(main.get_current_screen() as HomeScreen).play_requested.emit()
+	(main.get_current_screen() as HomeScreen).tutorial_requested.emit()
 
 	main.go_back()
 
@@ -120,7 +120,6 @@ func test_back_from_the_tutorial_keeps_the_saved_game() -> void:
 
 
 func test_back_from_a_game_offers_to_continue_it() -> void:
-	PlayerProgress.mark_tutorial_seen()
 	var main: Node = _start_main()
 	(main.get_current_screen() as HomeScreen).play_requested.emit()
 	var game := main.get_current_screen() as GameScreen

@@ -11,12 +11,11 @@ Goal: find out if the mechanic is fun. **Gate 1 passes if at least 3 testers out
 
 ## Protocol
 
-1. Launch the game and tap Play: the tutorial shows on the first Play of each launch. Hand over the phone on its first step. Say only: "It's a puzzle game prototype, play as you like. I'm just watching."
+1. Launch the game and tap Tutorial on the home screen. Hand over the phone on its first step; the tutorial ends on the home screen, where the tester taps Play. Say only: "It's a puzzle game prototype, play as you like. I'm just watching."
 2. **Do not explain anything.** Do not answer questions during play; note them instead ("What do you think it does?" is the only allowed reply).
 3. Watch in silence. Note the time of each game start and end.
 4. When a game ends, say nothing. Note if the tester taps Restart on their own.
 5. Stop after 10 minutes, or when the tester hands the phone back.
-   Note: the "?" button restarts the tutorial; skipping or finishing it starts a new game, which **replaces the current game** (it can only be resumed by going back to the menu and tapping Continue before that). If the tester taps it mid-game, note when and why.
 6. Then ask the debrief questions.
 
 ## Debrief questions
@@ -39,7 +38,7 @@ Goal: find out if the mechanic is fun. **Gate 1 passes if at least 3 testers out
 | Went through the tutorial, or skipped it? At which step? | |
 | Understood the merge across the axis (step 3)? (yes / partly / no) | |
 | Played almost always next to the axis (G3 / D1) after the tutorial? | |
-| Opened the tutorial again with "?"? When? | |
+| Opened the tutorial again from the home screen? When? | |
 | Understood how a chain formed from its animation? (yes / partly / no) | |
 | Slid the finger to look at the ghost before releasing? Tried to cancel a placement? | |
 | Tapped on the right half? Surprised to see the tile appear on the left? | |

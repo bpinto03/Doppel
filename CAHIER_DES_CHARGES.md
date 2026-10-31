@@ -137,8 +137,8 @@ La partie se termine lorsque **le joueur n'a plus aucune colonne** où poser sa 
 - Style visuel simple, cohérent, léger à produire (formes vectorielles / flat design).
 
 ### 7.2 Écrans
-1. Écran titre / accueil (Jouer, Défi du jour, Boutique, Réglages)
-2. Tutoriel court (3 étapes max, jouable)
+1. Écran titre / accueil (Jouer, Défi du jour, Boutique, Tutoriel, Réglages)
+2. Tutoriel court (3 étapes max, jouable), ouvert uniquement depuis le bouton Tutoriel de l'accueil : il n'est jamais lancé automatiquement et il n'y a pas de bouton « ? » en partie. Il se termine sur l'accueil.
 3. Écran de jeu (score, record, tuile suivante, pause). La pause donne aussi accès aux réglages de sons, musique, vibration et tremblement d'écran, sans quitter la partie.
 4. Fin de partie (score, record, pièces gagnées, rejouer, pub récompensée)
 5. Défis et objectifs

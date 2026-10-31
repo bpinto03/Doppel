@@ -64,21 +64,26 @@ func test_finished_saved_game_is_not_offered() -> void:
 	assert_false(home.is_choice_shown(HomeMenu.Choice.CONTINUE))
 
 
-func test_tutorial_opens_on_play_until_finished_or_skipped_then_never_again() -> void:
+func test_play_always_starts_a_game() -> void:
 	var main: Node = _start_main()
 
 	(main.get_current_screen() as HomeScreen).play_requested.emit()
-	assert_true((main.get_current_screen() as GameScreen).is_tutorial_running())
-	main.go_back()
-	(main.get_current_screen() as HomeScreen).play_requested.emit()
-	assert_true((main.get_current_screen() as GameScreen).is_tutorial_running(), "Back does not count as seen")
-	(main.get_current_screen().get_node("%TutorialPanel") as TutorialPanel).skip_requested.emit()
-	main.go_back()
-	(main.get_current_screen().get_node("%PausePanel").get_node("%MenuButton") as Button).pressed.emit()
-	(main.get_current_screen() as HomeScreen).play_requested.emit()
 
-	assert_false((main.get_current_screen() as GameScreen).is_tutorial_running())
-	assert_true(PlayerProgress.has_seen_tutorial())
+	var game := main.get_current_screen() as GameScreen
+	assert_false(game.is_tutorial_running())
+	assert_eq(game.get_navigation_state(), ScreenNavigation.GameState.PLAYING)
+
+
+func test_tutorial_opens_from_home_and_ends_back_home() -> void:
+	var main: Node = _start_main()
+
+	(main.get_current_screen() as HomeScreen).tutorial_requested.emit()
+	assert_true((main.get_current_screen() as GameScreen).is_tutorial_running())
+	var tutorial_panel: TutorialPanel = main.get_current_screen().get_node("%TutorialPanel")
+	for step: int in TutorialScenarios.create_steps().size():
+		tutorial_panel.next_requested.emit()
+
+	assert_true(main.get_current_screen() is HomeScreen)
 
 
 func test_continue_resumes_the_saved_game() -> void:
@@ -110,7 +115,7 @@ func test_back_in_a_game_opens_the_pause_and_back_again_resumes() -> void:
 func test_music_request_survives_the_way_to_a_game_and_back() -> void:
 	var main: Node = _start_main()
 
-	(main.get_current_screen() as HomeScreen).play_requested.emit()
+	(main.get_current_screen() as HomeScreen).tutorial_requested.emit()
 	main.go_back()
 	await wait_process_frames(1)
 

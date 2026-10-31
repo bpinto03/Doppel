@@ -59,7 +59,7 @@ When *enabled*, every *5th* placement gives a reflection of level +*1* (capped a
 
 ## Tutorial
 
-- Shown on Play until the player finished or skipped it once (remembered in the save; leaving with the back button does not count), never on Continue, and again with the "?" button. It leaves the saved game untouched until it starts a new game.
+- Opened only with the Tutorial button of the home screen, never automatically and never during a game. It ends back on the home screen (Done on the last step, or Skip at any time), and never touches the saved game.
 - Three steps, each on a predefined board with a fixed tile sequence and its own rules (6×6 grid, no distorted reflection):
   1. **Drop**: on an empty board, the tile and its reflection drop on the outer columns.
   2. **Merge**: the same tile dropped on its twin merges on both sides.

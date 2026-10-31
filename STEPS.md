@@ -136,11 +136,12 @@ Outil : simulateur d'équilibrage (`./run_simulation.sh`, voir `docs/balancing.m
 ## Phase 3 — Méta-jeu : menus, pièces, thèmes, défis
 
 ### 3.1 Navigation et écrans
-- [ ] Écran d'accueil : Jouer / Continuer (2.5) et Réglages (3.1) ; Défi du jour et Boutique viendront en 3.3 et 3.2
-- [ ] Écran de fin de partie (score, record, pièces gagnées, rejouer)
-- [ ] Écran de pause (Reprendre, Recommencer, Menu) avec ses réglages : sons, musique, vibration, tremblement d'écran, sans quitter la partie
-- [ ] Écran de réglages (son, musique, vibration, langue, thème Papier / Nuit) ; retirer les boutons de debug « Thème », « Vib » et « Musique » du HUD et les logs de debug FPS (`FrameRateProbe`) et latence audio (`AudioLatencyProbe`).
-- [ ] **Tutoriel** : version finale (mémoriser qu'il a été vu, visuels soignés ; version simple faite en phase 1)
+- [x] Écran d'accueil : Jouer / Continuer (2.5), Tutoriel et Réglages (3.1) ; Défi du jour et Boutique viendront en 3.3 et 3.2
+- [x] Écran de fin de partie (score, record, tuile max, rejouer, menu) ; pièces gagnées en 3.2, pub récompensée en phase 4
+- [x] Écran de pause (Reprendre, Recommencer, Menu) avec ses réglages : sons, musique, vibration, tremblement d'écran, sans quitter la partie
+- [x] Écran de réglages (son, musique, vibration, langue, thème Papier / Nuit) ; retirer les boutons de debug « Thème », « Vib » et « Musique » du HUD et les logs de debug FPS (`FrameRateProbe`) et latence audio (`AudioLatencyProbe`).
+- [x] **Tutoriel** à la demande : bouton Tutoriel à l'accueil, jamais lancé automatiquement ni depuis la partie (plus de bouton « ? »), retour à l'accueil à la fin
+- [ ] Tutoriel : visuels soignés (version simple faite en phase 1) : doigt qui tapote la colonne cible (asset `assets/tutorial/tutorial_pointer.svg` à fournir) ou flèche dessinée en code
 - [ ] Décider avec le développeur s'il faut une palette à contraste renforcé globale (daltonisme), indépendante des thèmes de la boutique
 
 ### 3.2 Pièces et boutique

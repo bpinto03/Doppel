@@ -1,7 +1,7 @@
 class_name GameScreen
 extends PaletteScreen
 
-## One game, or the tutorial. Main starts it with start_new_game(), start_tutorial() or start_game().
+## One game, or the tutorial opened from the home screen. Main starts it with start_new_game(), start_tutorial() or start_game().
 
 signal turn_playback_finished
 signal home_requested
@@ -29,7 +29,6 @@ var _best_score_before_game: int
 @onready var _current_swatch: TileSwatch = %CurrentSwatch
 @onready var _reflection_swatch: TileSwatch = %ReflectionSwatch
 @onready var _next_swatch: TileSwatch = %NextSwatch
-@onready var _help_button: Button = %HelpButton
 @onready var _pause_button: Button = %PauseButton
 @onready var _combo_label: Label = %ComboLabel
 @onready var _tutorial_panel: TutorialPanel = %TutorialPanel
@@ -44,10 +43,8 @@ func _ready() -> void:
 	_feedback = GameFeedback.new(AUDIO_CONFIG, HAPTICS_CONFIG, _playback, _board_view)
 	_board_view.pressed_while_locked.connect(_playback.skip)
 	_board_view.column_released.connect(_on_column_released)
-	_help_button.pressed.connect(start_tutorial)
 	_tutorial_panel.next_requested.connect(_on_tutorial_next_requested)
-	_tutorial_panel.skip_requested.connect(_finish_tutorial)
-	_help_button.pressed.connect(_feedback.play_ui_click)
+	_tutorial_panel.skip_requested.connect(home_requested.emit)
 	_tutorial_panel.next_requested.connect(_feedback.play_ui_click)
 	_tutorial_panel.skip_requested.connect(_feedback.play_ui_click)
 	_game_over_panel.replay_requested.connect(start_new_game)
@@ -87,7 +84,7 @@ func start_game(session: GameSession, best_score_before_game: int) -> void:
 	_refresh()
 
 
-## Leaves the saved game untouched: it is only replaced when a new game starts, after the tutorial.
+## The saved game stays untouched: the tutorial ends on the home screen, on its last step or on Skip.
 func start_tutorial() -> void:
 	_tutorial_steps = TutorialScenarios.create_steps()
 	_show_tutorial_step(0)
@@ -152,13 +149,7 @@ func _on_tutorial_next_requested() -> void:
 	if next_step_index < _tutorial_steps.size():
 		_show_tutorial_step(next_step_index)
 	else:
-		_finish_tutorial()
-
-
-## Leaving with the back button does not count: the tutorial opens again on the next Play.
-func _finish_tutorial() -> void:
-	PlayerProgress.mark_tutorial_seen()
-	start_new_game()
+		home_requested.emit()
 
 
 func _stop_tutorial() -> void:
@@ -206,7 +197,6 @@ func _on_playback_finished() -> void:
 		_feedback.play_game_over()
 		_game_over_panel.show_summary(GameOverSummary.new(_session, _best_score_before_game, RecordBook.get_best_score()))
 	if is_tutorial_running():
-		_help_button.disabled = false
 		_tutorial_panel.show_explanation(_tutorial_steps[_tutorial_step_index].explanation_key, _is_last_tutorial_step())
 	else:
 		_set_input_enabled(true)
@@ -219,7 +209,6 @@ func _is_last_tutorial_step() -> bool:
 
 func _set_input_enabled(is_enabled: bool) -> void:
 	_board_view.is_input_enabled = is_enabled
-	_help_button.disabled = not is_enabled
 
 
 func _refresh() -> void:

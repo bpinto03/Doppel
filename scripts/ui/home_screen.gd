@@ -1,11 +1,12 @@
 class_name HomeScreen
 extends PaletteScreen
 
-## Entry screen: Play, and Continue when a game in progress is saved, then Settings.
-## The daily challenge (3.3) and the shop (3.2) will join Settings below the choice buttons.
+## Entry screen: Play, and Continue when a game in progress is saved; below them, Tutorial and Settings.
+## The daily challenge (3.3) and the shop (3.2) will join the secondary buttons.
 
 signal play_requested
 signal continue_requested
+signal tutorial_requested
 signal settings_requested
 
 var _choices: Array[HomeMenu.Choice] = [HomeMenu.Choice.PLAY]
@@ -14,6 +15,8 @@ var _choices: Array[HomeMenu.Choice] = [HomeMenu.Choice.PLAY]
 @onready var _choice_buttons: BoxContainer = %ChoiceButtons
 @onready var _play_button: Button = %PlayButton
 @onready var _continue_button: Button = %ContinueButton
+@onready var _secondary_buttons: BoxContainer = %SecondaryButtons
+@onready var _tutorial_button: Button = %TutorialButton
 @onready var _settings_button: Button = %SettingsButton
 
 
@@ -21,15 +24,16 @@ func _ready() -> void:
 	super()
 	_play_button.pressed.connect(play_requested.emit)
 	_continue_button.pressed.connect(continue_requested.emit)
+	_tutorial_button.pressed.connect(tutorial_requested.emit)
 	_settings_button.pressed.connect(settings_requested.emit)
-	_layout.resized.connect(_arrange_choice_buttons)
+	_layout.resized.connect(_arrange_buttons)
 	show_choices(_choices)
 
 
 func show_choices(choices: Array[HomeMenu.Choice]) -> void:
 	_choices = choices
 	_continue_button.visible = choices.has(HomeMenu.Choice.CONTINUE)
-	_arrange_choice_buttons()
+	_arrange_buttons()
 
 
 func is_choice_shown(choice: HomeMenu.Choice) -> bool:
@@ -43,18 +47,25 @@ func is_stacked() -> bool:
 ## A new language changes the button widths once the texts are updated, hence the deferred call.
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready():
-		_arrange_choice_buttons.call_deferred()
+		_arrange_buttons.call_deferred()
 
 
-func _arrange_choice_buttons() -> void:
-	var min_widths: Array[float] = []
+func _arrange_buttons() -> void:
+	var choice_buttons: Array[Button] = []
 	for choice: HomeMenu.Choice in _choices:
-		min_widths.append(_get_choice_button(choice).get_combined_minimum_size().x)
-	var separation: float = _choice_buttons.get_theme_constant(&"separation")
-	_choice_buttons.vertical = HomeMenu.should_stack(min_widths, separation, _layout.size.x)
+		choice_buttons.append(_get_choice_button(choice))
+	_choice_buttons.vertical = _should_stack(choice_buttons, _choice_buttons)
+	_secondary_buttons.vertical = _should_stack([_tutorial_button, _settings_button], _secondary_buttons)
 	var ordered_choices: Array[HomeMenu.Choice] = HomeMenu.order_choices(_choices, _choice_buttons.vertical)
 	for index: int in ordered_choices.size():
 		_choice_buttons.move_child(_get_choice_button(ordered_choices[index]), index)
+
+
+func _should_stack(buttons: Array[Button], row: BoxContainer) -> bool:
+	var min_widths: Array[float] = []
+	for button: Button in buttons:
+		min_widths.append(button.get_combined_minimum_size().x)
+	return HomeMenu.should_stack(min_widths, row.get_theme_constant(&"separation"), _layout.size.x)
 
 
 func _get_choice_button(choice: HomeMenu.Choice) -> Button:

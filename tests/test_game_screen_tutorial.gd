@@ -46,7 +46,7 @@ func test_explanation_appears_only_once_the_playback_has_finished() -> void:
 	assert_false(_board_view.is_input_enabled)
 
 
-func test_steps_follow_each_other_then_a_real_game_starts() -> void:
+func test_steps_follow_each_other_then_the_last_one_asks_for_home() -> void:
 	var steps: Array[TutorialStep] = TutorialScenarios.create_steps()
 	for step_index: int in steps.size():
 		assert_eq(_screen.get_tutorial_step_index(), step_index)
@@ -54,7 +54,7 @@ func test_steps_follow_each_other_then_a_real_game_starts() -> void:
 		await wait_for_signal(_screen.turn_playback_finished, MAX_WAIT_SECONDS)
 		_tutorial_panel.next_requested.emit()
 
-	_assert_real_game_started()
+	assert_signal_emit_count(_screen, "home_requested", 1)
 
 
 func test_axis_step_ends_with_the_merge_across_the_axis_on_screen() -> void:
@@ -72,35 +72,18 @@ func test_axis_step_ends_with_the_merge_across_the_axis_on_screen() -> void:
 	assert_eq(displayed_rows[5], ". . 3 | 1 . .")
 
 
-func test_skip_starts_a_real_game_at_any_time() -> void:
+func test_skip_asks_for_home_at_any_time() -> void:
 	_tutorial_panel.skip_requested.emit()
 
-	_assert_real_game_started()
-
-
-func test_help_button_restarts_the_tutorial_and_abandons_the_game() -> void:
-	_tutorial_panel.skip_requested.emit()
-
-	_screen.get_node("%HelpButton").pressed.emit()
-
-	assert_true(_screen.is_tutorial_running())
-	assert_eq(_screen.get_tutorial_step_index(), 0)
-	assert_eq(BoardFixture.describe_board(_board_view.get_displayed_board())[5], ". . . | . . .")
+	assert_signal_emitted(_screen, "home_requested")
 
 
 func test_press_during_a_playback_unlocks_the_board_at_once() -> void:
-	_tutorial_panel.skip_requested.emit()
+	_screen.start_new_game()
 	_board_view.column_released.emit(TutorialScenarios.OUTER_LEFT_COLUMN)
 	assert_false(_board_view.is_input_enabled)
 
 	_board_view.pressed_while_locked.emit()
 
 	assert_signal_emit_count(_screen, "turn_playback_finished", 1)
-	assert_true(_board_view.is_input_enabled)
-
-
-func _assert_real_game_started() -> void:
-	assert_false(_screen.is_tutorial_running())
-	assert_false(_tutorial_panel.visible)
-	assert_false(_board_view.is_tutorial_hint_shown())
 	assert_true(_board_view.is_input_enabled)

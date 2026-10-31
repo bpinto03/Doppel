@@ -32,7 +32,7 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 
 - At launch, the home screen, never a game directly. Its choices come from `CurrentGameStore.load_session()`.
 - Settings opens the settings screen from the home screen only; its Back button and the back button return home.
-- Play opens the tutorial until the player finished or skipped it once (`ScreenNavigation.resolve_play()`, `PlayerProgress.has_seen_tutorial()`), then a new game. Continue resumes the saved game with `GameScreen.start_game()`, with no drop or merge animation.
+- Play always starts a new game. Tutorial opens the tutorial, which ends back on the home screen (last step or Skip), the saved game untouched. Continue resumes the saved game with `GameScreen.start_game()`, with no drop or merge animation.
 - The Android back button (`NOTIFICATION_WM_GO_BACK_REQUEST`, with `application/config/quit_on_go_back` off) is resolved by `ScreenNavigation.resolve_back()` from the current screen and the game state (`GameScreen.get_navigation_state()`); `Main` applies the answer: quit from home, pause from a game in progress, resume from the pause, back to the main page of the pause from its settings, home from the tutorial, the game over screen and the settings (see [0006](decisions/0006-back-button-and-overlays.md)).
 - It asks `AudioManager.start_music()` once at launch, so the music never restarts between screens.
 
@@ -42,7 +42,6 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 |--------|----------------|
 | `current_game_store.gd` | `CurrentGameStore`: the game in progress in the `current_game` save section, with the record before that game (`best_score_before_game`), so a resumed game still knows whether it beat the record. `load_session()` returns null when none is saved, and discards (with a warning) a saved game that `GameSession.create_from_data()` rejects, keeping the rest of the save. `store()` replaces the section, `erase()` removes it |
 | `record_book.gd` | `RecordBook`: best score and highest tile level over every real game, in the `record` section; `submit()` only raises them |
-| `player_progress.gd` | `PlayerProgress`: what the player did once and for all, in the `progress` section: `has_seen_tutorial()` (false when the key is missing), `mark_tutorial_seen()` |
 
 ### `scripts/ui/` — presentation
 
@@ -51,7 +50,7 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 | `palette_screen.gd` | `PaletteScreen`: base of full screens. Applies the active palette (interface theme, background color and image) and rebuilds it on `Settings.palette_changed`; `_apply_screen_palette()` adds what a screen draws itself |
 | `settings_rows.gd` | `SettingsRows`: every setting row, defined once (`scenes/ui/settings_rows.tscn`): sound, music, vibration and screen shake toggles (group `TOGGLES`), language French / English (`LANGUAGE`) and theme Paper / Night (`THEME`), each written to `Settings` at once. `shown_groups` picks the groups a screen shows |
 | `settings_screen.gd` | `SettingsScreen`: every `SettingsRows` group in a scroll container, and Back (`back_requested`). Later settings (phase 4) join `SettingsRows` as a new group |
-| `home_screen.gd` | `HomeScreen`: title, Play, and Continue when a game is saved, then Settings; emits `play_requested`, `continue_requested`, `settings_requested`. Lays the buttons side by side (Play left, Continue right, same width) when twice the widest button's minimum width fits, else stacks them (Continue on top), checked again on resize and language change |
+| `home_screen.gd` | `HomeScreen`: title, Play, and Continue when a game is saved; below them, Tutorial and Settings as secondary buttons. Emits `play_requested`, `continue_requested`, `tutorial_requested`, `settings_requested`. Each row lays its buttons side by side (Play left, Continue right; Tutorial left, Settings right; same width) when twice the widest button's minimum width fits, else stacks them (Continue on top), checked again on resize and language change |
 | `game_over_summary.gd` | `GameOverSummary`: pure values of the game over screen (score, record, highest tile) and whether the record was just beaten, against the record before the game; a previous record of 0 is never announced as beaten |
 | `game_over_panel.gd` | `GameOverPanel`: overlay over the finished game, with Play again (new game in one tap) and Menu (`menu_requested`, which `GameScreen` turns into `home_requested`). `RewardSlot` stays hidden until coins (3.2) and rewarded ads (phase 4) |
 | `screen_navigation.gd` | `ScreenNavigation`: pure decisions of where the back button leads, per screen and game state (`PLAYING`, `PAUSED`, `PAUSE_SETTINGS`, `TUTORIAL`, `GAME_OVER`), and whether an inactive app pauses the game |
@@ -71,7 +70,7 @@ Not part of the core: steps carry translation keys and highlight hints for the p
 | `tile_painter.gd` | Draws a tile with the active palette: a rounded `StyleBoxFlat` with a darker bottom relief, and its value sized with `TileTextConfig`. Empty cells use the same shape, sunken (darker top border). `draw_tile_shape()` draws the same rounded shape, filled or outlined, for merge pulses and tutorial highlights |
 | `theme_palette.gd` | `ThemePalette`: colors of one theme, for the interface, board and tiles |
 | `tile_text_config.gd` | Font and size limits of tile values, loaded from `data/tile_text.tres` |
-| `ui_theme_builder.gd` | Builds the interface `Theme` (label color, panels, buttons, and the `ChoiceButton` variation of settings toggles and choices: outlined when off, filled when on) of a palette on top of `assets/themes/base_theme.tres` |
+| `ui_theme_builder.gd` | Builds the interface `Theme` (label color, panels, buttons, and the `SecondaryButton` variation, outlined, for secondary actions, and `ChoiceButton`, based on it, for settings toggles and choices, filled when on) of a palette on top of `assets/themes/base_theme.tres` |
 | `safe_area_margin.gd` | `MarginContainer` whose scene margins are measured from the safe area (notch, system bars), on mobile only |
 
 ### `tools/simulation/` — balance simulator (not exported)
@@ -125,10 +124,10 @@ The ambient music is `assets/audio/music/musical_ambiance.ogg`, one track for ev
 ### Scenes
 
 - `scenes/main.tscn`: entry point, `Main` (see above).
-- `scenes/ui/home_screen.tscn`: title, the Play / Continue buttons and Settings.
+- `scenes/ui/home_screen.tscn`: title, the Play / Continue buttons, then the Tutorial / Settings buttons.
 - `scenes/ui/settings_screen.tscn`: `SettingsRows` and Back.
 - `scenes/ui/settings_rows.tscn`: the setting rows, by group.
-- `scenes/game/game_screen.tscn`: HUD with "?" and pause ("II") buttons, previews, board with the centered combo label, tutorial panel, pause and game over overlays.
+- `scenes/game/game_screen.tscn`: HUD with score, record, highest tile and the pause ("II") button, previews, board with the centered combo label, tutorial panel, pause and game over overlays.
 - `scenes/game/tutorial_panel.tscn`: tutorial message and buttons.
 - `scenes/game/game_over_panel.tscn`, `scenes/game/pause_panel.tscn`: game over and pause overlays of the game screen.
 
@@ -183,7 +182,7 @@ While a finger is down on the board, or the mouse hovers it on PC, `BoardView` a
 - `ResolutionPlayback` builds one `Tween` for the whole turn: placed tiles drop from the top row, speeding up, and squash on landing, each chain link flashes its groups, slides them onto their result cells and pops the results, later links faster and with a larger pop (`ResolutionPlaybackConfig.get_chain_intensity()`); each result tile throws a particle burst in its palette color, larger on later links, and from a configured link the board shakes (`BoardView.set_shake_offset()`, which moves the drawing and the effects layer, never the layout), unless `Settings.is_screen_shake_enabled` is off, fallen tiles slide down and squash the same way, with a short pause after each step. From link 2 on, one combo label centered on the board shows the multiplier (`x2`, `x2,5` in French), with a word from configured links, and pops at each link; it stays `combo_hold_duration` after the turn ends, and disappears at once on a skip or when the next turn starts.
 - The displayed board only changes through `ResolutionEvent.apply_to()`; the presentation never applies game rules.
 - A turn longer than `max_chain_duration` plays faster: the tween speed scale is raised so the whole turn fits.
-- While playing, the board ignores taps and the "?" button is disabled. A press on the board skips: the tween stops, the remaining events are applied, and `playback_finished` fires. Outside the tutorial this unlocks the board at once, so the same press plays the next tile on release. It fires exactly once per turn, whether the playback ends or is skipped, any number of times.
+- While playing, the board ignores taps. A press on the board skips: the tween stops, the remaining events are applied, and `playback_finished` fires. Outside the tutorial this unlocks the board at once, so the same press plays the next tile on release. It fires exactly once per turn, whether the playback ends or is skipped, any number of times.
 - At the end, the board view shows the session board again, which matches the replayed board.
 
 ## Audio feedback
@@ -199,24 +198,23 @@ Both playback signals are tween callbacks: a skip kills the tween, so the remain
 
 ## Tutorial flow
 
-1. `GameScreen.start_tutorial()` runs on Play until the tutorial was seen, and from the "?" button. It replaces the displayed session with the step's `TutorialStep.create_session()`; the saved game in progress is left untouched.
+1. `GameScreen.start_tutorial()` runs when the player taps Tutorial on the home screen, the only way to open it. It replaces the displayed session with the step's `TutorialStep.create_session()`; the saved game in progress is left untouched.
 2. `BoardView.show_tutorial_hint()` pulses the target column, its mirror, the step's cells and the axis, and sets `restricted_column` so only the target column (or its mirror) can be played.
 3. On release, `GameScreen` plays the turn like any other, through `ResolutionPlayback`. The hint is cleared.
-4. On `playback_finished`, the board stays locked and `TutorialPanel` shows the explanation. Next loads the following step; after the last one, or on Skip, the tutorial is marked as seen (`PlayerProgress.mark_tutorial_seen()`) and `start_new_game()` starts a real game, which replaces the saved one.
+4. On `playback_finished`, the board stays locked and `TutorialPanel` shows the explanation. Next loads the following step; after the last one (Done), or on Skip, `GameScreen` emits `home_requested` and `Main` shows the home screen; the saved game is untouched and Continue still offers it.
 
 ## Save flow
 
 What is saved, in `user://save.cfg` (format: [0002](decisions/0002-save-format.md), writing: [0005](decisions/0005-save-writing.md)):
 
 - `record`: best score and highest tile level (`RecordBook`).
-- `progress`: whether the tutorial was seen (`PlayerProgress`).
 - `settings`: every `Settings` value, written on each change.
 - `current_game`: the game in progress, `GameSession.to_data()`, and the record before it (`CurrentGameStore`). Never the tutorial.
 
 When:
 
 - After each real turn, right after `play_column()` and before the playback: the session already holds the final state, so a kill during the animation keeps the turn. The record is raised, then the game is stored, or erased if the turn ended it.
-- `start_new_game()` counts the saved game for the record, then replaces it with the new game. Play never clears the save by itself: with the tutorial first, the saved game stays until the tutorial starts the new game.
+- `start_new_game()` counts the saved game for the record, then replaces it with the new game. The tutorial never touches the save.
 - Continue rebuilds the saved game with `GameSession.create_from_data()` and shows its board at once, without animation. A game the core rejects is discarded; the record and settings stay.
 
 ## App lifecycle
