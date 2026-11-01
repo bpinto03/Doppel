@@ -8,7 +8,7 @@ Step 2.2 needs a visual identity readable on a small screen, in sunlight and for
 
 ## Decision
 
-- **Two free default themes**, picked in the settings: **Paper** (light, default) and **Night** (dark). Shop themes (step 3.2) come on top of them. Colors live in `data/palette_paper.tres` and `data/palette_night.tres` (`ThemePalette`) and cover the whole interface: background, text, panels, buttons, empty cells, axis, tutorial highlight, tiles.
+- **Two free default themes**, picked in the settings: **Paper** (light, default) and **Night** (dark). Shop themes (step 3.2) come on top of them, as entries of the theme catalog (`data/theme_catalog.tres`, see [0008](0008-themes-and-purchase.md)), which also lists Paper and Night. Colors live in `data/palette_paper.tres` and `data/palette_night.tres` (`ThemePalette`) and cover the whole interface: background, text, panels, buttons, empty cells, axis, tutorial highlight, tiles.
 - **Two tile text colors per theme**, one dark and one light (`tile_text_dark`, `tile_text_light`). Each level takes the one with the higher WCAG contrast on its tile (`ThemePalette.pick_tile_text_color()`), picked once per level when `TilePainter` is built, never per frame. Night tiles are all light, so every Night tile keeps the same near-black text (`tests/test_theme_palettes.gd`). Until 2026-10-31 each theme had a single text color; the Paper mockup (`docs/maquettes/`) mixes light and dark tiles, which a single color cannot serve.
 - **Tile colors** (OKLCH lightness on three bands, hues spread so neighbors differ in hue and lightness):
   - Text on tile: at least 4.5:1 in both themes (Paper 7.09, Night 5.4), enforced by `tests/test_theme_palettes.gd`.

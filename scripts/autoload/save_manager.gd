@@ -102,7 +102,7 @@ func _read_save_file(path: String) -> ConfigFile:
 
 func _migrate(save_file: ConfigFile, from_version: int) -> void:
 	if from_version < 2:
-		save_file.set_value(SETTINGS_SCRIPT.SECTION, SETTINGS_SCRIPT.PALETTE_NAME_KEY, SETTINGS_SCRIPT.DEFAULT_PALETTE_NAME)
+		save_file.set_value(SETTINGS_SCRIPT.SECTION, SETTINGS_SCRIPT.PALETTE_NAME_KEY, String(SETTINGS_SCRIPT.THEME_CATALOG.get_default_id()))
 
 
 ## The new save is written and read back in a temporary file before it replaces the current one,

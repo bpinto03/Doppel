@@ -64,7 +64,7 @@ func test_choosing_a_theme_applies_it() -> void:
 	(_rows.get_node("%NightButton") as Button).pressed.emit()
 
 	assert_eq(Settings.palette_name, "night")
-	assert_eq((_screen.get_node("%Background") as ColorRect).color, Settings.PALETTES["night"].background)
+	assert_eq((_screen.get_node("%Background") as ColorRect).color, Settings.THEME_CATALOG.find_entry(&"night").palette.background)
 	assert_true((_rows.get_node("%NightButton") as Button).button_pressed)
 	assert_false((_rows.get_node("%PaperButton") as Button).button_pressed)
 

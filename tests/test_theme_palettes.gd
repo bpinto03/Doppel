@@ -36,28 +36,28 @@ const MIN_TEXT_CONTRAST: float = 4.5
 
 
 func test_every_palette_has_one_color_per_level() -> void:
-	for palette_name: String in Settings.PALETTES:
-		assert_eq(Settings.PALETTES[palette_name].tile_colors.size(), LEVEL_COUNT, palette_name)
+	for palette_name: String in _get_palettes():
+		assert_eq(_get_palettes()[palette_name].tile_colors.size(), LEVEL_COUNT, palette_name)
 
 
 func test_tile_text_is_readable_on_every_tile() -> void:
-	for palette_name: String in Settings.PALETTES:
-		var painter := TilePainter.new(Settings.PALETTES[palette_name], TILE_TEXT_CONFIG)
+	for palette_name: String in _get_palettes():
+		var painter := TilePainter.new(_get_palettes()[palette_name], TILE_TEXT_CONFIG)
 		for level: int in range(1, LEVEL_COUNT + 1):
 			var contrast: float = ColorContrast.calculate_ratio(painter.get_text_color(level), painter.palette.get_tile_color(level))
 			assert_gte(contrast, MIN_TILE_TEXT_CONTRAST, "%s level %d" % [palette_name, level])
 
 
 func test_night_tiles_keep_their_near_black_text() -> void:
-	var painter := TilePainter.new(Settings.PALETTES["night"], TILE_TEXT_CONFIG)
+	var painter := TilePainter.new(Settings.THEME_CATALOG.find_entry(&"night").palette, TILE_TEXT_CONFIG)
 
 	for level: int in range(1, LEVEL_COUNT + 1):
 		assert_eq(painter.get_text_color(level), NIGHT_TILE_TEXT, "level %d" % level)
 
 
 func test_every_tile_or_its_outline_stands_out_from_the_board() -> void:
-	for palette_name: String in Settings.PALETTES:
-		var painter := TilePainter.new(Settings.PALETTES[palette_name], TILE_TEXT_CONFIG)
+	for palette_name: String in _get_palettes():
+		var painter := TilePainter.new(_get_palettes()[palette_name], TILE_TEXT_CONFIG)
 		for level: int in range(1, LEVEL_COUNT + 1):
 			var tile_color: Color = painter.palette.get_tile_color(level)
 			var visible_edge: Color = painter.get_edge_color(level) if painter.is_outlined(level) else tile_color
@@ -66,16 +66,16 @@ func test_every_tile_or_its_outline_stands_out_from_the_board() -> void:
 
 
 func test_every_palette_sets_every_home_and_modal_color() -> void:
-	for palette_name: String in Settings.PALETTES:
-		var saved_palette: String = FileAccess.get_file_as_string(Settings.PALETTES[palette_name].resource_path)
+	for palette_name: String in _get_palettes():
+		var saved_palette: String = FileAccess.get_file_as_string(_get_palettes()[palette_name].resource_path)
 		for property: StringName in HOME_COLOR_PROPERTIES + MODAL_COLOR_PROPERTIES + COIN_COLOR_PROPERTIES:
 			assert_true(saved_palette.contains("\n%s = " % property), "%s %s" % [palette_name, property])
 
 
 ## Both backgrounds are opaque, so the ratio is the one on screen.
 func test_coin_texts_are_readable_on_their_background() -> void:
-	for palette_name: String in Settings.PALETTES:
-		var palette: ThemePalette = Settings.PALETTES[palette_name]
+	for palette_name: String in _get_palettes():
+		var palette: ThemePalette = _get_palettes()[palette_name]
 		assert_eq(palette.coin_counter.a, 1.0, palette_name)
 		assert_eq(palette.modal_panel.a, 1.0, palette_name)
 		assert_gte(ColorContrast.calculate_ratio(palette.coin_counter_text, palette.coin_counter), MIN_TEXT_CONTRAST, "%s counter" % palette_name)
@@ -83,15 +83,15 @@ func test_coin_texts_are_readable_on_their_background() -> void:
 
 
 func test_night_tile_colors_do_not_change() -> void:
-	assert_eq(Settings.PALETTES["night"].tile_colors, NIGHT_TILE_COLORS)
+	assert_eq(Settings.THEME_CATALOG.find_entry(&"night").palette.tile_colors, NIGHT_TILE_COLORS)
 
 
 func test_night_tile_edges_keep_the_three_to_one_contrast() -> void:
-	assert_eq(Settings.PALETTES["night"].min_tile_edge_contrast, NIGHT_MIN_TILE_EDGE_CONTRAST)
+	assert_eq(Settings.THEME_CATALOG.find_entry(&"night").palette.min_tile_edge_contrast, NIGHT_MIN_TILE_EDGE_CONTRAST)
 
 
 func test_night_tiles_need_no_outline() -> void:
-	var painter := TilePainter.new(Settings.PALETTES["night"], TILE_TEXT_CONFIG)
+	var painter := TilePainter.new(Settings.THEME_CATALOG.find_entry(&"night").palette, TILE_TEXT_CONFIG)
 
 	for level: int in range(1, LEVEL_COUNT + 1):
 		assert_false(painter.is_outlined(level), "level %d" % level)
@@ -114,7 +114,7 @@ func test_contrast_ratio_spans_one_to_twenty_one() -> void:
 
 
 func test_secondary_and_choice_buttons_are_outlined() -> void:
-	for palette: ThemePalette in Settings.PALETTES.values():
+	for palette: ThemePalette in _get_palettes().values():
 		var theme: Theme = UiThemeBuilder.build(palette, load("res://assets/themes/base_theme.tres"))
 		var button := Button.new()
 		button.theme = theme
@@ -125,3 +125,10 @@ func test_secondary_and_choice_buttons_are_outlined() -> void:
 			assert_eq(normal_box.border_width_top, UiThemeBuilder.SECONDARY_BORDER_WIDTH, String(variation))
 			assert_eq(normal_box.bg_color, palette.panel, String(variation))
 
+
+## Every shipped theme, so a theme added to the catalog is checked too.
+func _get_palettes() -> Dictionary[StringName, ThemePalette]:
+	var palettes: Dictionary[StringName, ThemePalette] = {}
+	for entry: ThemeEntry in Settings.THEME_CATALOG.get_entries():
+		palettes[entry.id] = entry.palette
+	return palettes

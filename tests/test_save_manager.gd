@@ -144,7 +144,7 @@ func test_first_version_save_is_migrated_with_the_default_palette() -> void:
 
 	var save_manager: Node = _create_save_manager()
 
-	assert_eq(save_manager.get_value(SETTINGS_SCRIPT.SECTION, SETTINGS_SCRIPT.PALETTE_NAME_KEY, ""), SETTINGS_SCRIPT.DEFAULT_PALETTE_NAME)
+	assert_eq(save_manager.get_value(SETTINGS_SCRIPT.SECTION, SETTINGS_SCRIPT.PALETTE_NAME_KEY, ""), String(SETTINGS_SCRIPT.THEME_CATALOG.get_default_id()))
 	assert_eq(save_manager.get_value(SAVE_MANAGER_SCRIPT.META_SECTION, SAVE_MANAGER_SCRIPT.VERSION_KEY, 0), SAVE_MANAGER_SCRIPT.SAVE_VERSION)
 	assert_eq(save_manager.get_value("record", "best_score", 0), 512)
 	assert_eq(save_manager.get_value(SETTINGS_SCRIPT.SECTION, "is_vibration_enabled", true), false)

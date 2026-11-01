@@ -42,7 +42,8 @@ func test_counter_follows_the_balance() -> void:
 
 
 func test_six_digits_fit_in_every_language_and_more_never_widen_the_counter() -> void:
-	for palette: ThemePalette in Settings.PALETTES.values():
+	for entry: ThemeEntry in Settings.THEME_CATALOG.get_entries():
+		var palette: ThemePalette = entry.palette
 		for language: String in I18n.SUPPORTED_LANGUAGES:
 			TranslationServer.set_locale(language)
 			_set_balance(LARGEST_SHOWN_AMOUNT)

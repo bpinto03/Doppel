@@ -17,7 +17,8 @@ func before_each() -> void:
 
 
 func test_hover_looks_like_normal_and_focus_shows_nothing() -> void:
-	for palette: ThemePalette in Settings.PALETTES.values():
+	for entry: ThemeEntry in Settings.THEME_CATALOG.get_entries():
+		var palette: ThemePalette = entry.palette
 		_button.theme = UiThemeBuilder.build(palette, BASE_THEME)
 		for variation: StringName in VARIATIONS:
 			_button.theme_type_variation = variation
@@ -26,7 +27,7 @@ func test_hover_looks_like_normal_and_focus_shows_nothing() -> void:
 
 
 func test_minimum_width_counts_the_badge_and_the_chevron() -> void:
-	_button.theme = UiThemeBuilder.build(Settings.PALETTES["paper"], BASE_THEME)
+	_button.theme = UiThemeBuilder.build(Settings.THEME_CATALOG.find_entry(&"paper").palette, BASE_THEME)
 	var font: Font = _button.get_theme_font(&"font")
 	var text_width: float = font.get_string_size(_button.text, HORIZONTAL_ALIGNMENT_LEFT, -1, _button.get_theme_font_size(&"font_size")).x
 

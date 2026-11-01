@@ -46,3 +46,5 @@ TUTORIAL_NEXT,Next,Suivant
 TUTORIAL_DONE,Done,Terminer
 TUTORIAL_SKIP,Skip,Passer
 UI_COINS_EARNED,+{value},+{value}
+THEME_NAME_PAPER,Paper,Papier
+THEME_NAME_NIGHT,Night,Nuit

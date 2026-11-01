@@ -7,13 +7,11 @@ signal palette_changed
 
 const SECTION: String = "settings"
 const FOLLOW_DEVICE_LANGUAGE: String = ""
-const PALETTES: Dictionary[String, ThemePalette] = {
-	"paper": preload("res://data/palette_paper.tres"),
-	"night": preload("res://data/palette_night.tres"),
-}
-const DEFAULT_PALETTE_NAME: String = "paper"
+const THEME_CATALOG: ThemeCatalog = preload("res://data/theme_catalog.tres")
 const PALETTE_NAME_KEY: String = "palette_name"
 const DEFAULT_BUS_VOLUME: float = 1.0
+
+var _theme_shop := ThemeShop.new(THEME_CATALOG)
 
 var is_sound_enabled: bool:
 	get:
@@ -47,10 +45,11 @@ var language: String:
 		_store("language", value)
 
 
-## A key of PALETTES.
+## The id of the equipped theme in THEME_CATALOG. A saved id that is unknown or not owned reads as the default theme.
 var palette_name: String:
 	get:
-		return SaveManager.get_value(SECTION, PALETTE_NAME_KEY, DEFAULT_PALETTE_NAME)
+		var saved_id: String = str(SaveManager.get_value(SECTION, PALETTE_NAME_KEY, THEME_CATALOG.get_default_id()))
+		return String(_theme_shop.resolve_equipped_id(StringName(saved_id)))
 	set(value):
 		_store(PALETTE_NAME_KEY, value)
 		palette_changed.emit()
@@ -66,7 +65,7 @@ func set_bus_volume(bus_name: StringName, volume: float) -> void:
 
 
 func get_palette() -> ThemePalette:
-	return PALETTES.get(palette_name, PALETTES[DEFAULT_PALETTE_NAME])
+	return THEME_CATALOG.find_entry(StringName(palette_name)).palette
 
 
 func _get_bus_volume_key(bus_name: StringName) -> String:

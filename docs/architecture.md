@@ -99,6 +99,14 @@ Command line tool run by `./run_simulation.sh` (see [balancing.md](balancing.md#
 | `simulation_scenario.gd`, `scenarios.json` | `SimulationScenario`: a name and overrides applied to a copy of the balancing config |
 | `simulation_report.gd` | Console table and CSV text |
 
+### `scripts/themes/` — theme catalog and purchase
+
+| Script | Responsibility |
+|--------|----------------|
+| `theme_entry.gd` | `ThemeEntry` (`Resource`): `id` (saved, never renamed), `palette`, `price` (0 = free, always owned), `display_name_key` |
+| `theme_catalog.gd` | `ThemeCatalog` (`Resource`, `data/theme_catalog.tres`): ordered entries and `default_id`; `find_entry()` returns null for an unknown id |
+| `theme_shop.gd` | `ThemeShop` (`RefCounted`, catalog injected): `is_owned()`, `try_buy()` (refuses an unknown or owned theme and a short balance; `CoinWallet.try_spend()` then the `owned` list, in the same frame), `equip()` (owned themes only, writes `Settings.palette_name`, whose `palette_changed` recolors the screens) and `resolve_equipped_id()`, the only place that turns a saved id into the theme shown. Buying does not equip. See [0008](decisions/0008-themes-and-purchase.md) |
+
 ### `scripts/autoload/` — platform services
 
 Loaded in this order; each one may use the ones above it.
@@ -108,7 +116,7 @@ Loaded in this order; each one may use the ones above it.
 | `AppLifecycle` | Turns `NOTIFICATION_APPLICATION_PAUSED` / `FOCUS_OUT` and `RESUMED` / `FOCUS_IN` into `is_active` and the `deactivated` / `activated` signals (the last notification wins). The only place that reads these notifications (see App lifecycle) |
 | `SaveManager` | Versioned local save in `user://save.cfg` (see [0002](decisions/0002-save-format.md)). `get_value` / `set_value` by section and key. Changes made in the same frame make one write at the end of the frame, and an unchanged save is not written again; `flush()` writes at once, and runs on `AppLifecycle.deactivated`. Each write goes through a checked temporary file and keeps the previous save as a backup; a missing, empty, unreadable or newer save falls back to the backup, then to an empty save (see [0005](decisions/0005-save-writing.md)) |
 | `WalletEvents` | Only carries `coins_changed(new_total)`, emitted by the static `CoinWallet` |
-| `Settings` | Sound, music, vibration, screen shake, language, theme (`palette_name`: `paper` or `night`) and linear volume per audio bus (`get_bus_volume` / `set_bus_volume`, 0 to 1), stored in the `settings` section. Emits `changed`, and `palette_changed` for the theme |
+| `Settings` | Sound, music, vibration, screen shake, language, theme (`palette_name`: an id of `THEME_CATALOG`; read through `ThemeShop.resolve_equipped_id()`, so an unknown or unowned saved id shows the default theme; `get_palette()` returns its palette) and linear volume per audio bus (`get_bus_volume` / `set_bus_volume`, 0 to 1), stored in the `settings` section. Emits `changed`, and `palette_changed` for the theme |
 | `I18n` | Sets the locale: chosen language, else the device language if supported (en, fr), else English |
 | `AudioManager` | Applies the saved sound, music and volume settings to the buses at startup and on every change: a disabled sound or a volume of zero mutes its bus. `play_effect()` plays a `SoundEffect` on the `SFX` bus with a pool of reused players; a missing sound plays nothing. `start_music()` / `stop_music()` fade the looping ambient music in and out on the `Music` bus; the fades belong to the autoload. A `MusicState` decides from the music setting, the app request (`Main` asks once at launch) and the app state: play, pause while `AppLifecycle` reports the app inactive, or stop and release the stream (music disabled or no longer requested). A missing music file logs a warning and the game plays without music. |
 | `HapticsManager` | The only caller of `Input.vibrate_handheld()`. `request()` keeps the strongest `HapticPulse` of the frame and sends it on the next `_process`; nothing is sent while `Settings.is_vibration_enabled` is off. A pulse closer than `min_interval_ms` to the last one sent is dropped unless it is stronger. `take_pending_pulse()` makes the decision without the device call, for tests. `pulse_sent` reports every pulse sent. On desktop, or on a phone without a vibrator, the call does nothing |
@@ -151,6 +159,7 @@ The ambient music is `assets/audio/music/musical_ambiance.ogg`, one track for ev
 - `data/game_over_effects.tres`: game over confetti and appearance (see [balancing.md](balancing.md)).
 - `data/tutorial_hint.tres`: tutorial highlight pulse period.
 - `data/palette_paper.tres`, `data/palette_night.tres`: the two default themes (see [0003](decisions/0003-art-direction.md)).
+- `data/theme_catalog.tres`: every theme with its palette, price and name key (`paper` and `night`, free; default `paper`).
 - `data/tile_text.tres`: tile value font and size limits.
 - `data/board_style.tres`: board frame, cell gap and axis sizes.
 - `assets/translations/ui.csv`: player-facing texts (en, fr).
@@ -245,6 +254,7 @@ What is saved, in `user://save.cfg` (format: [0002](decisions/0002-save-format.m
 
 - `record`: best score and highest tile level (`RecordBook`).
 - `wallet`: the player's coins (`CoinWallet`).
+- `themes`: `owned`, the ids of bought themes (`ThemeShop`); free themes are never written. The equipped theme stays `settings/palette_name`.
 - `settings`: every `Settings` value, written on each change.
 - `current_game`: the game in progress, `GameSession.to_data()`, and the record before it (`CurrentGameStore`). Never the tutorial.
 
