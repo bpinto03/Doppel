@@ -3,6 +3,8 @@ extends GutTest
 const SHOP_SCREEN_SCENE: PackedScene = preload("res://scenes/ui/shop_screen.tscn")
 const MAIN_SCENE: PackedScene = preload("res://scenes/main.tscn")
 const MAIN_SCRIPT: GDScript = preload("res://scripts/main.gd")
+const BASE_THEME: Theme = preload("res://assets/themes/base_theme.tres")
+const TEST_RING_WIDTH: int = 16
 const TEST_SAVE_PATH: String = "user://test_shop_screen_save.cfg"
 const PAID_THEME_ID: StringName = &"test_paid"
 const PAID_THEME_PRICE: int = 500
@@ -149,6 +151,29 @@ func test_each_preview_draws_with_its_own_theme() -> void:
 		assert_eq(preview.get_frame_colors(), [palette.background, palette.frame_fill, palette.frame_border] as Array[Color], String(card.entry.id))
 	var night_frame: Array[Color] = (shop.get_card(&"night").get_node("%Preview") as ThemePreview).get_frame_colors()
 	assert_ne(night_frame[0], Settings.get_palette().background)
+
+
+func test_no_ring_around_previews_by_default() -> void:
+	var shop: ShopScreen = _add_shop()
+
+	for card: ThemeCard in shop.get_cards():
+		assert_eq((card.get_node("%Preview") as ThemePreview).get_ring().border_width_left, 0, String(card.entry.id))
+
+
+## The ring belongs to the shop, not to the previewed theme: every preview takes the one of the active palette.
+func test_every_preview_takes_the_ring_of_the_active_theme() -> void:
+	var palette: ThemePalette = Settings.get_palette().duplicate()
+	palette.shop_preview_ring = Color.SADDLE_BROWN
+	palette.shop_preview_ring_width = TEST_RING_WIDTH
+	var shop: ShopScreen = _add_shop()
+
+	shop.theme = UiThemeBuilder.build(palette, BASE_THEME)
+
+	for card: ThemeCard in shop.get_cards():
+		var ring: StyleBoxFlat = (card.get_node("%Preview") as ThemePreview).get_ring()
+		assert_eq(ring.border_width_left, TEST_RING_WIDTH, String(card.entry.id))
+		assert_eq(ring.border_color, Color.SADDLE_BROWN, String(card.entry.id))
+		assert_false(ring.draw_center, String(card.entry.id))
 
 
 ## The longest name and description, a five digit price and a six digit balance stay within the base width:

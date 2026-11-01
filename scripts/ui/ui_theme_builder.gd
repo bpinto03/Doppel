@@ -117,6 +117,8 @@ const SHOP_CARD_TYPE: StringName = &"ShopCard"
 const SHOP_CARD_EQUIPPED_TYPE: StringName = &"ShopCardEquipped"
 ## Sizes only: ThemePreview colors the frame with the palette of its own theme.
 const SHOP_PREVIEW_FRAME_TYPE: StringName = &"ShopPreviewFrame"
+## The ring around every preview, in the active palette.
+const SHOP_PREVIEW_RING_TYPE: StringName = &"ShopPreviewRing"
 const SHOP_CARD_NAME_TYPE: StringName = &"ShopCardName"
 const SHOP_CARD_DESCRIPTION_TYPE: StringName = &"ShopCardDescription"
 const SHOP_PRICE_TYPE: StringName = &"ShopPrice"
@@ -387,6 +389,10 @@ static func _add_shop_styles(theme: Theme, palette: ThemePalette) -> void:
 	_add_shop_card_style(theme, SHOP_CARD_EQUIPPED_TYPE, palette.shop_card_equipped, palette.shop_card_equipped_border, palette.shop_card_equipped_glow, SHOP_CARD_EQUIPPED_BORDER_WIDTH)
 	theme.set_type_variation(SHOP_PREVIEW_FRAME_TYPE, &"Panel")
 	theme.set_stylebox(&"panel", SHOP_PREVIEW_FRAME_TYPE, _create_bordered_box(Color.TRANSPARENT, Color.TRANSPARENT, SHOP_PREVIEW_BORDER_WIDTH, SHOP_PREVIEW_RADIUS))
+	theme.set_type_variation(SHOP_PREVIEW_RING_TYPE, &"Panel")
+	var ring_box: StyleBoxFlat = _create_bordered_box(Color.TRANSPARENT, palette.shop_preview_ring, palette.shop_preview_ring_width, SHOP_PREVIEW_RADIUS)
+	ring_box.draw_center = false
+	theme.set_stylebox(&"panel", SHOP_PREVIEW_RING_TYPE, ring_box)
 	_add_glowing_label_style(theme, SHOP_CARD_NAME_TYPE, SHOP_CARD_NAME_FONT_SIZE, palette.shop_name_text, Color.TRANSPARENT, 0)
 	_add_glowing_label_style(theme, SHOP_PRICE_TYPE, SHOP_PRICE_FONT_SIZE, palette.shop_name_text, Color.TRANSPARENT, 0)
 	theme.set_type_variation(SHOP_CARD_DESCRIPTION_TYPE, &"Label")

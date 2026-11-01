@@ -143,6 +143,10 @@ extends Resource
 @export var shop_disabled_text: Color
 @export var shop_check_badge: Color
 @export var shop_check_icon: Color
+## A ring of the active theme around every preview, outside the previewed theme's own frame; a width of 0,
+## the default, draws none.
+@export var shop_preview_ring: Color = Color.TRANSPARENT
+@export var shop_preview_ring_width: int = 0
 
 @export_group("Board")
 ## Translucent fill of the board frame.

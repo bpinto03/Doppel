@@ -3,6 +3,7 @@ extends Control
 
 ## A tiny board in one theme, whatever the active one: the frame in its frame colors over its background,
 ## and tiles 2, 8, 64 and 1024 in a 2 × 2 grid, drawn with its own TilePainter. Frame sizes come from ShopPreviewFrame.
+## The active theme may add a ring around it (ShopPreviewRing): the frame shrinks inside the ring, the tiles keep their place.
 
 const TILE_TEXT_CONFIG: TileTextConfig = preload("res://data/tile_text.tres")
 const PREVIEW_LEVELS: Array[int] = [1, 3, 6, 10]
@@ -29,21 +30,32 @@ func get_frame_colors() -> Array[Color]:
 	return [palette.background, palette.frame_fill, palette.frame_border]
 
 
+## The ring the active theme draws around the preview; a border width of 0 draws none.
+func get_ring() -> StyleBoxFlat:
+	return get_theme_stylebox(&"panel", UiThemeBuilder.SHOP_PREVIEW_RING_TYPE)
+
+
 func _draw() -> void:
 	if palette == null:
 		return
-	var frame_rect := Rect2(Vector2.ZERO, size)
-	var background_box: StyleBoxFlat = _create_frame_box(palette.background, Color.TRANSPARENT)
+	var ring: StyleBoxFlat = get_ring()
+	var ring_width: int = ring.border_width_left
+	if ring_width > 0:
+		draw_style_box(ring, Rect2(Vector2.ZERO, size))
+	var frame_rect := Rect2(Vector2.ZERO, size).grow(-ring_width)
+	var background_box: StyleBoxFlat = _create_frame_box(palette.background, Color.TRANSPARENT, ring_width)
 	background_box.set_border_width_all(0)
 	draw_style_box(background_box, frame_rect)
-	draw_style_box(_create_frame_box(palette.frame_fill, palette.frame_border), frame_rect)
+	draw_style_box(_create_frame_box(palette.frame_fill, palette.frame_border, ring_width), frame_rect)
 	_draw_tiles()
 
 
-func _create_frame_box(fill_color: Color, border_color: Color) -> StyleBoxFlat:
+## Corners shrink by the ring width, so the frame follows the inner edge of the ring.
+func _create_frame_box(fill_color: Color, border_color: Color, ring_width: int) -> StyleBoxFlat:
 	var box: StyleBoxFlat = get_theme_stylebox(&"panel", UiThemeBuilder.SHOP_PREVIEW_FRAME_TYPE).duplicate()
 	box.bg_color = fill_color
 	box.border_color = border_color
+	box.set_corner_radius_all(maxi(box.corner_radius_top_left - ring_width, 0))
 	return box
 
 
