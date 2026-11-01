@@ -33,6 +33,13 @@ const MODAL_COLOR_PROPERTIES: Array[StringName] = [
 ## Coin colors every palette sets itself, for the same reason.
 const COIN_COLOR_PROPERTIES: Array[StringName] = [&"coin_counter", &"coin_counter_border", &"coin_counter_text", &"coin_gain_text"]
 const MIN_TEXT_CONTRAST: float = 4.5
+## Shop colors every palette sets itself, for the same reason.
+const SHOP_COLOR_PROPERTIES: Array[StringName] = [
+	&"shop_card", &"shop_card_border", &"shop_card_glow", &"shop_card_equipped", &"shop_card_equipped_border", &"shop_card_equipped_glow",
+	&"shop_name_text", &"shop_description_text", &"shop_equip_button", &"shop_equip_button_highlight",
+	&"shop_buy_button", &"shop_buy_button_highlight", &"shop_button_text", &"shop_disabled_button", &"shop_disabled_text",
+	&"shop_check_badge", &"shop_check_icon",
+]
 
 
 func test_every_palette_has_one_color_per_level() -> void:
@@ -68,7 +75,7 @@ func test_every_tile_or_its_outline_stands_out_from_the_board() -> void:
 func test_every_palette_sets_every_home_and_modal_color() -> void:
 	for palette_name: String in _get_palettes():
 		var saved_palette: String = FileAccess.get_file_as_string(_get_palettes()[palette_name].resource_path)
-		for property: StringName in HOME_COLOR_PROPERTIES + MODAL_COLOR_PROPERTIES + COIN_COLOR_PROPERTIES:
+		for property: StringName in HOME_COLOR_PROPERTIES + MODAL_COLOR_PROPERTIES + COIN_COLOR_PROPERTIES + SHOP_COLOR_PROPERTIES:
 			assert_true(saved_palette.contains("\n%s = " % property), "%s %s" % [palette_name, property])
 
 
@@ -80,6 +87,27 @@ func test_coin_texts_are_readable_on_their_background() -> void:
 		assert_eq(palette.modal_panel.a, 1.0, palette_name)
 		assert_gte(ColorContrast.calculate_ratio(palette.coin_counter_text, palette.coin_counter), MIN_TEXT_CONTRAST, "%s counter" % palette_name)
 		assert_gte(ColorContrast.calculate_ratio(palette.coin_gain_text, palette.modal_panel), MIN_TEXT_CONTRAST, "%s gain" % palette_name)
+
+
+## Disabled buttons are left out, as WCAG does for inactive controls; every fill here is opaque.
+func test_shop_texts_are_readable_on_their_background() -> void:
+	for palette_name: StringName in _get_palettes():
+		var palette: ThemePalette = _get_palettes()[palette_name]
+		var text_pairs: Dictionary[String, Array] = {
+			"name on card": [palette.shop_name_text, palette.shop_card],
+			"name on equipped card": [palette.shop_name_text, palette.shop_card_equipped],
+			"description on card": [palette.shop_description_text, palette.shop_card],
+			"description on equipped card": [palette.shop_description_text, palette.shop_card_equipped],
+			"subtitle on background": [palette.shop_description_text, palette.background],
+			"Equip": [palette.shop_button_text, palette.shop_equip_button],
+			"Equip highlight": [palette.shop_button_text, palette.shop_equip_button_highlight],
+			"Buy": [palette.shop_button_text, palette.shop_buy_button],
+			"Buy highlight": [palette.shop_button_text, palette.shop_buy_button_highlight],
+		}
+		for pair_name: String in text_pairs:
+			var colors: Array = text_pairs[pair_name]
+			assert_eq((colors[1] as Color).a, 1.0, "%s %s" % [palette_name, pair_name])
+			assert_gte(ColorContrast.calculate_ratio(colors[0], colors[1]), MIN_TEXT_CONTRAST, "%s %s" % [palette_name, pair_name])
 
 
 func test_night_tile_colors_do_not_change() -> void:

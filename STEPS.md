@@ -209,7 +209,7 @@ Outil : simulateur d'équilibrage (`./run_simulation.sh`, voir `docs/balancing.m
 - [ ] Vérifier les zones sûres sur écrans à encoche
 - [ ] Corriger les bugs, geler les fonctionnalités (**feature freeze**)
 - [ ] Faire une passe d'équilibrage finale (difficulté, pondérations, pièces, fréquence des pubs)
-- [ ] Nettoyer le projet (assets inutilisés, logs de debug)
+- [ ] Nettoyer le projet (assets inutilisés, logs de debug), dont le solde de départ de test `DEBUG_STARTING_COINS` et sa garde (à supprimer avec ses tests)
 - [ ] Faire relire les textes (fautes, ton, cohérence FR / EN)
 
 - [ ] **✅ Gate 5 :** aucune crash connu, 60 FPS sur l'appareil de référence, build stable prêt à être testé par d'autres.

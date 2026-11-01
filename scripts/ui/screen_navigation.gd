@@ -4,7 +4,7 @@ extends RefCounted
 ## Where the Android back button leads, and when the game pauses by itself.
 ## Main and GameScreen apply the answers; they never decide them. See docs/decisions/0006-back-button-and-overlays.md.
 
-enum Screen { HOME, GAME, SETTINGS }
+enum Screen { HOME, GAME, SETTINGS, SHOP }
 enum GameState { PLAYING, PAUSED, PAUSE_SETTINGS, TUTORIAL, GAME_OVER }
 enum BackAction { QUIT, SHOW_HOME, OPEN_PAUSE, CLOSE_PAUSE, CLOSE_PAUSE_SETTINGS }
 
@@ -13,7 +13,7 @@ static func resolve_back(screen: Screen, game_state: GameState) -> BackAction:
 	match screen:
 		Screen.HOME:
 			return BackAction.QUIT
-		Screen.SETTINGS:
+		Screen.SETTINGS, Screen.SHOP:
 			return BackAction.SHOW_HOME
 	match game_state:
 		GameState.PLAYING:

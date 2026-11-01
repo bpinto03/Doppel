@@ -6,14 +6,24 @@ extends Node
 const HOME_SCREEN_SCENE: PackedScene = preload("res://scenes/ui/home_screen.tscn")
 const GAME_SCREEN_SCENE: PackedScene = preload("res://scenes/game/game_screen.tscn")
 const SETTINGS_SCREEN_SCENE: PackedScene = preload("res://scenes/ui/settings_screen.tscn")
+const SHOP_SCREEN_SCENE: PackedScene = preload("res://scenes/ui/shop_screen.tscn")
 const BALANCING_CONFIG: BalancingConfig = preload("res://data/balancing.tres")
+const DEBUG_STARTING_COINS: int = 100000
 
+## Set before Main enters the tree; tests set it to false to play as a release build.
+var is_debug_build: bool = OS.is_debug_build()
 var _current_screen: Control
 
 
 func _ready() -> void:
+	_grant_debug_starting_coins()
 	AudioManager.start_music()
 	show_home()
+
+
+## Only once per save, and never in a release build.
+static func should_grant_debug_starting_coins(is_debug: bool, has_saved_balance: bool) -> bool:
+	return is_debug and not has_saved_balance
 
 
 func _notification(what: int) -> void:
@@ -45,6 +55,7 @@ func show_home() -> void:
 	home.continue_requested.connect(_on_continue_requested)
 	home.tutorial_requested.connect(_on_tutorial_requested)
 	home.settings_requested.connect(_show_settings)
+	home.shop_requested.connect(_show_shop)
 
 
 func get_current_screen() -> Control:
@@ -73,11 +84,25 @@ func _show_settings() -> void:
 	settings.back_requested.connect(show_home)
 
 
+func _show_shop() -> void:
+	var shop: ShopScreen = SHOP_SCREEN_SCENE.instantiate()
+	_replace_screen(shop)
+	shop.back_requested.connect(show_home)
+
+
+func _grant_debug_starting_coins() -> void:
+	var has_saved_balance: bool = SaveManager.get_section(CoinWallet.SECTION).has(CoinWallet.COINS_KEY)
+	if should_grant_debug_starting_coins(is_debug_build, has_saved_balance):
+		CoinWallet.add_coins(DEBUG_STARTING_COINS)
+
+
 func _get_navigation_screen() -> ScreenNavigation.Screen:
 	if _current_screen is GameScreen:
 		return ScreenNavigation.Screen.GAME
 	if _current_screen is SettingsScreen:
 		return ScreenNavigation.Screen.SETTINGS
+	if _current_screen is ShopScreen:
+		return ScreenNavigation.Screen.SHOP
 	return ScreenNavigation.Screen.HOME
 
 

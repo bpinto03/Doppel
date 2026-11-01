@@ -5,7 +5,9 @@ const HOME_SCREEN_SCENE: PackedScene = preload("res://scenes/ui/home_screen.tscn
 const LONG_TEXT_LENGTH: int = 80
 ## Room every button keeps beyond its minimum width side by side, so a slightly longer translation still fits.
 const MIN_SPARE_WIDTH: float = 30.0
-const BUTTON_PATHS: Array[String] = ["%PlayButton", "%ContinueButton", "%TutorialButton", "%SettingsButton"]
+const BUTTON_PATHS: Array[String] = ["%PlayButton", "%ContinueButton", "%TutorialButton", "%ShopButton", "%SettingsButton"]
+const CHOICE_BUTTON_PATHS: Array[String] = ["%PlayButton", "%ContinueButton"]
+const SECONDARY_BUTTON_PATHS: Array[String] = ["%TutorialButton", "%ShopButton", "%SettingsButton"]
 
 var _home: HomeScreen
 var _base_size := Vector2(ProjectSettings.get_setting("display/window/size/viewport_width"), ProjectSettings.get_setting("display/window/size/viewport_height"))
@@ -43,7 +45,7 @@ func test_play_alone_hides_continue() -> void:
 
 
 ## The narrowest screen is the base width: the stretch mode only widens the viewport.
-func test_both_rows_fit_side_by_side_with_room_to_spare_in_every_language() -> void:
+func test_play_and_continue_fit_side_by_side_with_room_to_spare_in_every_language() -> void:
 	for language: String in I18n.SUPPORTED_LANGUAGES:
 		TranslationServer.set_locale(language)
 		var home: HomeScreen = await _add_home_screen()
@@ -51,11 +53,32 @@ func test_both_rows_fit_side_by_side_with_room_to_spare_in_every_language() -> v
 		await wait_process_frames(1)
 
 		assert_false(home.is_stacked(), language)
-		assert_false((home.get_node("%SecondaryButtons") as BoxContainer).vertical, language)
-		for button_path: String in BUTTON_PATHS:
+		for button_path: String in CHOICE_BUTTON_PATHS:
 			var button: Button = home.get_node(button_path)
 			var spare_width: float = button.size.x - button.get_combined_minimum_size().x
 			assert_gte(spare_width, MIN_SPARE_WIDTH, "%s %s" % [tr(button.text), language])
+
+
+## Three secondary buttons do not fit side by side on the base width, so they stack, each one as wide as the screen allows.
+func test_secondary_buttons_stack_within_the_base_width_in_every_language() -> void:
+	for language: String in I18n.SUPPORTED_LANGUAGES:
+		TranslationServer.set_locale(language)
+		var home: HomeScreen = await _add_home_screen()
+		await wait_process_frames(1)
+
+		assert_true((home.get_node("%SecondaryButtons") as BoxContainer).vertical, language)
+		for button_path: String in SECONDARY_BUTTON_PATHS:
+			var button: Button = home.get_node(button_path)
+			assert_gte(button.size.x - button.get_combined_minimum_size().x, MIN_SPARE_WIDTH, "%s %s" % [tr(button.text), language])
+			assert_lte(button.get_global_rect().end.x, _base_size.x, "%s %s" % [tr(button.text), language])
+
+
+func test_themes_button_asks_for_the_shop() -> void:
+	watch_signals(_home)
+
+	(_home.get_node("%ShopButton") as Button).pressed.emit()
+
+	assert_signal_emitted(_home, "shop_requested")
 
 
 func test_every_button_plays_the_click() -> void:

@@ -1,0 +1,104 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/theme_card.gd" id="1_card"]
+[ext_resource type="Script" path="res://scripts/ui/theme_preview.gd" id="2_preview"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_coin.svg" id="3_coin"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_done.svg" id="4_check"]
+
+[node name="ThemeCard" type="PanelContainer"]
+size_flags_horizontal = 3
+theme_type_variation = &"ShopCard"
+script = ExtResource("1_card")
+
+[node name="Row" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 40
+
+[node name="Preview" type="Control" parent="Row"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_type_variation = &"ShopPreviewFrame"
+script = ExtResource("2_preview")
+
+[node name="Details" type="VBoxContainer" parent="Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="NameRow" type="HBoxContainer" parent="Row/Details"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="Row/Details/NameRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ShopCardName"
+vertical_alignment = 1
+text_overrun_behavior = 3
+clip_text = true
+
+[node name="CheckBadge" type="PanelContainer" parent="Row/Details/NameRow"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_type_variation = &"ShopCheckBadge"
+
+[node name="CheckIcon" type="TextureRect" parent="Row/Details/NameRow/CheckBadge"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 2
+texture_filter = 4
+texture = ExtResource("4_check")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="DescriptionLabel" type="Label" parent="Row/Details"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ShopCardDescription"
+autowrap_mode = 3
+text_overrun_behavior = 3
+
+[node name="Actions" type="HBoxContainer" parent="Row/Details"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Price" type="HBoxContainer" parent="Row/Details/Actions"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"CoinRow"
+
+[node name="PriceIcon" type="TextureRect" parent="Row/Details/Actions/Price"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture_filter = 4
+texture = ExtResource("3_coin")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PriceLabel" type="Label" parent="Row/Details/Actions/Price"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ShopPrice"
+vertical_alignment = 1
+text_overrun_behavior = 1
+clip_text = true
+
+[node name="ActionButton" type="Button" parent="Row/Details/Actions"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ShopEquipButton"

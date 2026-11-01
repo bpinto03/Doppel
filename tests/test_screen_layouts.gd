@@ -97,9 +97,12 @@ func _get_safe_rect(margin: MarginContainer) -> Rect2:
 	return Rect2(margin.global_position + top_left, margin.size - top_left - bottom_right)
 
 
+## At the base size: the headless viewport is wider, which would hide a row too wide for a phone.
 func _add_screen(scene: PackedScene) -> Control:
 	var screen: Control = scene.instantiate()
 	add_child_autofree(screen)
+	screen.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
+	screen.size = _base_size
 	await wait_process_frames(1)
 	return screen
 

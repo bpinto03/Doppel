@@ -8,3 +8,5 @@ extends Resource
 ## Free themes (price 0) are always owned.
 @export var price: int
 @export var display_name_key: String
+## At most two lines in the shop card.
+@export var description_key: String

@@ -27,5 +27,10 @@ func test_buttons_stack_when_twice_the_widest_does_not_fit() -> void:
 	assert_true(HomeMenu.should_stack([300.0, 420.0], SEPARATION, 420.0 * 2 + SEPARATION - 1.0))
 
 
+func test_three_buttons_stay_side_by_side_when_three_times_the_widest_fits() -> void:
+	assert_false(HomeMenu.should_stack([300.0, 420.0, 350.0], SEPARATION, 420.0 * 3 + SEPARATION * 2))
+	assert_true(HomeMenu.should_stack([300.0, 420.0, 350.0], SEPARATION, 420.0 * 3 + SEPARATION * 2 - 1.0))
+
+
 func test_single_button_never_stacks() -> void:
 	assert_false(HomeMenu.should_stack([2000.0], SEPARATION, 100.0))

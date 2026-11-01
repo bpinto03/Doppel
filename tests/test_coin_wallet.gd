@@ -182,8 +182,10 @@ func _create_game_screen() -> GameScreen:
 	return game
 
 
+## As a release build, so the debug starting coins never mix with the rewards checked here.
 func _start_main() -> Node:
 	var main: Node = MAIN_SCENE.instantiate()
+	main.is_debug_build = false
 	add_child_autofree(main)
 	return main
 

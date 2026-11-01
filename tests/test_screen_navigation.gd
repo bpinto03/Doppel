@@ -50,6 +50,11 @@ func test_back_from_the_settings_shows_home() -> void:
 		assert_eq(ScreenNavigation.resolve_back(ScreenNavigation.Screen.SETTINGS, game_state), ScreenNavigation.BackAction.SHOW_HOME)
 
 
+func test_back_from_the_shop_shows_home() -> void:
+	for game_state: ScreenNavigation.GameState in ScreenNavigation.GameState.values():
+		assert_eq(ScreenNavigation.resolve_back(ScreenNavigation.Screen.SHOP, game_state), ScreenNavigation.BackAction.SHOW_HOME)
+
+
 func test_back_in_the_pause_settings_returns_to_the_pause() -> void:
 	assert_eq(
 		ScreenNavigation.resolve_back(ScreenNavigation.Screen.GAME, ScreenNavigation.GameState.PAUSE_SETTINGS),

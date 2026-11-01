@@ -63,6 +63,7 @@ When *enabled*, every *5th* placement gives a reflection of level +*1* (capped a
 - The reward goes to the wallet once, when the turn that ends the game is played, before its animation.
 - An abandoned game (Play or Restart during a game, Play from home over a saved game) and the tutorial earn no coins.
 - The wallet keeps coins across games and has no cap. It never goes below 0; spending more than the balance is refused.
+- Coins buy themes in the shop (Themes, on the home screen), at the price set in the theme catalog. A bought theme is kept for good; buying does not equip it. Free themes (Paper, Night) are always owned.
 
 ## Tutorial
 

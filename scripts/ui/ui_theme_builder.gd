@@ -107,6 +107,46 @@ const COIN_COUNTER_VERTICAL_MARGIN: int = 8
 const COIN_ROW_SEPARATION: int = 14
 const COIN_COUNTER_FONT_SIZE: int = 48
 const COIN_GAIN_FONT_SIZE: int = 60
+## Theme shop, measured on docs/maquettes/*/theme_catalog_*.png at 1080 px wide.
+const SHOP_SUBTITLE_TYPE: StringName = &"ShopSubtitle"
+const SHOP_CARD_TYPE: StringName = &"ShopCard"
+const SHOP_CARD_EQUIPPED_TYPE: StringName = &"ShopCardEquipped"
+## Sizes only: ThemePreview colors the frame with the palette of its own theme.
+const SHOP_PREVIEW_FRAME_TYPE: StringName = &"ShopPreviewFrame"
+const SHOP_CARD_NAME_TYPE: StringName = &"ShopCardName"
+const SHOP_CARD_DESCRIPTION_TYPE: StringName = &"ShopCardDescription"
+const SHOP_PRICE_TYPE: StringName = &"ShopPrice"
+const SHOP_EQUIP_BUTTON_TYPE: StringName = &"ShopEquipButton"
+const SHOP_BUY_BUTTON_TYPE: StringName = &"ShopBuyButton"
+const SHOP_CHECK_BADGE_TYPE: StringName = &"ShopCheckBadge"
+const SHOP_SUBTITLE_FONT_SIZE: int = 40
+const SHOP_CARD_RADIUS: int = 32
+const SHOP_CARD_BORDER_WIDTH: int = 2
+const SHOP_CARD_EQUIPPED_BORDER_WIDTH: int = 4
+const SHOP_CARD_GLOW_SIZE: int = 16
+## The same on every card, so the equipped border never moves the content.
+const SHOP_CARD_PADDING: int = 32
+const SHOP_PREVIEW_RADIUS: int = 26
+const SHOP_PREVIEW_BORDER_WIDTH: int = 3
+const SHOP_CARD_NAME_FONT_SIZE: int = 60
+const SHOP_CARD_DESCRIPTION_FONT_SIZE: int = 36
+const SHOP_PRICE_FONT_SIZE: int = 56
+const SHOP_BUTTON_FONT_SIZE: int = 44
+const SHOP_BUTTON_RADIUS: int = 26
+## The highlight fades into the base color over the top half of a button, through a blended top border.
+const SHOP_BUTTON_FADE_HEIGHT: int = 50
+const SHOP_BUTTON_HORIZONTAL_MARGIN: int = 16
+const SHOP_BUTTON_VERTICAL_MARGIN: int = 8
+## Sizes laid out by ThemeCard and ShopScreen.
+const SHOP_PREVIEW_SIZE: float = 276.0
+const SHOP_CHECK_BADGE_SIZE: int = 96
+const SHOP_CHECK_ICON_SIZE: float = 52.0
+const SHOP_PRICE_ICON_SIZE: float = 58.0
+const SHOP_BUTTON_HEIGHT: float = 100.0
+## Share of the action row taken by Buy beside the price.
+const SHOP_BUY_BUTTON_WIDTH_RATIO: float = 0.6
+const SHOP_DESCRIPTION_MAX_LINES: int = 2
+const SHOP_BACK_BUTTON_SIZE := Vector2(540.0, 144.0)
 ## Tile, mirror and next previews under the HUD.
 const PREVIEW_COLUMN_TYPE: StringName = &"PreviewColumn"
 const PREVIEW_CAPTION_TYPE: StringName = &"PreviewCaption"
@@ -128,6 +168,7 @@ static func build(palette: ThemePalette, base_theme: Theme) -> Theme:
 	_add_game_over_styles(theme, palette)
 	_add_tutorial_styles(theme, palette)
 	_add_coin_styles(theme, palette)
+	_add_shop_styles(theme, palette)
 	return theme
 
 
@@ -322,6 +363,67 @@ static func _add_coin_styles(theme: Theme, palette: ThemePalette) -> void:
 	theme.set_constant(&"separation", COIN_ROW_TYPE, COIN_ROW_SEPARATION)
 	_add_glowing_label_style(theme, COIN_COUNTER_VALUE_TYPE, COIN_COUNTER_FONT_SIZE, palette.coin_counter_text, Color.TRANSPARENT, 0)
 	_add_glowing_label_style(theme, COIN_GAIN_VALUE_TYPE, COIN_GAIN_FONT_SIZE, palette.coin_gain_text, Color.TRANSPARENT, 0)
+
+
+static func _add_shop_styles(theme: Theme, palette: ThemePalette) -> void:
+	theme.set_type_variation(SHOP_SUBTITLE_TYPE, &"Label")
+	theme.set_font_size(&"font_size", SHOP_SUBTITLE_TYPE, SHOP_SUBTITLE_FONT_SIZE)
+	theme.set_color(&"font_color", SHOP_SUBTITLE_TYPE, palette.shop_description_text)
+	_add_shop_card_style(theme, SHOP_CARD_TYPE, palette.shop_card, palette.shop_card_border, palette.shop_card_glow, SHOP_CARD_BORDER_WIDTH)
+	_add_shop_card_style(theme, SHOP_CARD_EQUIPPED_TYPE, palette.shop_card_equipped, palette.shop_card_equipped_border, palette.shop_card_equipped_glow, SHOP_CARD_EQUIPPED_BORDER_WIDTH)
+	theme.set_type_variation(SHOP_PREVIEW_FRAME_TYPE, &"Panel")
+	theme.set_stylebox(&"panel", SHOP_PREVIEW_FRAME_TYPE, _create_bordered_box(Color.TRANSPARENT, Color.TRANSPARENT, SHOP_PREVIEW_BORDER_WIDTH, SHOP_PREVIEW_RADIUS))
+	_add_glowing_label_style(theme, SHOP_CARD_NAME_TYPE, SHOP_CARD_NAME_FONT_SIZE, palette.shop_name_text, Color.TRANSPARENT, 0)
+	_add_glowing_label_style(theme, SHOP_PRICE_TYPE, SHOP_PRICE_FONT_SIZE, palette.shop_name_text, Color.TRANSPARENT, 0)
+	theme.set_type_variation(SHOP_CARD_DESCRIPTION_TYPE, &"Label")
+	theme.set_font_size(&"font_size", SHOP_CARD_DESCRIPTION_TYPE, SHOP_CARD_DESCRIPTION_FONT_SIZE)
+	theme.set_color(&"font_color", SHOP_CARD_DESCRIPTION_TYPE, palette.shop_description_text)
+	_add_shop_button_style(theme, SHOP_EQUIP_BUTTON_TYPE, palette.shop_equip_button, palette.shop_equip_button_highlight, palette)
+	_add_shop_button_style(theme, SHOP_BUY_BUTTON_TYPE, palette.shop_buy_button, palette.shop_buy_button_highlight, palette)
+	theme.set_type_variation(SHOP_CHECK_BADGE_TYPE, &"PanelContainer")
+	var badge_box := StyleBoxFlat.new()
+	badge_box.bg_color = palette.shop_check_badge
+	badge_box.set_corner_radius_all(ceili(SHOP_CHECK_BADGE_SIZE / 2.0))
+	theme.set_stylebox(&"panel", SHOP_CHECK_BADGE_TYPE, badge_box)
+	theme.set_color(&"icon_color", SHOP_CHECK_BADGE_TYPE, palette.shop_check_icon)
+
+
+static func _add_shop_card_style(theme: Theme, type: StringName, color: Color, border_color: Color, glow_color: Color, border_width: int) -> void:
+	theme.set_type_variation(type, &"PanelContainer")
+	var box: StyleBoxFlat = _create_bordered_box(color, border_color, border_width, SHOP_CARD_RADIUS)
+	_set_content_margins(box, SHOP_CARD_PADDING, SHOP_CARD_PADDING)
+	box.shadow_color = glow_color
+	box.shadow_size = SHOP_CARD_GLOW_SIZE if glow_color.a > 0.0 else 0
+	theme.set_stylebox(&"panel", type, box)
+
+
+## Hover looks like normal and a tap shows no focus frame, as on the other buttons.
+static func _add_shop_button_style(theme: Theme, type: StringName, color: Color, highlight_color: Color, palette: ThemePalette) -> void:
+	theme.set_type_variation(type, &"Button")
+	theme.set_font(&"font", type, BOLD_FONT)
+	theme.set_font_size(&"font_size", type, SHOP_BUTTON_FONT_SIZE)
+	for state: StringName in BUTTON_FONT_STATES:
+		theme.set_color(state, type, palette.shop_button_text)
+	theme.set_color(&"font_disabled_color", type, palette.shop_disabled_text)
+	var normal_box: StyleBoxFlat = _create_faded_button_box(color, highlight_color)
+	var pressed_box: StyleBoxFlat = _create_faded_button_box(color.darkened(PRESSED_DARKENING), highlight_color.darkened(PRESSED_DARKENING))
+	var disabled_box: StyleBoxFlat = _create_faded_button_box(palette.shop_disabled_button, palette.shop_disabled_button)
+	theme.set_stylebox(&"normal", type, normal_box)
+	theme.set_stylebox(&"hover", type, normal_box)
+	theme.set_stylebox(&"pressed", type, pressed_box)
+	theme.set_stylebox(&"hover_pressed", type, pressed_box)
+	theme.set_stylebox(&"disabled", type, disabled_box)
+	theme.set_stylebox(&"focus", type, StyleBoxEmpty.new())
+
+
+static func _create_faded_button_box(color: Color, highlight_color: Color) -> StyleBoxFlat:
+	var box: StyleBoxFlat = _create_rounded_box(color)
+	box.set_corner_radius_all(SHOP_BUTTON_RADIUS)
+	box.border_color = highlight_color
+	box.border_width_top = SHOP_BUTTON_FADE_HEIGHT
+	box.border_blend = true
+	_set_content_margins(box, SHOP_BUTTON_HORIZONTAL_MARGIN, SHOP_BUTTON_VERTICAL_MARGIN)
+	return box
 
 
 static func _add_stat_row_style(theme: Theme, type: StringName, color: Color, border_color: Color, glow_color: Color) -> void:

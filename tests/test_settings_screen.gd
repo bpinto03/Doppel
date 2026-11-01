@@ -60,15 +60,6 @@ func test_choosing_a_language_applies_it_at_once_and_keeps_it() -> void:
 	assert_false((_rows.get_node("%EnglishButton") as Button).button_pressed)
 
 
-func test_choosing_a_theme_applies_it() -> void:
-	(_rows.get_node("%NightButton") as Button).pressed.emit()
-
-	assert_eq(Settings.palette_name, "night")
-	assert_eq((_screen.get_node("%Background") as ColorRect).color, Settings.THEME_CATALOG.find_entry(&"night").palette.background)
-	assert_true((_rows.get_node("%NightButton") as Button).button_pressed)
-	assert_false((_rows.get_node("%PaperButton") as Button).button_pressed)
-
-
 func test_back_asks_to_leave() -> void:
 	watch_signals(_screen)
 
@@ -89,7 +80,7 @@ func test_settings_open_from_home_and_back_returns_home() -> void:
 
 
 func test_settings_screen_shows_every_group() -> void:
-	for group_path: String in ["%Toggles", "%Language", "%Theme"]:
+	for group_path: String in ["%Toggles", "%Language"]:
 		assert_true((_rows.get_node(group_path) as Control).visible, group_path)
 
 
@@ -100,4 +91,3 @@ func test_rows_show_only_the_groups_asked_for() -> void:
 
 	assert_true((toggles_only.get_node("%Toggles") as Control).visible)
 	assert_false((toggles_only.get_node("%Language") as Control).visible)
-	assert_false((toggles_only.get_node("%Theme") as Control).visible)

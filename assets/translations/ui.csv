@@ -18,9 +18,6 @@ UI_MUSIC,Music,Musique
 UI_VIBRATION,Vibration,Vibration
 UI_SCREEN_SHAKE,Screen shake,Tremblement d'écran
 UI_LANGUAGE,Language,Langue
-UI_THEME,Theme,Thème
-UI_THEME_PAPER,Paper,Papier
-UI_THEME_NIGHT,Night,Nuit
 UI_ON,On,Oui
 UI_OFF,Off,Non
 UI_BACK,Back,Retour
@@ -48,3 +45,11 @@ TUTORIAL_SKIP,Skip,Passer
 UI_COINS_EARNED,+{value},+{value}
 THEME_NAME_PAPER,Paper,Papier
 THEME_NAME_NIGHT,Night,Nuit
+UI_SHOP,Themes,Thèmes
+UI_SHOP_TITLE,Themes,Thèmes
+UI_THEME_BUY,Buy,Acheter
+UI_THEME_EQUIP,Equip,Équiper
+UI_THEME_EQUIPPED,Equipped,Équipé
+UI_SHOP_SUBTITLE,Customize the look of the game!,Personnalise l’apparence du jeu !
+THEME_DESC_PAPER,"A soft, natural style inspired by paper.","Un style doux et naturel, inspiré du papier."
+THEME_DESC_NIGHT,"A modern, elegant look for playing in the dark.",Un look moderne et élégant pour jouer dans l’obscurité.

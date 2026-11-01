@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" path="res://assets/icons/icon_graduation_cap.svg" id="8_tutorial"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_gear.svg" id="9_settings"]
 [ext_resource type="PackedScene" path="res://scenes/ui/coin_counter.tscn" id="10_counter"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_palette.svg" id="11_shop"]
 
 [node name="HomeScreen" type="Control" unique_id=1934027715]
 layout_mode = 3
@@ -118,6 +119,13 @@ layout_mode = 2
 theme_type_variation = &"HomeSecondaryButton"
 text = "UI_TUTORIAL"
 badge_icon = ExtResource("8_tutorial")
+
+[node name="ShopButton" parent="Margin/Layout/Content/Buttons/SecondaryButtons" instance=ExtResource("5_button")]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HomeSecondaryButton"
+text = "UI_SHOP"
+badge_icon = ExtResource("11_shop")
 
 [node name="SettingsButton" parent="Margin/Layout/Content/Buttons/SecondaryButtons" unique_id=1170235908 instance=ExtResource("5_button")]
 unique_name_in_owner = true

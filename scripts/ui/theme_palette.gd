@@ -111,6 +111,30 @@ extends Resource
 ## "+N" coins earned, on the modal panel.
 @export var coin_gain_text: Color
 
+@export_group("Shop")
+## Theme cards of the shop; every text keeps a 4.5:1 contrast on the fill it sits on.
+@export var shop_card: Color
+@export var shop_card_border: Color
+@export var shop_card_glow: Color
+## The card of the equipped theme: a tinted fill, a thicker accent border and its glow.
+@export var shop_card_equipped: Color
+@export var shop_card_equipped_border: Color
+@export var shop_card_equipped_glow: Color
+@export var shop_name_text: Color
+## Card descriptions and the shop subtitle.
+@export var shop_description_text: Color
+## Equip and Buy fade from the highlight at the top to the base color below.
+@export var shop_equip_button: Color
+@export var shop_equip_button_highlight: Color
+@export var shop_buy_button: Color
+@export var shop_buy_button_highlight: Color
+@export var shop_button_text: Color
+## Equipped, and Buy with too few coins.
+@export var shop_disabled_button: Color
+@export var shop_disabled_text: Color
+@export var shop_check_badge: Color
+@export var shop_check_icon: Color
+
 @export_group("Board")
 ## Translucent fill of the board frame.
 @export var frame_fill: Color

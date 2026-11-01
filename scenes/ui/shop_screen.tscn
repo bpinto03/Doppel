@@ -1,0 +1,117 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/shop_screen.gd" id="1_screen"]
+[ext_resource type="Theme" path="res://assets/themes/base_theme.tres" id="2_theme"]
+[ext_resource type="Script" uid="uid://c0a5hkffmvw0b" path="res://scripts/ui/safe_area_margin.gd" id="3_safe_area"]
+[ext_resource type="PackedScene" path="res://scenes/ui/coin_counter.tscn" id="4_counter"]
+[ext_resource type="PackedScene" path="res://scenes/ui/icon_action_button.tscn" id="5_button"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_back.svg" id="6_back"]
+
+[node name="ShopScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_screen")
+
+[node name="Background" type="ColorRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BackgroundImage" type="TextureRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 150
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 150
+script = ExtResource("3_safe_area")
+
+[node name="Layout" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 40
+
+[node name="Header" type="VBoxContainer" parent="Margin/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="TitleLabel" type="Label" parent="Margin/Layout/Header"]
+layout_mode = 2
+theme_type_variation = &"ModalTitle"
+text = "UI_SHOP_TITLE"
+horizontal_alignment = 1
+
+[node name="SubtitleLabel" type="Label" parent="Margin/Layout/Header"]
+layout_mode = 2
+theme_type_variation = &"ShopSubtitle"
+text = "UI_SHOP_SUBTITLE"
+horizontal_alignment = 1
+
+[node name="Scroll" type="ScrollContainer" parent="Margin/Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 3
+
+[node name="CardsMargin" type="MarginContainer" parent="Margin/Layout/Scroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Cards" type="VBoxContainer" parent="Margin/Layout/Scroll/CardsMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 40
+
+[node name="BackButton" parent="Margin/Layout" instance=ExtResource("5_button")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+theme_type_variation = &"HomePrimaryButton"
+text = "UI_BACK"
+badge_icon = ExtResource("6_back")
+
+[node name="CornerMargin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 40
+script = ExtResource("3_safe_area")
+
+[node name="CoinCounter" parent="CornerMargin" instance=ExtResource("4_counter")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0

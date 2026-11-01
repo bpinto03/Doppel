@@ -44,6 +44,14 @@ func test_shipped_catalog_ids_are_unique_and_named() -> void:
 		ids.append(entry.id)
 
 
+func test_every_shipped_name_and_description_is_translated() -> void:
+	for language: String in I18n.SUPPORTED_LANGUAGES:
+		var translation: Translation = TranslationServer.get_translation_object(language)
+		for entry: ThemeEntry in Settings.THEME_CATALOG.get_entries():
+			for key: String in [entry.display_name_key, entry.description_key]:
+				assert_ne(String(translation.get_message(key)), "", "%s %s" % [key, language])
+
+
 func test_shipped_default_theme_is_free() -> void:
 	assert_eq(Settings.THEME_CATALOG.find_entry(Settings.THEME_CATALOG.get_default_id()).price, 0)
 
@@ -167,6 +175,7 @@ func _create_catalog_with_paid_theme() -> ThemeCatalog:
 	paid_entry.palette = Settings.THEME_CATALOG.find_entry(&"night").palette
 	paid_entry.price = PAID_THEME_PRICE
 	paid_entry.display_name_key = "THEME_NAME_NIGHT"
+	paid_entry.description_key = "THEME_DESC_NIGHT"
 	var entries: Array[ThemeEntry] = Settings.THEME_CATALOG.get_entries().duplicate()
 	entries.append(paid_entry)
 	catalog.entries = entries

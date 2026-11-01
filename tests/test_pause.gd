@@ -113,7 +113,6 @@ func test_pause_settings_show_only_the_toggles() -> void:
 	var rows: SettingsRows = game.get_node("%PausePanel").get_node("%SettingsRows")
 	assert_true((rows.get_node("%Toggles") as Control).visible)
 	assert_false((rows.get_node("%Language") as Control).visible)
-	assert_false((rows.get_node("%Theme") as Control).visible)
 
 
 func test_back_in_the_pause_settings_returns_to_the_pause_then_resumes() -> void:

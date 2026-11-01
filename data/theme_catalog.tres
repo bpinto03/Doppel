@@ -11,6 +11,7 @@ id = &"paper"
 palette = ExtResource("3_paper")
 price = 0
 display_name_key = "THEME_NAME_PAPER"
+description_key = "THEME_DESC_PAPER"
 
 [sub_resource type="Resource" id="Resource_night"]
 script = ExtResource("2_entry")
@@ -18,6 +19,7 @@ id = &"night"
 palette = ExtResource("4_night")
 price = 0
 display_name_key = "THEME_NAME_NIGHT"
+description_key = "THEME_DESC_NIGHT"
 
 [resource]
 script = ExtResource("1_catalog")
