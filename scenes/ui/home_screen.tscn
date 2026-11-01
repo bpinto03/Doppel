@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" path="res://assets/icons/icon_resume.svg" id="7_resume"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_graduation_cap.svg" id="8_tutorial"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_gear.svg" id="9_settings"]
+[ext_resource type="PackedScene" path="res://scenes/ui/coin_counter.tscn" id="10_counter"]
 
 [node name="HomeScreen" type="Control" unique_id=1934027715]
 layout_mode = 3
@@ -128,3 +129,23 @@ badge_icon = ExtResource("9_settings")
 [node name="SpaceBelow" type="Control" parent="Margin/Layout"]
 layout_mode = 2
 size_flags_vertical = 3
+
+[node name="CornerMargin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 40
+script = ExtResource("3_safe_area")
+
+[node name="CoinCounter" parent="CornerMargin" instance=ExtResource("10_counter")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0

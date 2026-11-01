@@ -14,6 +14,10 @@ All gameplay values live in `data/balancing.tres` (a `BalancingConfig` resource,
 | `is_distorted_reflection_enabled` | true | Turns the distorted reflection lever on or off |
 | `distorted_reflection_period` | 3 | Every Nth placement has a distorted reflection **[TO TEST]** |
 | `distorted_reflection_level_bonus` | 1 | Levels added to a distorted reflection |
+| `coin_minimum_per_game` | 5 | Coins earned by a finished game, whatever its score **[TO TEST]** |
+| `coin_score_per_coin` | 700 | Score points per coin; must stay above 0 **[TO TEST]** |
+| `coin_level_bonus_start_level` | 6 | Highest level (64) from which each extra level earns a bonus **[TO TEST]** |
+| `coin_per_level_above_start` | 4 | Coins per highest level above `coin_level_bonus_start_level` **[TO TEST]** |
 | `rules_version` | 1 | Saved games made under another value are discarded on load (record and settings are kept) |
 
 Bump `rules_version` only when old saved games would no longer make sense: a level changes meaning, or a rule changes what a board or a turn can be. Do not bump it for a weight, score or timing tweak: a saved game stays valid and simply continues with the new values. A board size change discards saved games on its own.
@@ -34,6 +38,31 @@ Weights are relative; they do not need to sum to 100. **[TO TEST]**
 The expert and master tiers only concern good players. Bigger tiles earlier make levels climb faster, but also fill the board faster.
 
 `tests/test_balancing_data.gd` checks the shipped data: a tier from level 0, distinct thresholds, at least one level per tier, levels within `max_tile_level`, positive weights, and the shipped thresholds (`SHIPPED_TIER_THRESHOLDS`), so a threshold lowered for a phone test fails the tests. Update `SHIPPED_TIER_THRESHOLDS` when the thresholds change on purpose.
+
+## Coins
+
+`CoinReward.calculate_coins()`:
+
+```
+coins = max(coin_minimum_per_game,
+            floor(score / coin_score_per_coin)
+            + max(0, highest_level - coin_level_bonus_start_level) × coin_per_level_above_start)
+```
+
+Calibration target: 25 coins per game on average, so about 20 games for a standard theme at 500 coins.
+
+Simulator orders of magnitude (`base` scenario, 1000 games per strategy, 2026-11-01): `random` ≈ 8, `greedy` ≈ 25, `heuristic` ≈ 33 coins per game.
+
+Reference points from the developer's own games (usual scores 9 500 to 15 000, record 20 450):
+
+| Score | Highest tile | Coins |
+|-------|--------------|-------|
+| 9 500 | 256 | 21 |
+| 12 000 | 256 | 25 |
+| 15 000 | 512 | 33 |
+| 20 450 | 512 | 41 |
+
+The highest tile of these examples is assumed, not measured. The developer plays better than a new player: a beginner is closer to `random`, about 60 games for 500 coins. Theme prices will be set from the testers' games **[TO TEST]**.
 
 ## Resolution playback
 
@@ -103,6 +132,8 @@ Measured on PC with these values: a drop alone 0.19 s; a single merge, drop and 
 | `confetti_max_spin` | 540 | Spin, either way, in degrees per second |
 | `appear_duration` | 0.22 | Fade in of the panel |
 | `appear_start_scale` | 0.92 | The panel grows from this scale to its size during the fade |
+| `coin_pop_start_scale` | 0.6 | The "+N" coins earned grow back from this scale, once the panel has appeared; no pop while screen shake is off |
+| `coin_pop_duration` | 0.3 | Length of that pop |
 | `halo_turn_duration` | 20 | One full turn of the halo rays |
 | `halo_breath_duration` | 2 | The halo fades from full opacity to `halo_min_opacity`, then back, each way in this time |
 | `halo_min_opacity` | 0.75 | Faintest point of the halo breathing |

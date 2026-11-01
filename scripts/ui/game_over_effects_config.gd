@@ -26,6 +26,11 @@ extends Resource
 ## The panel grows from this scale to its own size while it fades in.
 @export var appear_start_scale: float
 
+@export_group("Coins earned")
+## The "+N" row grows back from this scale once the panel has appeared; off with screen shake.
+@export var coin_pop_start_scale: float
+@export var coin_pop_duration: float
+
 @export_group("Crown halo")
 ## The halo turns and breathes while the panel shows, through its transform and opacity only: it is never redrawn.
 ## One full turn of the rays.

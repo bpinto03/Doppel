@@ -30,6 +30,10 @@ const MODAL_COLOR_PROPERTIES: Array[StringName] = [
 	&"game_over_stat_caption", &"game_over_stat_value",
 ]
 
+## Coin colors every palette sets itself, for the same reason.
+const COIN_COLOR_PROPERTIES: Array[StringName] = [&"coin_counter", &"coin_counter_border", &"coin_counter_text", &"coin_gain_text"]
+const MIN_TEXT_CONTRAST: float = 4.5
+
 
 func test_every_palette_has_one_color_per_level() -> void:
 	for palette_name: String in Settings.PALETTES:
@@ -64,8 +68,18 @@ func test_every_tile_or_its_outline_stands_out_from_the_board() -> void:
 func test_every_palette_sets_every_home_and_modal_color() -> void:
 	for palette_name: String in Settings.PALETTES:
 		var saved_palette: String = FileAccess.get_file_as_string(Settings.PALETTES[palette_name].resource_path)
-		for property: StringName in HOME_COLOR_PROPERTIES + MODAL_COLOR_PROPERTIES:
+		for property: StringName in HOME_COLOR_PROPERTIES + MODAL_COLOR_PROPERTIES + COIN_COLOR_PROPERTIES:
 			assert_true(saved_palette.contains("\n%s = " % property), "%s %s" % [palette_name, property])
+
+
+## Both backgrounds are opaque, so the ratio is the one on screen.
+func test_coin_texts_are_readable_on_their_background() -> void:
+	for palette_name: String in Settings.PALETTES:
+		var palette: ThemePalette = Settings.PALETTES[palette_name]
+		assert_eq(palette.coin_counter.a, 1.0, palette_name)
+		assert_eq(palette.modal_panel.a, 1.0, palette_name)
+		assert_gte(ColorContrast.calculate_ratio(palette.coin_counter_text, palette.coin_counter), MIN_TEXT_CONTRAST, "%s counter" % palette_name)
+		assert_gte(ColorContrast.calculate_ratio(palette.coin_gain_text, palette.modal_panel), MIN_TEXT_CONTRAST, "%s gain" % palette_name)
 
 
 func test_night_tile_colors_do_not_change() -> void:

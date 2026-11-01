@@ -26,6 +26,13 @@ extends Resource
 @export var distorted_reflection_period: int
 @export var distorted_reflection_level_bonus: int
 
+@export_group("Coins")
+@export var coin_minimum_per_game: int
+## Must stay above 0: the score is divided by it.
+@export var coin_score_per_coin: int
+@export var coin_level_bonus_start_level: int
+@export var coin_per_level_above_start: int
+
 
 func find_spawn_weights(highest_level_reached: int) -> Dictionary[int, float]:
 	var selected_tier: SpawnWeightTier = null

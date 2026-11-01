@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 
 AppLifecycle="*res://scripts/autoload/app_lifecycle.gd"
 SaveManager="*res://scripts/autoload/save_manager.gd"
+WalletEvents="*res://scripts/autoload/wallet_events.gd"
 Settings="*res://scripts/autoload/settings.gd"
 I18n="*res://scripts/autoload/i18n.gd"
 AudioManager="*res://scripts/autoload/audio_manager.gd"

@@ -10,6 +10,8 @@ const TEST_SAVE_PATH: String = "user://test_screen_layouts_save.cfg"
 const SEED: int = 1234
 ## A long score, so the game over values are as wide as they get in practice.
 const LARGE_SCORE: int = 9999999
+const LARGE_COIN_GAIN: int = 999
+const LARGE_COIN_BALANCE: int = 999999
 
 var _save := SaveFixture.new(TEST_SAVE_PATH)
 var _viewport_width: float = ProjectSettings.get_setting("display/window/size/viewport_width")
@@ -43,7 +45,7 @@ func test_screens_fit_the_base_width_in_every_language() -> void:
 			assert_lte(_get_content_width(screen), _viewport_width, "%s in %s" % [screen.name, language])
 
 
-## Seven digit values and the longest title keep the panel at its width, and the crown stays on screen.
+## Seven digit values, the coin reward and the longest title keep the panel at its width, and the crown stays on screen.
 func test_game_over_panel_and_crown_fit_the_safe_area_at_the_base_size_in_every_language() -> void:
 	for language: String in I18n.SUPPORTED_LANGUAGES:
 		TranslationServer.set_locale(language)
@@ -55,7 +57,7 @@ func test_game_over_panel_and_crown_fit_the_safe_area_at_the_base_size_in_every_
 		session.highest_level_reached = BALANCING_CONFIG.max_tile_level
 		game.start_game(session, 1)
 		var game_over_panel: GameOverPanel = game.get_node("%GameOverPanel")
-		game_over_panel.show_summary(GameOverSummary.new(session, 1, LARGE_SCORE))
+		game_over_panel.show_summary(GameOverSummary.new(session, 1, LARGE_SCORE), CoinRewardResult.new(LARGE_COIN_GAIN, LARGE_COIN_BALANCE))
 		await wait_seconds(GameOverPanel.EFFECTS_CONFIG.appear_duration)
 		await wait_process_frames(1)
 

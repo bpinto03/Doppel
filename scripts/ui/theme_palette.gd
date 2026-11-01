@@ -103,6 +103,14 @@ extends Resource
 @export var game_over_stat_caption: Color
 @export var game_over_stat_value: Color
 
+@export_group("Coins")
+## Coin counter on the home and game over screens; its text must keep a 4.5:1 contrast on its fill.
+@export var coin_counter: Color
+@export var coin_counter_border: Color
+@export var coin_counter_text: Color
+## "+N" coins earned, on the modal panel.
+@export var coin_gain_text: Color
+
 @export_group("Board")
 ## Translucent fill of the board frame.
 @export var frame_fill: Color

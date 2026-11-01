@@ -6,6 +6,7 @@ const TEST_SAVE_PATH: String = "user://test_game_over_save.cfg"
 const SEED: int = 1234
 const PREVIOUS_BEST: int = 100
 const HIGH_SCORE: int = 500
+const STARTING_COINS: int = 30
 const EFFECTS_CONFIG: GameOverEffectsConfig = preload("res://data/game_over_effects.tres")
 
 var _save := SaveFixture.new(TEST_SAVE_PATH)
@@ -53,6 +54,39 @@ func test_finished_game_shows_the_game_over_panel_with_the_session_values() -> v
 	var highest_tile_value: int = MergeScoring.calculate_tile_value(game.get_session().highest_level_reached)
 	assert_eq((panel.get_node("%MaxTileValue") as Label).text, str(highest_tile_value))
 	assert_eq(game.get_navigation_state(), ScreenNavigation.GameState.GAME_OVER)
+
+
+func test_game_over_panel_shows_the_coins_earned_and_the_balance() -> void:
+	CoinWallet.add_coins(STARTING_COINS)
+	var game: GameScreen = _start_game_one_pair_from_end(PREVIOUS_BEST)
+
+	_finish_the_game(game)
+
+	var panel: GameOverPanel = game.get_node("%GameOverPanel")
+	var reward: CoinRewardResult = game.get_coin_reward()
+	assert_true((panel.get_node("%RewardSlot") as Control).visible)
+	assert_eq(panel.get_coin_gain_text(), "+%d" % reward.coins_earned)
+	assert_eq((panel.get_node("%CoinCounter") as CoinCounter).get_shown_text(), str(STARTING_COINS + reward.coins_earned))
+
+
+func test_coins_earned_pop_only_with_screen_shake_on() -> void:
+	for is_shake_enabled: bool in [true, false]:
+		Settings.is_screen_shake_enabled = is_shake_enabled
+		var game: GameScreen = _start_game_one_pair_from_end(PREVIOUS_BEST)
+
+		_finish_the_game(game)
+
+		var panel: GameOverPanel = game.get_node("%GameOverPanel")
+		assert_eq(panel.is_coin_gain_popping(), is_shake_enabled, "screen shake: %s" % is_shake_enabled)
+
+
+func test_a_game_over_without_reward_hides_the_reward_slot() -> void:
+	var game: GameScreen = _start_game_one_pair_from_end(PREVIOUS_BEST)
+	var panel: GameOverPanel = game.get_node("%GameOverPanel")
+
+	panel.show_summary(GameOverSummary.new(_create_session_with_score(HIGH_SCORE), PREVIOUS_BEST, HIGH_SCORE), null)
+
+	assert_false((panel.get_node("%RewardSlot") as Control).visible)
 
 
 func test_play_again_starts_a_new_game_in_one_tap() -> void:

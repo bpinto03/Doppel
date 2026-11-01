@@ -1,0 +1,32 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/coin_counter.gd" id="1_counter"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_coin.svg" id="2_coin"]
+
+[node name="CoinCounter" type="PanelContainer"]
+mouse_filter = 2
+theme_type_variation = &"CoinCounter"
+script = ExtResource("1_counter")
+
+[node name="Row" type="HBoxContainer" parent="."]
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"CoinRow"
+
+[node name="Icon" type="TextureRect" parent="Row"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture_filter = 4
+texture = ExtResource("2_coin")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Value" type="Label" parent="Row"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"CoinCounterValue"
+horizontal_alignment = 1
+vertical_alignment = 1
+clip_text = true

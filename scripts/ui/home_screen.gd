@@ -2,7 +2,7 @@ class_name HomeScreen
 extends PaletteScreen
 
 ## Entry screen: logo and title, then Play, and Continue when a game in progress is saved; below them, Tutorial and Settings.
-## The daily challenge (3.3) and the shop (3.2) will join the secondary buttons.
+## The coin balance sits in the top right corner. The daily challenge (3.3) and the shop (3.2) will join the secondary buttons.
 
 signal play_requested
 signal continue_requested

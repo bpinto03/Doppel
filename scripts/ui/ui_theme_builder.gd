@@ -94,6 +94,19 @@ const TUTORIAL_CARD_TYPE: StringName = &"TutorialCard"
 const TUTORIAL_MESSAGE_TYPE: StringName = &"TutorialMessage"
 const TUTORIAL_CARD_PADDING: int = 36
 const TUTORIAL_MESSAGE_FONT_SIZE: int = 44
+## Coin counter (home, game over) and the "+N" coins earned on the game over screen.
+const COIN_COUNTER_TYPE: StringName = &"CoinCounter"
+const COIN_COUNTER_VALUE_TYPE: StringName = &"CoinCounterValue"
+## Icon beside its amount, in the counter and in the "+N" row.
+const COIN_ROW_TYPE: StringName = &"CoinRow"
+const COIN_GAIN_VALUE_TYPE: StringName = &"CoinGainValue"
+const COIN_COUNTER_RADIUS: int = 36
+const COIN_COUNTER_BORDER_WIDTH: int = 3
+const COIN_COUNTER_HORIZONTAL_MARGIN: int = 22
+const COIN_COUNTER_VERTICAL_MARGIN: int = 8
+const COIN_ROW_SEPARATION: int = 14
+const COIN_COUNTER_FONT_SIZE: int = 48
+const COIN_GAIN_FONT_SIZE: int = 60
 ## Tile, mirror and next previews under the HUD.
 const PREVIEW_COLUMN_TYPE: StringName = &"PreviewColumn"
 const PREVIEW_CAPTION_TYPE: StringName = &"PreviewCaption"
@@ -114,6 +127,7 @@ static func build(palette: ThemePalette, base_theme: Theme) -> Theme:
 	_add_modal_styles(theme, palette)
 	_add_game_over_styles(theme, palette)
 	_add_tutorial_styles(theme, palette)
+	_add_coin_styles(theme, palette)
 	return theme
 
 
@@ -297,6 +311,17 @@ static func _add_tutorial_styles(theme: Theme, palette: ThemePalette) -> void:
 	theme.set_type_variation(TUTORIAL_MESSAGE_TYPE, &"Label")
 	theme.set_font_size(&"font_size", TUTORIAL_MESSAGE_TYPE, TUTORIAL_MESSAGE_FONT_SIZE)
 	theme.set_color(&"font_color", TUTORIAL_MESSAGE_TYPE, palette.modal_secondary_text)
+
+
+static func _add_coin_styles(theme: Theme, palette: ThemePalette) -> void:
+	theme.set_type_variation(COIN_COUNTER_TYPE, &"PanelContainer")
+	var box: StyleBoxFlat = _create_bordered_box(palette.coin_counter, palette.coin_counter_border, COIN_COUNTER_BORDER_WIDTH, COIN_COUNTER_RADIUS)
+	_set_content_margins(box, COIN_COUNTER_HORIZONTAL_MARGIN, COIN_COUNTER_VERTICAL_MARGIN)
+	theme.set_stylebox(&"panel", COIN_COUNTER_TYPE, box)
+	theme.set_type_variation(COIN_ROW_TYPE, &"HBoxContainer")
+	theme.set_constant(&"separation", COIN_ROW_TYPE, COIN_ROW_SEPARATION)
+	_add_glowing_label_style(theme, COIN_COUNTER_VALUE_TYPE, COIN_COUNTER_FONT_SIZE, palette.coin_counter_text, Color.TRANSPARENT, 0)
+	_add_glowing_label_style(theme, COIN_GAIN_VALUE_TYPE, COIN_GAIN_FONT_SIZE, palette.coin_gain_text, Color.TRANSPARENT, 0)
 
 
 static func _add_stat_row_style(theme: Theme, type: StringName, color: Color, border_color: Color, glow_color: Color) -> void:

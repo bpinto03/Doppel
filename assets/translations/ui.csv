@@ -45,3 +45,4 @@ UI_COMBO_AMAZING,Amazing!,Incroyable !
 TUTORIAL_NEXT,Next,Suivant
 TUTORIAL_DONE,Done,Terminer
 TUTORIAL_SKIP,Skip,Passer
+UI_COINS_EARNED,+{value},+{value}

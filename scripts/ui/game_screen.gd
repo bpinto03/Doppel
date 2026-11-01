@@ -25,6 +25,7 @@ var _feedback: GameFeedback
 var _tutorial_steps: Array[TutorialStep] = []
 var _tutorial_step_index: int = NO_TUTORIAL_STEP
 var _best_score_before_game: int
+var _coin_reward: CoinRewardResult
 
 @onready var _board_view: BoardView = %BoardView
 @onready var _score_label: Label = %ScoreLabel
@@ -94,6 +95,7 @@ func start_game(session: GameSession, best_score_before_game: int) -> void:
 	_pause_button.visible = true
 	_session = session
 	_best_score_before_game = best_score_before_game
+	_coin_reward = null
 	_set_input_enabled(true)
 	_refresh()
 
@@ -107,6 +109,11 @@ func start_tutorial() -> void:
 
 func get_session() -> GameSession:
 	return _session
+
+
+## Null until a real game ends in game over.
+func get_coin_reward() -> CoinRewardResult:
+	return _coin_reward
 
 
 func is_tutorial_running() -> bool:
@@ -197,12 +204,22 @@ func _on_app_deactivated() -> void:
 
 
 ## Saved before the playback: the session already holds the final state of the turn, and the app may be killed mid-animation.
+## On game over, the coins and the erased game are changed in the same frame, so they reach the disk in one write
+## (see docs/decisions/0007-coins-and-wallet.md).
 func _save_turn() -> void:
 	RecordBook.submit(_session)
 	if _session.is_game_over:
+		_pay_coin_reward()
 		CurrentGameStore.erase()
 	else:
 		CurrentGameStore.store(_session, _best_score_before_game)
+
+
+func _pay_coin_reward() -> void:
+	var coins_earned: int = CoinReward.calculate_coins(_session.score, _session.highest_level_reached, BALANCING_CONFIG)
+	if coins_earned > 0:
+		CoinWallet.add_coins(coins_earned)
+	_coin_reward = CoinRewardResult.new(coins_earned, CoinWallet.get_coins())
 
 
 ## In the tutorial, the board stays locked until the player moves to the next step.
@@ -210,7 +227,7 @@ func _on_playback_finished() -> void:
 	_refresh()
 	if _session.is_game_over:
 		_feedback.play_game_over()
-		_game_over_panel.show_summary(GameOverSummary.new(_session, _best_score_before_game, RecordBook.get_best_score()))
+		_game_over_panel.show_summary(GameOverSummary.new(_session, _best_score_before_game, RecordBook.get_best_score()), _coin_reward)
 	if is_tutorial_running():
 		_tutorial_panel.show_explanation(_tutorial_steps[_tutorial_step_index].explanation_key, _is_last_tutorial_step())
 	else:

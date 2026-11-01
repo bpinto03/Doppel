@@ -37,6 +37,13 @@ func test_every_tier_draws_levels_in_bounds_with_positive_weights() -> void:
 			assert_gt(tier.level_weights[level], 0.0, "Tier %d, level %d" % [tier.min_highest_level, level])
 
 
+func test_coin_values_are_in_bounds() -> void:
+	assert_gt(_config.coin_score_per_coin, 0)
+	assert_gte(_config.coin_minimum_per_game, 0)
+	assert_gte(_config.coin_per_level_above_start, 0)
+	assert_between(_config.coin_level_bonus_start_level, 0, _config.max_tile_level)
+
+
 func _get_sorted_thresholds() -> Array[int]:
 	var thresholds: Array[int] = []
 	for tier: SpawnWeightTier in _config.spawn_weight_tiers:

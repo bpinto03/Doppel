@@ -3,7 +3,7 @@ extends Control
 
 ## Covers the finished game: the crown and its halo above the panel, then score, record and highest tile rows,
 ## Play again and Menu. Each game over fades the panel in and throws confetti, more of them on a new record.
-## RewardSlot waits for the coins earned (step 3.2) and the rewarded ad (phase 4).
+## RewardSlot shows the coins earned, with a small pop unless screen shake is off, and the balance; the rewarded ad joins it in phase 4.
 
 signal replay_requested
 signal menu_requested
@@ -23,6 +23,7 @@ var _tile_colors: Array[Color] = []
 var _appear_tween: Tween
 var _halo_turn_tween: Tween
 var _halo_breath_tween: Tween
+var _coin_pop_tween: Tween
 
 @onready var _content: Control = %Content
 @onready var _panel: PanelContainer = %Panel
@@ -38,12 +39,16 @@ var _halo_breath_tween: Tween
 @onready var _max_tile_value: Label = %MaxTileValue
 @onready var _replay_button: IconActionButton = %ReplayButton
 @onready var _menu_button: IconActionButton = %MenuButton
+@onready var _reward_slot: Control = %RewardSlot
+@onready var _coin_gain: Control = %CoinGain
+@onready var _gain_icon: TextureRect = %GainIcon
+@onready var _coin_gain_value: Label = %CoinGainValue
 
 
 func _ready() -> void:
 	_replay_button.custom_minimum_size.y = REPLAY_BUTTON_HEIGHT
 	_menu_button.custom_minimum_size.y = MENU_BUTTON_HEIGHT
-	for icon: TextureRect in [_score_icon, _record_icon, _max_tile_icon]:
+	for icon: TextureRect in [_score_icon, _record_icon, _max_tile_icon, _gain_icon]:
 		icon.custom_minimum_size = STAT_ICON_SIZE
 	# The crown bottom lines up with the bottom of this space, which starts after the panel padding.
 	_crown_space.custom_minimum_size.y = CROWN_SIZE.y * (1.0 - CROWN_ABOVE_PANEL_RATIO) - UiThemeBuilder.MODAL_CARD_PADDING
@@ -72,7 +77,9 @@ func apply_palette(palette: ThemePalette) -> void:
 	_tile_colors = palette.tile_colors
 
 
-func show_summary(summary: GameOverSummary) -> void:
+## coin_reward is null when the game paid nothing, which hides the reward slot.
+func show_summary(summary: GameOverSummary, coin_reward: CoinRewardResult) -> void:
+	_show_coin_reward(coin_reward)
 	_score_value.text = str(summary.score)
 	_best_value.text = str(summary.best_score)
 	_max_tile_value.text = str(MergeScoring.calculate_tile_value(summary.highest_level))
@@ -81,6 +88,14 @@ func show_summary(summary: GameOverSummary) -> void:
 	_appear()
 	_animate_halo()
 	_burst_confetti_after_layout(summary.is_new_record)
+
+
+func get_coin_gain_text() -> String:
+	return _coin_gain_value.text
+
+
+func is_coin_gain_popping() -> bool:
+	return _coin_pop_tween != null and _coin_pop_tween.is_running()
 
 
 func is_new_record_shown() -> bool:
@@ -98,6 +113,27 @@ func _appear() -> void:
 	_appear_tween = create_tween().set_parallel()
 	_appear_tween.tween_property(_content, "scale", Vector2.ONE, EFFECTS_CONFIG.appear_duration).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	_appear_tween.tween_property(self, "modulate:a", 1.0, EFFECTS_CONFIG.appear_duration)
+
+
+func _show_coin_reward(coin_reward: CoinRewardResult) -> void:
+	_reward_slot.visible = coin_reward != null
+	if coin_reward == null:
+		return
+	_coin_gain_value.text = tr(&"UI_COINS_EARNED").format({"value": coin_reward.coins_earned})
+	if Settings.is_screen_shake_enabled:
+		_pop_coin_gain()
+
+
+## Starts once the panel has appeared, from the center of the "+N" row, laid out by then.
+func _pop_coin_gain() -> void:
+	_coin_pop_tween = create_tween()
+	_coin_pop_tween.tween_interval(EFFECTS_CONFIG.appear_duration)
+	_coin_pop_tween.tween_callback(_center_coin_gain_pivot)
+	_coin_pop_tween.tween_property(_coin_gain, "scale", Vector2.ONE, EFFECTS_CONFIG.coin_pop_duration).from(Vector2.ONE * EFFECTS_CONFIG.coin_pop_start_scale).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+
+func _center_coin_gain_pivot() -> void:
+	_coin_gain.pivot_offset = _coin_gain.size / 2.0
 
 
 ## Loops until the panel hides; only the halo transform and opacity change, so nothing is redrawn.
@@ -118,10 +154,11 @@ func _burst_confetti_after_layout(is_record: bool) -> void:
 
 
 func _stop_effects() -> void:
-	for tween: Tween in [_appear_tween, _halo_turn_tween, _halo_breath_tween]:
+	for tween: Tween in [_appear_tween, _halo_turn_tween, _halo_breath_tween, _coin_pop_tween]:
 		if tween != null:
 			tween.kill()
 	_content.scale = Vector2.ONE
+	_coin_gain.scale = Vector2.ONE
 	modulate.a = 1.0
 	_halo.rotation = 0.0
 	_halo.modulate.a = 1.0

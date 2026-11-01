@@ -17,6 +17,10 @@ static func create_config() -> BalancingConfig:
 	config.is_distorted_reflection_enabled = false
 	config.distorted_reflection_period = 5
 	config.distorted_reflection_level_bonus = 1
+	config.coin_minimum_per_game = 5
+	config.coin_score_per_coin = 700
+	config.coin_level_bonus_start_level = 6
+	config.coin_per_level_above_start = 4
 	return config
 
 

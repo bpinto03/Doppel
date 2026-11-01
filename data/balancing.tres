@@ -56,3 +56,7 @@ large_group_bonus_per_extra_tile = 1
 is_distorted_reflection_enabled = true
 distorted_reflection_period = 3
 distorted_reflection_level_bonus = 1
+coin_minimum_per_game = 5
+coin_score_per_coin = 700
+coin_level_bonus_start_level = 6
+coin_per_level_above_start = 4

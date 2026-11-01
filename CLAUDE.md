@@ -138,4 +138,4 @@ Rules:
 
 Tracked in `STEPS.md` (tick the boxes). Keep this section to a single line naming the current phase.
 
-**Current phase:** Phase 3.2 (coins and shop) next, 3.1 done; Gate 1 passed, Gate 2 not marked as passed in STEPS.md.
+**Current phase:** Phase 3.2 (coins and shop) in progress: coin formula, wallet and coin display done, shop themes next; Gate 1 passed, Gate 2 not marked as passed in STEPS.md.

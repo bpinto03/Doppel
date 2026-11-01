@@ -149,7 +149,7 @@ Outil : simulateur d'équilibrage (`./run_simulation.sh`, voir `docs/balancing.m
 - [x] Panneau du tutoriel fidèle aux maquettes (`docs/maquettes/`) ; vérifié sur téléphone en français et en anglais, thèmes Nuit et Papier
 
 ### 3.2 Pièces et boutique
-- [ ] Définir la formule des pièces gagnées par partie
+- [x] Définir la formule des pièces gagnées par partie ; portefeuille, versement en fin de partie et affichage des pièces (accueil, fin de partie) faits aussi
 - [ ] Créer 4 à 6 thèmes de tuiles de boutique, en plus des deux thèmes gratuits Papier et Nuit (mettre à jour les exemples de thèmes du cahier des charges)
 - [ ] Coder la boutique (achat avec pièces, thème équipé, sauvegarde)
 

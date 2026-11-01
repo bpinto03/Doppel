@@ -57,6 +57,13 @@ When *enabled*, every *5th* placement gives a reflection of level +*1* (capped a
 - The HUD shows score, best score (saved, over every game) and highest tile reached in the game.
 - The record keeps the best score and the highest tile level over every game, and never goes down. An abandoned game (Play while a game is saved) counts for the record.
 
+## Coins
+
+- A game ended by game over earns `max(minimum, floor(score / score_per_coin) + max(0, highest_level − bonus_start_level) × coins_per_level)`. Values in `docs/balancing.md`.
+- The reward goes to the wallet once, when the turn that ends the game is played, before its animation.
+- An abandoned game (Play or Restart during a game, Play from home over a saved game) and the tutorial earn no coins.
+- The wallet keeps coins across games and has no cap. It never goes below 0; spending more than the balance is refused.
+
 ## Tutorial
 
 - Opened only with the Tutorial button of the home screen, never automatically and never during a game. It ends back on the home screen (Done on the last step, or Skip at any time), and never touches the saved game.
