@@ -16,7 +16,7 @@ Step 2.2 needs a visual identity readable on a small screen, in sunlight and for
   - Night only, neighbor levels: lightness gap in grayscale ≥ 10 (11.4); CIEDE2000 gap ≥ 12 in normal vision, deuteranopia, protanopia and tritanopia (13.3).
   - Night limit: with a single text color, the theme only spans about 30 lightness points, so some **non-neighbor** pairs look alike with color vision deficiency (4/256, 16/64, 64/4096 with deuteranopia and protanopia, 2/8, 4/128, 16/4096 with deuteranopia, 2/128, 16/1024, 32/2048 with tritanopia). The value on the tile tells them apart; the pairs are kept in [balancing.md](../balancing.md) in case a color vision deficiency mode is considered after launch.
 - **Night tile colors** (2026-10-31): levels 1 to 5 come from the visual reference in `docs/maquettes/` (2 turquoise, 4 orchid, 8 off-white, 32 coral pink), except 16, a slightly deeper yellow (`#f8c940` instead of `#fcd24a`) to keep the grayscale gap with 8 (8.7 → 11.4). Levels 6 to 12 keep the former hues, more saturated in the same style.
-- **Paper tile colors** (2026-10-31, replaced the same day): the face colors of the "normal" row of `docs/maquettes/couleur_tuiles.png`, sampled as the median of each tile's sides, without its gradient or highlight. All pastel, so every tile takes the dark text.
+- **Paper tile colors** (2026-10-31, replaced the same day): the face colors of the "normal" row of `docs/maquettes/paper/couleur_tuiles_paper.png`, sampled as the median of each tile's sides, without its gradient or highlight. All pastel, so every tile takes the dark text.
 
   | Level | Value | Color | | Level | Value | Color |
   |---|---|---|---|---|---|---|

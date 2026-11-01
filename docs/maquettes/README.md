@@ -1,8 +1,18 @@
 # Mockups
 
-`maquette_night.png` (Night theme) and `maquette_paper.png` (Paper theme) are **AI-generated visual references** for the game screen: HUD, previews, board and the first tile colors. `night_menu.png` and `paper_menu.png` are the same kind of reference for the home screen: logo, title and menu buttons, `night_pause.png` and `paper_pause.png` for the pause overlay, `night_end.png` and `paper_end.png` for the game over overlay, `night_tuto.png` and `paper_tuto.png` for the tutorial panel under the board (only the panel is a reference there), and `night/theme_catalog_night.png` and `paper/theme_catalog_paper.png` for the theme shop (`ShopScreen`). They are not a technical source of truth: proportions, sizes and colors are approximate, some details contradict each other (the same value in two colors), and their aspect ratio (about 9:19.5) differs from the base resolution (1080×1920). The implemented layout is described in [architecture.md](../architecture.md), the tile colors in [0003](../decisions/0003-art-direction.md).
+**AI-generated visual references**, one folder per theme. They are not a technical source of truth: proportions, sizes and colors are approximate, some details contradict each other (the same value in two colors), and their aspect ratio (about 9:19.5) differs from the base resolution (1080×1920). The implemented layout is described in [architecture.md](../architecture.md), the tile colors in [0003](../decisions/0003-art-direction.md).
 
-`couleur_tuiles.png` is the visual reference of the Paper tile colors: only its "normal" row is used, for the flat face colors; the example grid, the color vision simulations and the tile gradients and highlights are illustrations. The values in `data/palette_paper.tres` are the source of truth (listed in [0003](../decisions/0003-art-direction.md)).
+| Screen | `paper/` | `night/` | `neon/` |
+|--------|----------|----------|---------|
+| Game: HUD, previews, board | `jeu_paper.png` | `maquette_night.png` | `jeu_neon.png` |
+| Home: logo, title, menu buttons | `paper_menu.png` | `night_menu.png` | `neon_menu.png` |
+| Pause overlay | `paper_pause.png` | `night_pause.png` | `neon_pause.png` |
+| Game over overlay | `paper_end.png` | `night_end.png` | `neon_end.png` |
+| Tutorial panel under the board (only the panel is a reference) | `paper_tuto.png` | `night_tuto.png` | `neon_tuto.png` |
+| Theme shop (`ShopScreen`) | `theme_catalog_paper.png` | `theme_catalog_night.png` | `theme_catalog_neon.png` |
+| Tile colors | `couleur_tuiles_paper.png` | `couleur_tuiles_night.png` | `couleur_tuiles_neon.png` |
+
+Tile color sheets: only the "normal" row is used, for the flat face colors, sampled as the median of each tile's sides; the example grid, the text at the top and the tile gradients and highlights are illustrations. The Paper sheet is the source of the Paper tile colors. The Night sheet is an illustration only: the Night tile colors were chosen before it (see 0003). The palettes in `data/` are the source of truth.
 
 Godot skips the whole `docs/` folder (`docs/.gdignore`), so the images are never imported nor exported.
 

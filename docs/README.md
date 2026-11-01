@@ -7,7 +7,7 @@
 | [balancing.md](balancing.md) | Tunable values and what they control |
 | [playtest_phase1.md](playtest_phase1.md) | Gate 1 playtest protocol and results sheet |
 | [release_checklist.md](release_checklist.md) | Package ID, signing and store submission notes |
-| [maquettes/](maquettes/) | AI-generated visual references of the game screen (Night and Paper), not a source of truth |
+| [maquettes/](maquettes/) | AI-generated visual references of every screen, one folder per theme (Paper, Night, Neon), not a source of truth |
 | [decisions/](decisions/) | Decision records |
 
 Decision records:
