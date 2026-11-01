@@ -5,6 +5,8 @@ const MAIN_SCENE: PackedScene = preload("res://scenes/main.tscn")
 const MAIN_SCRIPT: GDScript = preload("res://scripts/main.gd")
 const BASE_THEME: Theme = preload("res://assets/themes/base_theme.tres")
 const TEST_RING_WIDTH: int = 16
+const DRAG_STEP_COUNT: int = 8
+const DRAG_STEP_DISTANCE: float = 30.0
 const TEST_SAVE_PATH: String = "user://test_shop_screen_save.cfg"
 const PAID_THEME_ID: StringName = &"test_paid"
 const PAID_THEME_PRICE: int = 500
@@ -176,6 +178,40 @@ func test_every_preview_takes_the_ring_of_the_active_theme() -> void:
 		assert_false(ring.draw_center, String(card.entry.id))
 
 
+func test_the_wheel_over_a_card_scrolls_the_list() -> void:
+	var shop: ShopScreen = await _add_shop_in_own_viewport()
+	var start: Vector2 = _get_center(shop, "%DescriptionLabel")
+
+	_push_wheel_down(shop.get_viewport(), start)
+	await wait_process_frames(2)
+
+	assert_gt(_get_scroll(shop).scroll_vertical, 0)
+
+
+## Four cards overflow the base height, so a drag must scroll wherever it starts on a card, its button included.
+func test_dragging_a_card_scrolls_the_list_without_pressing_its_button() -> void:
+	for node_path: String in ["%DescriptionLabel", "%ActionButton"]:
+		var shop: ShopScreen = await _add_shop_in_own_viewport()
+		watch_signals(shop.get_card(&"night"))
+
+		await _drag_up(shop.get_viewport(), _get_center(shop, node_path))
+
+		assert_gt(_get_scroll(shop).scroll_vertical, 0, node_path)
+		assert_signal_not_emitted(shop.get_card(&"night"), "action_pressed", node_path)
+
+
+func test_tapping_a_card_button_still_presses_it() -> void:
+	var shop: ShopScreen = await _add_shop_in_own_viewport()
+	var center: Vector2 = _get_center(shop, "%ActionButton")
+	watch_signals(shop.get_card(&"night"))
+
+	_push_left_button(shop.get_viewport(), center, true)
+	_push_left_button(shop.get_viewport(), center, false)
+	await wait_process_frames(1)
+
+	assert_signal_emitted(shop.get_card(&"night"), "action_pressed")
+
+
 ## The longest name and description, a five digit price and a six digit balance stay within the base width:
 ## the name and price in full, the description on two lines at most.
 func test_content_fits_the_base_width_in_every_language_and_theme() -> void:
@@ -295,3 +331,60 @@ func _is_playing(stream: AudioStream) -> bool:
 		if player is AudioStreamPlayer and (player as AudioStreamPlayer).stream == stream and (player as AudioStreamPlayer).playing:
 			return true
 	return false
+
+
+func _push_wheel_down(viewport: Viewport, position: Vector2) -> void:
+	for is_pressed: bool in [true, false]:
+		var wheel := InputEventMouseButton.new()
+		wheel.button_index = MOUSE_BUTTON_WHEEL_DOWN
+		wheel.pressed = is_pressed
+		wheel.position = position
+		wheel.global_position = position
+		viewport.push_input(wheel)
+
+
+## ScrollContainer drags only with a touchscreen, as on a phone, where touches also arrive as mouse events.
+func _drag_up(viewport: Viewport, start: Vector2) -> void:
+	var was_emulating_touch: bool = Input.emulate_touch_from_mouse
+	Input.emulate_touch_from_mouse = true
+	_push_left_button(viewport, start, true)
+	for step: int in range(1, DRAG_STEP_COUNT + 1):
+		var motion := InputEventMouseMotion.new()
+		motion.position = start - Vector2(0, DRAG_STEP_DISTANCE * step)
+		motion.global_position = motion.position
+		motion.relative = Vector2(0, -DRAG_STEP_DISTANCE)
+		motion.button_mask = MOUSE_BUTTON_MASK_LEFT
+		viewport.push_input(motion)
+		await wait_process_frames(1)
+	_push_left_button(viewport, start - Vector2(0, DRAG_STEP_DISTANCE * DRAG_STEP_COUNT), false)
+	await wait_process_frames(1)
+	Input.emulate_touch_from_mouse = was_emulating_touch
+
+
+func _push_left_button(viewport: Viewport, position: Vector2, is_pressed: bool) -> void:
+	var button := InputEventMouseButton.new()
+	button.button_index = MOUSE_BUTTON_LEFT
+	button.pressed = is_pressed
+	button.position = position
+	button.global_position = position
+	viewport.push_input(button)
+
+
+## The test runner's own interface covers the root viewport and would take the input.
+func _add_shop_in_own_viewport() -> ShopScreen:
+	var viewport := SubViewport.new()
+	viewport.size = Vector2i(int(_viewport_width), ProjectSettings.get_setting("display/window/size/viewport_height"))
+	add_child_autofree(viewport)
+	var shop: ShopScreen = SHOP_SCREEN_SCENE.instantiate()
+	shop.catalog = _create_catalog_with_paid_theme()
+	viewport.add_child(shop)
+	await wait_process_frames(2)
+	return shop
+
+
+func _get_scroll(shop: ShopScreen) -> ScrollContainer:
+	return shop.get_node("Margin/Layout/Scroll")
+
+
+func _get_center(shop: ShopScreen, night_card_node_path: String) -> Vector2:
+	return (shop.get_card(&"night").get_node(night_card_node_path) as Control).get_global_rect().get_center()
