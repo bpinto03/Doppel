@@ -47,6 +47,12 @@ func test_every_palette_has_one_color_per_level() -> void:
 		assert_eq(_get_palettes()[palette_name].tile_colors.size(), LEVEL_COUNT, palette_name)
 
 
+func test_rims_are_absent_or_one_per_level() -> void:
+	for palette_name: StringName in _get_palettes():
+		var rim_count: int = _get_palettes()[palette_name].tile_rim_colors.size()
+		assert_true(rim_count == 0 or rim_count == LEVEL_COUNT, "%s has %d rims" % [palette_name, rim_count])
+
+
 func test_tile_text_is_readable_on_every_tile() -> void:
 	for palette_name: String in _get_palettes():
 		var painter := TilePainter.new(_get_palettes()[palette_name], TILE_TEXT_CONFIG)

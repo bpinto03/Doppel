@@ -206,7 +206,7 @@ Sound files are normalized to the same perceived loudness: −20 dB K-weighted R
 
 ## Board style
 
-`data/board_style.tres` (a `BoardStyle`). Colors come from the palette: frame `frame_fill` and `frame_border`, empty cells `empty_cell` and `cell_outline`, axis `axis`. Glows come from the palette too: `frame_glow` and `axis_glow` colors (transparent for none) and `tile_glow_opacity` (tiles, 0 for none). `min_tile_edge_contrast` (3.0 in both themes) is the least contrast of a tile against the empty cells and the frame; a tile below it gets an outline. Lower it to outline fewer tiles: at 1.3, Paper 128 and 256 lose theirs and the other outlines get lighter.
+`data/board_style.tres` (a `BoardStyle`). Colors come from the palette: frame `frame_fill` and `frame_border`, empty cells `empty_cell` and `cell_outline`, axis `axis`. Glows come from the palette too: `frame_glow` and `axis_glow` colors (transparent for none) and `tile_glow_opacity` (tiles, 0 for none). `min_tile_edge_contrast` (3.0 in both themes) is the least contrast of a tile against the empty cells and the frame; a tile below it gets an outline. Lower it to outline fewer tiles: at 1.3, Paper 128 and 256 lose theirs and the other outlines get lighter. A palette with `tile_rim_colors` gives every tile a light rim instead (`TILE_RIM_RATIO`, 4 % of the tile side, in `tile_painter.gd`), and the rim color must reach `min_tile_edge_contrast`.
 
 | Parameter | Default | Controls |
 |-----------|---------|----------|

@@ -11,6 +11,8 @@ const CELL_OUTLINE_RATIO: float = 0.015
 ## Glow size relative to the tile's shorter side; its opacity comes from the palette.
 const GLOW_SIZE_RATIO: float = 0.08
 const TILE_OUTLINE_RATIO: float = 0.02
+## Rim width of palettes with tile_rim_colors, relative to the tile's shorter side.
+const TILE_RIM_RATIO: float = 0.04
 const OUTLINE_DARKENING_STEP: float = 0.05
 
 var palette: ThemePalette
@@ -27,6 +29,10 @@ func _init(theme_palette: ThemePalette, text_config: TileTextConfig) -> void:
 	_text_config = text_config
 	for level: int in range(1, palette.tile_colors.size() + 1):
 		_text_colors.append(palette.pick_tile_text_color(level))
+		if palette.has_tile_rims():
+			_outlined_levels.append(true)
+			_edge_colors.append(palette.tile_rim_colors[level - 1])
+			continue
 		var tile_color: Color = palette.get_tile_color(level)
 		var is_outlined: bool = not stands_out_from_board(tile_color)
 		_outlined_levels.append(is_outlined)
@@ -38,11 +44,13 @@ func draw_tile(canvas: CanvasItem, rect: Rect2, level: int, opacity: float = 1.0
 		_draw_empty_cell(canvas, rect, opacity)
 		return
 	var tile_color := Color(palette.get_tile_color(level), opacity)
-	var relief: int = roundi(_get_shorter_side(rect) * RELIEF_RATIO)
+	var relief: int = 0 if palette.has_tile_rims() else roundi(_get_shorter_side(rect) * RELIEF_RATIO)
 	_set_up_box(rect, tile_color)
 	if is_outlined(level):
-		_tile_box.set_border_width_all(maxi(1, roundi(_get_shorter_side(rect) * TILE_OUTLINE_RATIO)))
-	_tile_box.border_width_bottom = relief
+		var outline_ratio: float = TILE_RIM_RATIO if palette.has_tile_rims() else TILE_OUTLINE_RATIO
+		_tile_box.set_border_width_all(maxi(1, roundi(_get_shorter_side(rect) * outline_ratio)))
+	if not palette.has_tile_rims():
+		_tile_box.border_width_bottom = relief
 	_tile_box.border_color = Color(get_edge_color(level), opacity)
 	if palette.tile_glow_opacity > 0.0:
 		_tile_box.shadow_color = Color(tile_color, palette.tile_glow_opacity * opacity)
@@ -56,7 +64,7 @@ func get_text_color(level: int) -> Color:
 	return _text_colors[level - 1]
 
 
-## The relief color, which is also the outline color of an outlined tile.
+## The relief color, which is also the outline color of an outlined tile, or the rim color when the palette has rims.
 func get_edge_color(level: int) -> Color:
 	return _edge_colors[level - 1]
 

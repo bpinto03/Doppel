@@ -159,6 +159,13 @@ extends Resource
 @export var min_tile_edge_contrast: float
 ## One color per level, from level 1.
 @export var tile_colors: Array[Color]
+## Empty for none. Else one color per level, from level 1: a light rim all around each tile, without the relief,
+## which decides instead of the tile color whether the tile stands out from the board.
+@export var tile_rim_colors: Array[Color] = []
+
+
+func has_tile_rims() -> bool:
+	return not tile_rim_colors.is_empty()
 
 
 func get_tile_color(level: int) -> Color:
