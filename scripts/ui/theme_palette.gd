@@ -102,6 +102,10 @@ extends Resource
 @export var game_over_tile_icon: Color
 @export var game_over_stat_caption: Color
 @export var game_over_stat_value: Color
+## Value color of each row; transparent, the default, keeps game_over_stat_value.
+@export var game_over_score_value: Color = Color.TRANSPARENT
+@export var game_over_record_value: Color = Color.TRANSPARENT
+@export var game_over_tile_value: Color = Color.TRANSPARENT
 
 @export_group("Coins")
 ## Coin counter on the home and game over screens; its text must keep a 4.5:1 contrast on its fill.

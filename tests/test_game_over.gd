@@ -89,6 +89,25 @@ func test_a_game_over_without_reward_hides_the_reward_slot() -> void:
 	assert_false((panel.get_node("%RewardSlot") as Control).visible)
 
 
+func test_each_row_value_takes_its_palette_color_or_the_shared_one() -> void:
+	var game: GameScreen = _start_game_one_pair_from_end(PREVIOUS_BEST)
+	var panel: GameOverPanel = game.get_node("%GameOverPanel")
+	var value_paths: Array[String] = ["%ScoreValue", "%BestValue", "%MaxTileValue"]
+	var palette: ThemePalette = Settings.get_palette().duplicate()
+	game.theme = UiThemeBuilder.build(palette, PaletteScreen.BASE_THEME)
+	for path: String in value_paths:
+		assert_eq((panel.get_node(path) as Label).get_theme_color(&"font_color"), palette.game_over_stat_value, path)
+
+	palette.game_over_score_value = Color.ORANGE
+	palette.game_over_record_value = Color.MAGENTA
+	palette.game_over_tile_value = Color.CYAN
+	game.theme = UiThemeBuilder.build(palette, PaletteScreen.BASE_THEME)
+
+	assert_eq((panel.get_node("%ScoreValue") as Label).get_theme_color(&"font_color"), Color.ORANGE)
+	assert_eq((panel.get_node("%BestValue") as Label).get_theme_color(&"font_color"), Color.MAGENTA)
+	assert_eq((panel.get_node("%MaxTileValue") as Label).get_theme_color(&"font_color"), Color.CYAN)
+
+
 func test_play_again_starts_a_new_game_in_one_tap() -> void:
 	var game: GameScreen = _start_game_one_pair_from_end(PREVIOUS_BEST)
 	_finish_the_game(game)

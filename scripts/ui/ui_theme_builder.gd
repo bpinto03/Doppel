@@ -82,6 +82,9 @@ const GAME_OVER_TILE_ROW_TYPE: StringName = &"GameOverTileRow"
 const GAME_OVER_STAT_CAPTION_TYPE: StringName = &"GameOverStatCaption"
 const GAME_OVER_RECORD_CAPTION_TYPE: StringName = &"GameOverRecordCaption"
 const GAME_OVER_STAT_VALUE_TYPE: StringName = &"GameOverStatValue"
+const GAME_OVER_SCORE_VALUE_TYPE: StringName = &"GameOverScoreValue"
+const GAME_OVER_RECORD_VALUE_TYPE: StringName = &"GameOverRecordValue"
+const GAME_OVER_TILE_VALUE_TYPE: StringName = &"GameOverTileValue"
 const GAME_OVER_TITLE_FONT_SIZE: int = 84
 const STAT_ROW_RADIUS: int = 28
 const STAT_ROW_BORDER_WIDTH: int = 2
@@ -342,6 +345,16 @@ static func _add_game_over_styles(theme: Theme, palette: ThemePalette) -> void:
 	theme.set_type_variation(GAME_OVER_RECORD_CAPTION_TYPE, GAME_OVER_STAT_CAPTION_TYPE)
 	theme.set_color(&"font_color", GAME_OVER_RECORD_CAPTION_TYPE, palette.game_over_record_caption)
 	_add_glowing_label_style(theme, GAME_OVER_STAT_VALUE_TYPE, STAT_VALUE_FONT_SIZE, palette.game_over_stat_value, Color.TRANSPARENT, 0)
+	_add_row_value_style(theme, GAME_OVER_SCORE_VALUE_TYPE, palette.game_over_score_value)
+	_add_row_value_style(theme, GAME_OVER_RECORD_VALUE_TYPE, palette.game_over_record_value)
+	_add_row_value_style(theme, GAME_OVER_TILE_VALUE_TYPE, palette.game_over_tile_value)
+
+
+## A transparent color keeps the shared stat value color.
+static func _add_row_value_style(theme: Theme, type: StringName, color: Color) -> void:
+	theme.set_type_variation(type, GAME_OVER_STAT_VALUE_TYPE)
+	if color.a > 0.0:
+		theme.set_color(&"font_color", type, color)
 
 
 static func _add_tutorial_styles(theme: Theme, palette: ThemePalette) -> void:
