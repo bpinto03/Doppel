@@ -62,6 +62,7 @@ const HOME_SECONDARY_BUTTON_TYPE: StringName = &"HomeSecondaryButton"
 const ICON_BUTTON_RADIUS: int = 36
 const ICON_BUTTON_BORDER_WIDTH: int = 3
 const ICON_BUTTON_FONT_SIZE: int = 44
+const ICON_BUTTON_BADGE_BORDER_WIDTH: int = 4
 ## Pause overlay: scrim, panel, title between two rules, then its buttons.
 const MODAL_SCRIM_TYPE: StringName = &"ModalScrim"
 const MODAL_CARD_TYPE: StringName = &"ModalCard"
@@ -304,9 +305,9 @@ static func _add_preview_styles(theme: Theme) -> void:
 
 static func _add_home_button_styles(theme: Theme, palette: ThemePalette) -> void:
 	_add_icon_button_box(theme, HOME_PRIMARY_BUTTON_TYPE, palette.home_primary_button, palette.home_primary_button_border, palette.home_primary_button_glow)
-	_add_icon_button_badge(theme, HOME_PRIMARY_BUTTON_TYPE, palette.home_primary_badge, palette.home_primary_icon, palette.home_primary_text)
+	_add_icon_button_badge(theme, HOME_PRIMARY_BUTTON_TYPE, palette.home_primary_badge, palette.home_primary_badge_border, palette.home_primary_icon, palette.home_primary_text)
 	_add_icon_button_box(theme, HOME_SECONDARY_BUTTON_TYPE, palette.home_secondary_button, palette.home_secondary_button_border, Color.TRANSPARENT)
-	_add_icon_button_badge(theme, HOME_SECONDARY_BUTTON_TYPE, palette.home_secondary_badge, palette.home_secondary_icon, palette.home_secondary_text)
+	_add_icon_button_badge(theme, HOME_SECONDARY_BUTTON_TYPE, palette.home_secondary_badge, palette.home_secondary_badge_border, palette.home_secondary_icon, palette.home_secondary_text)
 
 
 static func _add_modal_styles(theme: Theme, palette: ThemePalette) -> void:
@@ -327,9 +328,9 @@ static func _add_modal_styles(theme: Theme, palette: ThemePalette) -> void:
 	theme.set_stylebox(&"separator", MODAL_TITLE_RULE_TYPE, rule)
 	theme.set_constant(&"separation", MODAL_TITLE_RULE_TYPE, MODAL_TITLE_RULE_WIDTH)
 	_add_icon_button_box(theme, MODAL_PRIMARY_BUTTON_TYPE, palette.modal_primary_button, palette.modal_primary_button_border, palette.modal_primary_button_glow)
-	_add_icon_button_badge(theme, MODAL_PRIMARY_BUTTON_TYPE, palette.modal_primary_badge, palette.modal_primary_icon, palette.modal_primary_text)
+	_add_icon_button_badge(theme, MODAL_PRIMARY_BUTTON_TYPE, palette.modal_primary_badge, palette.modal_primary_badge_border, palette.modal_primary_icon, palette.modal_primary_text)
 	_add_icon_button_box(theme, MODAL_SECONDARY_BUTTON_TYPE, palette.modal_secondary_button, palette.modal_secondary_button_border, Color.TRANSPARENT)
-	_add_icon_button_badge(theme, MODAL_SECONDARY_BUTTON_TYPE, palette.modal_secondary_badge, palette.modal_secondary_icon, palette.modal_secondary_text)
+	_add_icon_button_badge(theme, MODAL_SECONDARY_BUTTON_TYPE, palette.modal_secondary_badge, palette.modal_secondary_badge_border, palette.modal_secondary_icon, palette.modal_secondary_text)
 
 
 ## Hover looks like normal, since a tap on Android can leave a button hovered; a tap never shows a focus frame.
@@ -463,12 +464,15 @@ static func _add_icon_button_box(theme: Theme, type: StringName, color: Color, b
 	theme.set_stylebox(&"focus", type, StyleBoxEmpty.new())
 
 
-static func _add_icon_button_badge(theme: Theme, type: StringName, badge_color: Color, icon_color: Color, text_color: Color) -> void:
+static func _add_icon_button_badge(theme: Theme, type: StringName, badge_color: Color, badge_border_color: Color, icon_color: Color, text_color: Color) -> void:
 	for state: StringName in BUTTON_FONT_STATES:
 		theme.set_color(state, type, text_color)
 	var badge_box := StyleBoxFlat.new()
 	badge_box.bg_color = badge_color
 	badge_box.set_corner_radius_all(ceili(IconActionButton.BADGE_SIZE / 2.0))
+	if badge_border_color.a > 0.0:
+		badge_box.border_color = badge_border_color
+		badge_box.set_border_width_all(ICON_BUTTON_BADGE_BORDER_WIDTH)
 	theme.set_stylebox(&"badge", type, badge_box)
 	theme.set_color(&"badge_icon_color", type, icon_color)
 

@@ -33,3 +33,18 @@ func test_minimum_width_counts_the_badge_and_the_chevron() -> void:
 
 	var margins: float = IconActionButton.TEXT_LEFT_MARGIN + IconActionButton.TEXT_RIGHT_MARGIN
 	assert_almost_eq(_button.get_combined_minimum_size().x, text_width + margins, 1.0)
+
+
+func test_a_badge_gets_a_ring_only_from_an_opaque_border_color() -> void:
+	var palette: ThemePalette = Settings.get_palette().duplicate()
+	_button.theme_type_variation = UiThemeBuilder.HOME_PRIMARY_BUTTON_TYPE
+	_button.theme = UiThemeBuilder.build(palette, BASE_THEME)
+	assert_eq((_button.get_theme_stylebox(&"badge") as StyleBoxFlat).border_width_top, 0)
+
+	palette.home_primary_badge_border = Color.MAGENTA
+	_button.theme = UiThemeBuilder.build(palette, BASE_THEME)
+
+	var badge_box := _button.get_theme_stylebox(&"badge") as StyleBoxFlat
+	assert_eq(badge_box.border_width_top, UiThemeBuilder.ICON_BUTTON_BADGE_BORDER_WIDTH)
+	assert_eq(badge_box.border_color, Color.MAGENTA)
+

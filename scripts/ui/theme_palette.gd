@@ -50,6 +50,8 @@ extends Resource
 @export var home_primary_button_border: Color
 @export var home_primary_button_glow: Color
 @export var home_primary_badge: Color
+## A ring around the badge; transparent, the default, draws none.
+@export var home_primary_badge_border: Color = Color.TRANSPARENT
 @export var home_primary_icon: Color
 ## Also the chevron color, at lower opacity.
 @export var home_primary_text: Color
@@ -57,6 +59,7 @@ extends Resource
 @export var home_secondary_button: Color
 @export var home_secondary_button_border: Color
 @export var home_secondary_badge: Color
+@export var home_secondary_badge_border: Color = Color.TRANSPARENT
 @export var home_secondary_icon: Color
 @export var home_secondary_text: Color
 
@@ -73,12 +76,14 @@ extends Resource
 @export var modal_primary_button_border: Color
 @export var modal_primary_button_glow: Color
 @export var modal_primary_badge: Color
+@export var modal_primary_badge_border: Color = Color.TRANSPARENT
 @export var modal_primary_icon: Color
 @export var modal_primary_text: Color
 ## Menu, Restart, Settings and Back in the pause, Menu on the game over screen.
 @export var modal_secondary_button: Color
 @export var modal_secondary_button_border: Color
 @export var modal_secondary_badge: Color
+@export var modal_secondary_badge_border: Color = Color.TRANSPARENT
 @export var modal_secondary_icon: Color
 @export var modal_secondary_text: Color
 ## Tap icon beside the tutorial instruction; the tutorial text takes modal_secondary_text.
