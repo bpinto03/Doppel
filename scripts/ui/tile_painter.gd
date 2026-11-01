@@ -13,6 +13,8 @@ const GLOW_SIZE_RATIO: float = 0.08
 const TILE_OUTLINE_RATIO: float = 0.02
 ## Rim width of palettes with tile_rim_colors, relative to the tile's shorter side.
 const TILE_RIM_RATIO: float = 0.04
+## Value outline width of palettes with tile_text_outline, relative to the font size.
+const TEXT_OUTLINE_RATIO: float = 0.14
 const OUTLINE_DARKENING_STEP: float = 0.05
 
 var palette: ThemePalette
@@ -57,7 +59,8 @@ func draw_tile(canvas: CanvasItem, rect: Rect2, level: int, opacity: float = 1.0
 		_tile_box.shadow_size = roundi(_get_shorter_side(rect) * GLOW_SIZE_RATIO)
 	_tile_box.draw(canvas.get_canvas_item(), rect)
 	var face := Rect2(rect.position, rect.size - Vector2(0.0, relief))
-	_draw_value(canvas, face, str(MergeScoring.calculate_tile_value(level)), Color(get_text_color(level), opacity))
+	var outline_color := Color(palette.tile_text_outline, palette.tile_text_outline.a * opacity)
+	_draw_value(canvas, face, str(MergeScoring.calculate_tile_value(level)), Color(get_text_color(level), opacity), outline_color)
 
 
 func get_text_color(level: int) -> Color:
@@ -140,11 +143,15 @@ func _set_up_box(rect: Rect2, color: Color) -> void:
 	_tile_box.set_corner_radius_all(roundi(_get_shorter_side(rect) * CORNER_RADIUS_RATIO))
 
 
-func _draw_value(canvas: CanvasItem, rect: Rect2, text: String, color: Color) -> void:
+## A transparent outline color draws no outline.
+func _draw_value(canvas: CanvasItem, rect: Rect2, text: String, color: Color, outline_color: Color = Color.TRANSPARENT) -> void:
 	var font: Font = _text_config.font
 	var font_size: int = calculate_font_size(text, rect.size)
 	var baseline_y: float = rect.get_center().y + (font.get_ascent(font_size) - font.get_descent(font_size)) / 2.0
 	var baseline := Vector2(rect.position.x, baseline_y)
+	if outline_color.a > 0.0:
+		var outline_size: int = maxi(1, roundi(font_size * TEXT_OUTLINE_RATIO))
+		canvas.draw_string_outline(font, baseline, text, HORIZONTAL_ALIGNMENT_CENTER, rect.size.x, font_size, outline_size, outline_color)
 	canvas.draw_string(font, baseline, text, HORIZONTAL_ALIGNMENT_CENTER, rect.size.x, font_size, color)
 
 

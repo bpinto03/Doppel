@@ -1,15 +1,15 @@
-[gd_resource type="Resource" script_class="ThemeCatalog" format=3]
+[gd_resource type="Resource" script_class="ThemeCatalog" format=3 uid="uid://bibwrqgbmpspx"]
 
-[ext_resource type="Script" path="res://scripts/themes/theme_catalog.gd" id="1_catalog"]
-[ext_resource type="Script" path="res://scripts/themes/theme_entry.gd" id="2_entry"]
-[ext_resource type="Resource" path="res://data/palette_paper.tres" id="3_paper"]
-[ext_resource type="Resource" path="res://data/palette_night.tres" id="4_night"]
+[ext_resource type="Script" uid="uid://byukdcm2bdncq" path="res://scripts/themes/theme_catalog.gd" id="1_catalog"]
+[ext_resource type="Script" uid="uid://b0oucwkmu5oru" path="res://scripts/themes/theme_entry.gd" id="2_entry"]
+[ext_resource type="Resource" uid="uid://bk5hsnoev240q" path="res://data/palette_paper.tres" id="3_paper"]
+[ext_resource type="Resource" uid="uid://ck4t2mfb501nk" path="res://data/palette_night.tres" id="4_night"]
+[ext_resource type="Resource" path="res://data/palette_neon.tres" id="5_neon"]
 
 [sub_resource type="Resource" id="Resource_paper"]
 script = ExtResource("2_entry")
 id = &"paper"
 palette = ExtResource("3_paper")
-price = 0
 display_name_key = "THEME_NAME_PAPER"
 description_key = "THEME_DESC_PAPER"
 
@@ -17,11 +17,18 @@ description_key = "THEME_DESC_PAPER"
 script = ExtResource("2_entry")
 id = &"night"
 palette = ExtResource("4_night")
-price = 0
 display_name_key = "THEME_NAME_NIGHT"
 description_key = "THEME_DESC_NIGHT"
 
+[sub_resource type="Resource" id="Resource_neon"]
+script = ExtResource("2_entry")
+id = &"neon"
+palette = ExtResource("5_neon")
+price = 500
+display_name_key = "THEME_NAME_NEON"
+description_key = "THEME_DESC_NEON"
+
 [resource]
 script = ExtResource("1_catalog")
-entries = Array[ExtResource("2_entry")]([SubResource("Resource_paper"), SubResource("Resource_night")])
+entries = Array[ExtResource("2_entry")]([SubResource("Resource_paper"), SubResource("Resource_night"), SubResource("Resource_neon")])
 default_id = &"paper"

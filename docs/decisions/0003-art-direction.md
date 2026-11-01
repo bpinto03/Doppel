@@ -28,6 +28,25 @@ Step 2.2 needs a visual identity readable on a small screen, in sunlight and for
   | 6 | 64 | `#f2dec8` | | 12 | 4096 | `#f8f4ee` |
 
   A design choice: Paper has no color vision deficiency mode, so the grayscale, CIEDE2000 and confusable-pair rules above do not apply to it. Their figures for the record: grayscale gaps down to 3.3 (128/256), CIEDE2000 down to 2.6 (256/512, deuteranopia). Even in normal vision, 2/512 (ΔE 1.3) and 4/1024 (ΔE 1.8) look almost the same: only the value tells them apart.
+- **Neon tile colors** (2026-11-01, shop theme): from the "normal" row of `docs/maquettes/neon/couleur_tuiles_neon.png`, sampled as the median of each tile's sides. Neon follows the Night rules for neighbor levels (grayscale gap ≥ 10, CIEDE2000 ≥ 12 in normal vision, deuteranopia, protanopia and tritanopia) and also keeps its repeated hues apart in normal vision (2/512, 4/1024, 128/2048, 64/256: CIEDE2000 ≥ 12), checked by `tests/test_tile_color_distinction.gd`. The sheet fails 7 of 11 neighbor pairs (256/512 look the same even in normal vision: ΔE 4.3) and the 128 text (4.39:1), so seven levels changed lightness only (OKLab L, hue kept):
+
+  | Level | Value | Sheet | Kept | OKLab L | White on tile | Rim |
+  |---|---|---|---|---|---|---|
+  | 1 | 2 | `#0166f0` | `#0166f0` | 0 | 5.05 | `#26e5fc` |
+  | 2 | 4 | `#01b6c3` | `#01b6c3` | 0 | 2.48 | `#69faf9` |
+  | 3 | 8 | `#1fb04b` | `#009d38` | −5.7 | 3.57 | `#a3fbab` |
+  | 4 | 16 | `#dba40d` | `#e8b129` | +4.0 | 1.95 | `#fcf646` |
+  | 5 | 32 | `#e75817` | `#e75817` | 0 | 3.62 | `#fbd357` |
+  | 6 | 64 | `#802ff8` | `#802ff8` | 0 | 5.71 | `#e89efd` |
+  | 7 | 128 | `#e104a8` | `#ff5adc` | +11.9 | 2.71 | `#fcabf0` |
+  | 8 | 256 | `#5308e8` | `#3600af` | −9.6 | 11.83 | `#e184fd` |
+  | 9 | 512 | `#2726df` | `#2f3df1` | +5.0 | 6.87 | `#ada7fd` |
+  | 10 | 1024 | `#01aad5` | `#00a0cb` | −2.9 | 3.05 | `#69fbfc` |
+  | 11 | 2048 | `#cb02a6` | `#bd0099` | −3.1 | 5.80 | `#fa96f6` |
+  | 12 | 4096 | `#1e0c74` | `#1e0c74` | 0 | 15.44 | `#ff3df2` |
+
+  Result: neighbor grayscale gap down to 11.1, CIEDE2000 down to 12.0 in every vision; repeated hues 12.5, 12.1, 21.1 and 16.4. The biggest change is 128, lighter. Each tile has the light rim of the sheet (`tile_rim_colors`, sampled on the sheet), which stands for the tile against the board (at least 5.89:1): it lets 256, 512, 2048 and 4096 stay dark instead of being lightened. The 4096 keeps its dark face with a magenta rim (`#ff3df2`; the sheet rim, `#701ee1`, reaches only 2.42:1). Values are white on every tile, as on the sheet, with a dark outline (`tile_text_outline`, `#0e0c22`, 14 % of the font size, chosen on 2026-11-01): white alone reads only 1.95:1 on 16, 2.48 on 4, 2.71 on 128, 3.05 on 1024, 3.57 on 8 and 3.62 on 32, and tiles dark enough for white text cannot keep the neighbor rules. The 4.5:1 rule is checked between the white and its outline.
+- **Neon interface** (2026-11-01): colors from the Neon mockups (`docs/maquettes/neon/`), background `#0e0c22`, the median of the center of `background_neon.png`, where the board sits on a flat area. Gold crown and trophy icons shared with Paper. Optional palette fields filled for Neon only: tile rims, game over values in their row color (amber, pink, cyan) and badges drawn as rings. Not reproduced, as for Night: the gradients (title, HUD capsule, board frame, panel borders, shop buttons outline), one color per home and pause button (Continue takes the Play colors), the close cross of the pause, the glossy highlight of cells and previews, line-art icons, the two-tone tutorial hand, uppercase preview captions and the tiles drawn as outlines only on the game mockups (the color sheet wins). Play again stays green, like Resume.
 - **Font: Fredoka** (SemiBold for the interface, Bold for tile values), one family for the whole game. Chosen over Rubik for its compact digits: "4096" is 2.16 em wide in Fredoka Bold against 2.66 em in Rubik Bold, so it is drawn about 23 % larger in the same tile. It lacks "≈": avoid it in texts.
 - **Tile value size** follows `data/tile_text.tres`: as large as possible within a height ratio and a width ratio of the tile, measured with the font, so longer values shrink without per-length cases.
 - **Home logo** (2026-10-31): drawn in code by `LogoMark` with the palette `logo_*` colors, no image, so every shop theme gets it from its palette. The circle overlap shows only through the transparency of the fills. The Night glow is thin concentric rings (no blur, no visible steps).
@@ -52,6 +71,7 @@ Decided on 2026-10-31: no color vision deficiency mode (such as a global high-co
 
 ## Consequences
 
+- Neon is not tested on a phone yet.
 - Both themes were validated on a phone (Night indoors, Paper near a window). The Paper tile colors of 2026-10-31 are not tested on a phone yet.
 - A shop theme with textures (pixel art, marble) would need optional textures in `ThemePalette`; not built until such a theme is wanted.
 - Until the settings screen (step 3.1), debug builds show a "Theme" button in the HUD to switch themes.

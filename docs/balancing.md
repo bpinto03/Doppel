@@ -64,6 +64,13 @@ Reference points from the developer's own games (usual scores 9 500 to 15 000, r
 
 The highest tile of these examples is assumed, not measured. The developer plays better than a new player: a beginner is closer to `random`, about 60 games for 500 coins. Theme prices will be set from the testers' games **[TO TEST]**.
 
+| Theme | Price | |
+|-------|-------|---|
+| Paper, Night | 0 | Always owned |
+| Neon | 500 | About 20 games at the target of 25 coins per game **[TO TEST]** |
+
+Prices live in `data/theme_catalog.tres`.
+
 ## Resolution playback
 
 Durations in seconds, in `data/resolution_playback.tres` (a `ResolutionPlaybackConfig`). They only change how a turn is shown, never its outcome.
@@ -222,11 +229,14 @@ Rendering cost of the glows, measured on a full board (36 tiles) at 1080×2340 i
 
 ## Confusable tile colors
 
-Night non-neighbor levels whose colors look alike with color vision deficiency (simulated, see [0003](decisions/0003-art-direction.md)). Only the value tells them apart. Kept in case a color vision deficiency mode is considered after launch (none in the MVP, see 0003). Paper is not checked for color vision deficiency (see 0003).
+Night and Neon non-neighbor levels whose colors look alike with color vision deficiency (simulated, see [0003](decisions/0003-art-direction.md)). Only the value tells them apart. Kept in case a color vision deficiency mode is considered after launch (none in the MVP, see 0003). Paper is not checked for color vision deficiency (see 0003).
 
 | Theme | Several deficiency types | Protanopia | Deuteranopia | Tritanopia |
 |-------|------------------|------------|--------------|------------|
 | Night | 4/256, 16/64, 64/4096 (deuteranopia, protanopia) | — | 2/8, 4/128, 16/4096 | 2/128, 16/1024, 32/2048 |
+| Neon | 2/64, 8/32, 128/1024 (deuteranopia, protanopia); 2/512, 4/1024 (all three) | 2/128, 256/2048, 512/2048 | 4/128 | 8/1024 |
+
+Neon also has two non-neighbor pairs close in normal vision: 64/512 (CIEDE2000 8.8) and 256/4096 (8.7, but the 4096 has a magenta rim).
 
 ## Tutorial highlight
 

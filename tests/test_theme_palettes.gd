@@ -53,12 +53,22 @@ func test_rims_are_absent_or_one_per_level() -> void:
 		assert_true(rim_count == 0 or rim_count == LEVEL_COUNT, "%s has %d rims" % [palette_name, rim_count])
 
 
+## Outlined values read against their outline, whatever the tile color.
 func test_tile_text_is_readable_on_every_tile() -> void:
 	for palette_name: String in _get_palettes():
 		var painter := TilePainter.new(_get_palettes()[palette_name], TILE_TEXT_CONFIG)
 		for level: int in range(1, LEVEL_COUNT + 1):
-			var contrast: float = ColorContrast.calculate_ratio(painter.get_text_color(level), painter.palette.get_tile_color(level))
+			var backdrop: Color = painter.palette.tile_text_outline if painter.palette.has_tile_text_outline() else painter.palette.get_tile_color(level)
+			var contrast: float = ColorContrast.calculate_ratio(painter.get_text_color(level), backdrop)
 			assert_gte(contrast, MIN_TILE_TEXT_CONTRAST, "%s level %d" % [palette_name, level])
+
+
+func test_outlined_values_are_light_on_every_tile() -> void:
+	var palette: ThemePalette = Settings.THEME_CATALOG.find_entry(&"night").palette.duplicate()
+	palette.tile_text_outline = Color.BLACK
+
+	for level: int in range(1, LEVEL_COUNT + 1):
+		assert_eq(palette.pick_tile_text_color(level), palette.tile_text_light, "level %d" % level)
 
 
 func test_night_tiles_keep_their_near_black_text() -> void:

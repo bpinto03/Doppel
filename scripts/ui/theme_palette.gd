@@ -171,18 +171,28 @@ extends Resource
 ## Empty for none. Else one color per level, from level 1: a light rim all around each tile, without the relief,
 ## which decides instead of the tile color whether the tile stands out from the board.
 @export var tile_rim_colors: Array[Color] = []
+## Transparent, the default, for none. Else every tile value takes tile_text_light, outlined in this color,
+## so the value reads on any tile; its contrast is then measured against the outline.
+@export var tile_text_outline: Color = Color.TRANSPARENT
 
 
 func has_tile_rims() -> bool:
 	return not tile_rim_colors.is_empty()
 
 
+func has_tile_text_outline() -> bool:
+	return tile_text_outline.a > 0.0
+
+
 func get_tile_color(level: int) -> Color:
 	return tile_colors[level - 1]
 
 
-## The value text with the higher contrast on this level's tile. TilePainter keeps the answer for each level.
+## The value text with the higher contrast on this level's tile, or the light text when values are outlined.
+## TilePainter keeps the answer for each level.
 func pick_tile_text_color(level: int) -> Color:
+	if has_tile_text_outline():
+		return tile_text_light
 	var tile_color: Color = get_tile_color(level)
 	var dark_contrast: float = ColorContrast.calculate_ratio(tile_text_dark, tile_color)
 	var light_contrast: float = ColorContrast.calculate_ratio(tile_text_light, tile_color)

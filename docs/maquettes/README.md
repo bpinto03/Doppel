@@ -22,3 +22,7 @@ Godot skips the whole `docs/` folder (`docs/.gdignore`), so the images are never
 - Each card previews its theme in that theme's own palette (frame and tiles), never in the active one.
 - Back uses the existing `HomePrimaryButton` variation of `IconActionButton` (round badge with the back arrow, chevron on the right), not the bare left chevron of the mockups.
 - Equip and Buy are darker than on the mockups, so their white text reaches 4.5:1: Equip by 22 % (Paper) and 24 % (Night), Buy by 28 % (Paper) and 29 % (Night).
+
+## Neon: assumed differences
+
+Listed in [0003](../decisions/0003-art-direction.md): tile colors retouched for neighbor distinction, white values with a dark outline, no gradients, one color per kind of button (Continue like Play, every pause button but Resume alike), no close cross, no glossy highlight, existing icons, Play again green like Resume. The elements the Neon mockups leave out (Themes button, coin counters, coins earned, pause settings page, combo, placement ghost) are drawn with the Neon palette.

@@ -33,7 +33,7 @@ func test_one_card_per_theme_in_catalog_order() -> void:
 	for card: ThemeCard in shop.get_cards():
 		ids.append(card.entry.id)
 
-	assert_eq(ids, [&"paper", &"night", PAID_THEME_ID])
+	assert_eq(ids, [&"paper", &"night", &"neon", PAID_THEME_ID])
 
 
 func test_cards_show_equipped_owned_and_for_sale() -> void:
