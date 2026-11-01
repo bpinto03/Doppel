@@ -68,6 +68,7 @@ The highest tile of these examples is assumed, not measured. The developer plays
 |-------|-------|---|
 | Paper, Night | 0 | Always owned |
 | Neon | 500 | About 20 games at the target of 25 coins per game **[TO TEST]** |
+| Wood | 500 | Same as Neon **[TO TEST]** |
 
 Prices live in `data/theme_catalog.tres`.
 
@@ -213,7 +214,9 @@ Sound files are normalized to the same perceived loudness: −20 dB K-weighted R
 
 ## Board style
 
-`data/board_style.tres` (a `BoardStyle`). Colors come from the palette: frame `frame_fill` and `frame_border`, empty cells `empty_cell` and `cell_outline`, axis `axis`. Glows come from the palette too: `frame_glow` and `axis_glow` colors (transparent for none) and `tile_glow_opacity` (tiles, 0 for none). `min_tile_edge_contrast` (3.0 in both themes) is the least contrast of a tile against the empty cells and the frame; a tile below it gets an outline. Lower it to outline fewer tiles: at 1.3, Paper 128 and 256 lose theirs and the other outlines get lighter. A palette with `tile_rim_colors` gives every tile a light rim instead (`TILE_RIM_RATIO`, 4 % of the tile side, in `tile_painter.gd`), and the rim color must reach `min_tile_edge_contrast`.
+`data/board_style.tres` (a `BoardStyle`). Colors come from the palette: frame `frame_fill` and `frame_border`, empty cells `empty_cell` and `cell_outline`, axis `axis`. Glows come from the palette too: `frame_glow` and `axis_glow` colors (transparent for none) and `tile_glow_opacity` (tiles, 0 for none). `min_tile_edge_contrast` (3.0 in every theme; every Wood tile is outlined, see 0009) is the least contrast of a tile against the empty cells and the frame; a tile below it gets an outline. Lower it to outline fewer tiles: at 1.3, Paper 128 and 256 lose theirs and the other outlines get lighter. A palette with `tile_rim_colors` gives every tile a light rim instead (`TILE_RIM_RATIO`, 4 % of the tile side, in `tile_painter.gd`), and the rim color must reach `min_tile_edge_contrast`.
+
+Wood grain (see [0009](decisions/0009-wood-theme.md)): `surface_grain_opacity` (0.16, interface boxes, frame, empty cells) and `tile_grain_opacity` (0.08) set how far the grain darkens or lightens a surface at most. Raising one lowers the contrast of every text on that surface at the grain extremes: `tests/test_theme_palettes.gd` fails first on the 4, 1024 and Resume texts. Cost on a full board at 1080×2340 in Compatibility: +42 draw calls (99 to 141), +7 % primitives; setting `tile_grain_opacity` to 0 removes most of the draw calls. The hollow cell sizes are `CELL_INSET_SHADOW_RATIO` (8 % of the cell side) and `CELL_INSET_HIGHLIGHT_RATIO` (3 %) in `tile_painter.gd`.
 
 | Parameter | Default | Controls |
 |-----------|---------|----------|
@@ -237,6 +240,8 @@ Night and Neon non-neighbor levels whose colors look alike with color vision def
 | Neon | 2/64, 8/32, 128/1024 (deuteranopia, protanopia); 2/512, 4/1024 (all three) | 2/128, 256/2048, 512/2048 | 4/128 | 8/1024 |
 
 Neon also has two non-neighbor pairs close in normal vision: 64/512 (CIEDE2000 8.8) and 256/4096 (8.7, but the 4096 has a magenta rim).
+
+Wood, like Paper, has no neighbor or color vision rule (see [0009](decisions/0009-wood-theme.md)); its close pairs are kept for the record. In normal vision: 16/64 (CIEDE2000 2.9, almost the same), 32/2048 (3.6), 512/4096 (4.4). With color vision deficiency (CIEDE2000 under 6): 32/2048 (0.4 deuteranopia, 0.9 protanopia, 2.0 tritanopia), 16/64 and 512/4096 (all three), 4/128 and the neighbors 16/32 (deuteranopia), 4/32, 4/64, 4/2048 and 8/1024 (protanopia), 32/128 and 128/2048 (tritanopia).
 
 ## Tutorial highlight
 

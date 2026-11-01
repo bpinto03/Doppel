@@ -5,6 +5,7 @@
 [ext_resource type="Resource" uid="uid://bk5hsnoev240q" path="res://data/palette_paper.tres" id="3_paper"]
 [ext_resource type="Resource" uid="uid://ck4t2mfb501nk" path="res://data/palette_night.tres" id="4_night"]
 [ext_resource type="Resource" path="res://data/palette_neon.tres" id="5_neon"]
+[ext_resource type="Resource" path="res://data/palette_wood.tres" id="6_wood"]
 
 [sub_resource type="Resource" id="Resource_paper"]
 script = ExtResource("2_entry")
@@ -28,7 +29,15 @@ price = 500
 display_name_key = "THEME_NAME_NEON"
 description_key = "THEME_DESC_NEON"
 
+[sub_resource type="Resource" id="Resource_wood"]
+script = ExtResource("2_entry")
+id = &"wood"
+palette = ExtResource("6_wood")
+price = 500
+display_name_key = "THEME_NAME_WOOD"
+description_key = "THEME_DESC_WOOD"
+
 [resource]
 script = ExtResource("1_catalog")
-entries = Array[ExtResource("2_entry")]([SubResource("Resource_paper"), SubResource("Resource_night"), SubResource("Resource_neon")])
+entries = Array[ExtResource("2_entry")]([SubResource("Resource_paper"), SubResource("Resource_night"), SubResource("Resource_neon"), SubResource("Resource_wood")])
 default_id = &"paper"

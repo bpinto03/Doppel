@@ -56,6 +56,8 @@ const HOME_TITLE_TYPE: StringName = &"HomeTitle"
 const HOME_TITLE_FONT_SIZE: int = 168
 ## Glow of the home and pause titles.
 const TITLE_GLOW_SIZE: int = 12
+## Drop of the light lip under engraved titles.
+const TITLE_ENGRAVING_OFFSET: int = 4
 const HOME_PRIMARY_BUTTON_TYPE: StringName = &"HomePrimaryButton"
 const HOME_SECONDARY_BUTTON_TYPE: StringName = &"HomeSecondaryButton"
 ## Every IconActionButton variation: home, pause, game over and tutorial buttons.
@@ -175,7 +177,34 @@ static func build(palette: ThemePalette, base_theme: Theme) -> Theme:
 	_add_tutorial_styles(theme, palette)
 	_add_coin_styles(theme, palette)
 	_add_shop_styles(theme, palette)
+	if palette.has_engraved_titles():
+		for type: StringName in [HOME_TITLE_TYPE, MODAL_TITLE_TYPE]:
+			_engrave_label(theme, type, palette.title_engraving_highlight)
+	if palette.has_surface_grain():
+		_add_grain_to_opaque_boxes(theme, palette)
 	return theme
+
+
+## The lip is the label shadow, dropped below the letters instead of widened around them.
+static func _engrave_label(theme: Theme, type: StringName, highlight: Color) -> void:
+	theme.set_color(&"font_shadow_color", type, highlight)
+	theme.set_constant(&"shadow_offset_x", type, 0)
+	theme.set_constant(&"shadow_offset_y", type, TITLE_ENGRAVING_OFFSET)
+	theme.set_constant(&"shadow_outline_size", type, 0)
+
+
+## Translucent boxes (scrims, previews, rings) stay flat: grain over them would tint what lies behind.
+## A box shared by several states (normal and hover) stays shared once grained.
+static func _add_grain_to_opaque_boxes(theme: Theme, palette: ThemePalette) -> void:
+	var grained_boxes: Dictionary[StyleBoxFlat, GrainStyleBox] = {}
+	for type: StringName in theme.get_type_list():
+		for name: StringName in theme.get_stylebox_list(type):
+			var box := theme.get_stylebox(name, type) as StyleBoxFlat
+			if box == null or not box.draw_center or box.bg_color.a < 1.0:
+				continue
+			if not grained_boxes.has(box):
+				grained_boxes[box] = GrainStyleBox.new(box, palette.surface_grain, palette.surface_grain_opacity)
+			theme.set_stylebox(name, type, grained_boxes[box])
 
 
 static func _add_button_styles(theme: Theme, palette: ThemePalette) -> void:

@@ -73,5 +73,5 @@ Decided on 2026-10-31: no color vision deficiency mode (such as a global high-co
 
 - Neon is not tested on a phone yet.
 - Both themes were validated on a phone (Night indoors, Paper near a window). The Paper tile colors of 2026-10-31 are not tested on a phone yet.
-- A shop theme with textures (pixel art, marble) would need optional textures in `ThemePalette`; not built until such a theme is wanted.
+- A palette may draw a grain overlay over its surfaces and tiles (`surface_grain`, Wood only, see [0009](0009-wood-theme.md)). Other textures (pixel art, marble) are not built until such a theme is wanted.
 - Until the settings screen (step 3.1), debug builds show a "Theme" button in the HUD to switch themes.

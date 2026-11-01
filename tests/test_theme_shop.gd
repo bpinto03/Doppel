@@ -7,6 +7,7 @@ const PAID_THEME_PRICE: int = 500
 const UNKNOWN_THEME_ID: StringName = &"unknown_theme"
 ## Provisional, see docs/balancing.md.
 const NEON_PRICE: int = 500
+const WOOD_PRICE: int = 500
 
 var _save := SaveFixture.new(TEST_SAVE_PATH)
 var _catalog: ThemeCatalog
@@ -27,15 +28,17 @@ func after_each() -> void:
 	AudioManager.apply_settings()
 
 
-func test_shipped_catalog_holds_paper_and_night_for_free_then_neon() -> void:
+func test_shipped_catalog_holds_paper_and_night_for_free_then_neon_and_wood() -> void:
 	var catalog: ThemeCatalog = Settings.THEME_CATALOG
 
 	var ids: Array[StringName] = []
 	for entry: ThemeEntry in catalog.get_entries():
 		ids.append(entry.id)
-	assert_eq(ids, [&"paper", &"night", &"neon"] as Array[StringName])
+	assert_eq(ids, [&"paper", &"night", &"neon", &"wood"] as Array[StringName])
 	assert_eq(catalog.find_entry(&"neon").price, NEON_PRICE)
+	assert_eq(catalog.find_entry(&"wood").price, WOOD_PRICE)
 	assert_false(ThemeShop.new(catalog).is_owned(&"neon"))
+	assert_false(ThemeShop.new(catalog).is_owned(&"wood"))
 	assert_eq(catalog.get_default_id(), &"paper")
 	assert_eq(catalog.find_entry(&"paper").price, 0)
 	assert_eq(catalog.find_entry(&"night").price, 0)

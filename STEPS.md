@@ -150,7 +150,7 @@ Outil : simulateur d'équilibrage (`./run_simulation.sh`, voir `docs/balancing.m
 
 ### 3.2 Pièces et boutique
 - [x] Définir la formule des pièces gagnées par partie ; portefeuille, versement en fin de partie et affichage des pièces (accueil, fin de partie) faits aussi
-- [ ] Créer 4 à 6 thèmes de tuiles de boutique, en plus des deux thèmes gratuits Papier et Nuit (mettre à jour les exemples de thèmes du cahier des charges)
+- [ ] Créer 4 à 6 thèmes de tuiles de boutique, en plus des deux thèmes gratuits Papier et Nuit (mettre à jour les exemples de thèmes du cahier des charges) ; Néon et Bois faits, reste à décider combien de thèmes supplémentaires on garde (cible 4 à 6)
 - [ ] Coder la boutique (achat avec pièces, thème équipé, sauvegarde)
 
 ### 3.3 Défis

@@ -8,6 +8,9 @@ const CORNER_RADIUS_RATIO: float = 0.12
 const RELIEF_RATIO: float = 0.05
 const RELIEF_DARKENING: float = 0.3
 const CELL_OUTLINE_RATIO: float = 0.015
+## Hollow cells of palettes with cell_inset_shadow or cell_inset_highlight, relative to the cell's shorter side.
+const CELL_INSET_SHADOW_RATIO: float = 0.08
+const CELL_INSET_HIGHLIGHT_RATIO: float = 0.03
 ## Glow size relative to the tile's shorter side; its opacity comes from the palette.
 const GLOW_SIZE_RATIO: float = 0.08
 const TILE_OUTLINE_RATIO: float = 0.02
@@ -58,6 +61,8 @@ func draw_tile(canvas: CanvasItem, rect: Rect2, level: int, opacity: float = 1.0
 		_tile_box.shadow_color = Color(tile_color, palette.tile_glow_opacity * opacity)
 		_tile_box.shadow_size = roundi(_get_shorter_side(rect) * GLOW_SIZE_RATIO)
 	_tile_box.draw(canvas.get_canvas_item(), rect)
+	if palette.has_tile_grain():
+		SurfaceGrain.draw_over_box(canvas.get_canvas_item(), rect, _tile_box, palette.surface_grain, palette.tile_grain_opacity * opacity)
 	var face := Rect2(rect.position, rect.size - Vector2(0.0, relief))
 	var outline_color := Color(palette.tile_text_outline, palette.tile_text_outline.a * opacity)
 	_draw_value(canvas, face, str(MergeScoring.calculate_tile_value(level)), Color(get_text_color(level), opacity), outline_color)
@@ -127,15 +132,41 @@ func _find_outline_color(tile_color: Color) -> Color:
 
 
 func _draw_empty_cell(canvas: CanvasItem, rect: Rect2, opacity: float) -> void:
+	if palette.has_hollow_cells():
+		_draw_hollow_cell(canvas, rect, opacity)
+		return
 	_set_up_box(rect, Color(palette.empty_cell, opacity))
 	_tile_box.set_border_width_all(maxi(1, roundi(_get_shorter_side(rect) * CELL_OUTLINE_RATIO)))
 	_tile_box.border_color = Color(palette.cell_outline, opacity)
 	_tile_box.draw(canvas.get_canvas_item(), rect)
+	_draw_surface_grain(canvas, rect, opacity)
+
+
+## Light from above: the top edge of the hole casts a shadow inside, and its bottom edge catches the light.
+func _draw_hollow_cell(canvas: CanvasItem, rect: Rect2, opacity: float) -> void:
+	var lip: int = maxi(1, roundi(_get_shorter_side(rect) * CELL_INSET_HIGHLIGHT_RATIO))
+	_set_up_box(rect, Color(palette.cell_inset_highlight, palette.cell_inset_highlight.a * opacity))
+	_tile_box.draw(canvas.get_canvas_item(), rect)
+	var hole := Rect2(rect.position, rect.size - Vector2(0.0, lip))
+	_set_up_box(hole, Color(palette.empty_cell, opacity))
+	_tile_box.draw(canvas.get_canvas_item(), hole)
+	_draw_surface_grain(canvas, hole, opacity)
+	_tile_box.border_width_top = maxi(1, roundi(_get_shorter_side(rect) * CELL_INSET_SHADOW_RATIO))
+	_tile_box.border_color = Color(palette.cell_inset_shadow, palette.cell_inset_shadow.a * opacity)
+	_tile_box.border_blend = true
+	_tile_box.draw_center = false
+	_tile_box.draw(canvas.get_canvas_item(), hole)
+
+
+func _draw_surface_grain(canvas: CanvasItem, rect: Rect2, opacity: float) -> void:
+	if palette.has_surface_grain():
+		SurfaceGrain.draw_over_box(canvas.get_canvas_item(), rect, _tile_box, palette.surface_grain, palette.surface_grain_opacity * opacity)
 
 
 ## One box is reused for every tile: StyleBoxFlat.draw() records its current values at once.
 func _set_up_box(rect: Rect2, color: Color) -> void:
 	_tile_box.draw_center = true
+	_tile_box.border_blend = false
 	_tile_box.set_border_width_all(0)
 	_tile_box.shadow_size = 0
 	_tile_box.bg_color = color

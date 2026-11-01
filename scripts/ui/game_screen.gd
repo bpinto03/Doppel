@@ -14,6 +14,9 @@ const TUTORIAL_HINT_CONFIG: TutorialHintConfig = preload("res://data/tutorial_hi
 const TILE_TEXT_CONFIG: TileTextConfig = preload("res://data/tile_text.tres")
 const NO_TUTORIAL_STEP: int = -1
 const HUD_ICON_SIZE := Vector2(80.0, 80.0)
+const ENGRAVED_ICON_SHADER: Shader = preload("res://assets/shaders/engraved_icon.gdshader")
+## Drop of the light lip under engraved HUD icons, as a share of the icon height: 3 px at 80 px.
+const HUD_ICON_LIP_OFFSET := Vector2(0.0, 0.04)
 ## The three preview columns share one width, so the mirror preview sits on the axis.
 const PREVIEW_COLUMN_WIDTH: float = 228.0
 const PREVIEW_TILE_SIZE := Vector2(176.0, 176.0)
@@ -255,6 +258,9 @@ func _refresh() -> void:
 func _apply_screen_palette(palette: ThemePalette) -> void:
 	(%ScoreIcon as TextureRect).texture = palette.score_icon
 	(%RecordIcon as TextureRect).texture = palette.record_icon
+	var icon_material: ShaderMaterial = _create_engraved_icon_material(palette) if palette.has_engraved_hud_icons() else null
+	for icon: TextureRect in [%ScoreIcon, %RecordIcon]:
+		icon.material = icon_material
 	_game_over_panel.apply_palette(palette)
 	_tutorial_panel.apply_palette(palette)
 	_combo_label.add_theme_color_override(&"font_outline_color", palette.background)
@@ -262,3 +268,12 @@ func _apply_screen_palette(palette: ThemePalette) -> void:
 	_board_view.tile_painter = tile_painter
 	for swatch: TileSwatch in [_current_swatch, _reflection_swatch, _next_swatch]:
 		swatch.tile_painter = tile_painter
+
+
+func _create_engraved_icon_material(palette: ThemePalette) -> ShaderMaterial:
+	var icon_material := ShaderMaterial.new()
+	icon_material.shader = ENGRAVED_ICON_SHADER
+	icon_material.set_shader_parameter(&"engraving_color", palette.hud_icon_engraving)
+	icon_material.set_shader_parameter(&"highlight_color", palette.hud_icon_engraving_highlight)
+	icon_material.set_shader_parameter(&"lip_offset", HUD_ICON_LIP_OFFSET)
+	return icon_material

@@ -11,6 +11,11 @@ extends Resource
 @export var panel: Color
 @export var button: Color
 @export var button_text: Color
+## Null, the default, for none. Else a grain overlay (tools/textures/build_grain_overlay.gd) drawn over every opaque
+## interface box, the board frame and the empty cells, at surface_grain_opacity, and over the tiles at
+## tile_grain_opacity: it darkens or lightens a surface by at most that opacity, so texts on it keep 4.5:1 at both.
+@export var surface_grain: Texture2D
+@export var surface_grain_opacity: float = 0.0
 
 @export_group("HUD")
 ## Glows and soft shadows here and on the board are drawn in these colors; a transparent color removes one.
@@ -30,6 +35,10 @@ extends Resource
 @export var record_value_glow: Color
 @export var score_icon: Texture2D
 @export var record_icon: Texture2D
+## Transparent, the default, for none. Else the HUD crown and trophy are drawn as engraved silhouettes in this
+## color, with a light lip below in the highlight color.
+@export var hud_icon_engraving: Color = Color.TRANSPARENT
+@export var hud_icon_engraving_highlight: Color = Color.TRANSPARENT
 @export var pause_button: Color
 @export var pause_button_border: Color
 @export var pause_symbol: Color
@@ -45,6 +54,9 @@ extends Resource
 @export var logo_glow: Color
 @export var title: Color
 @export var title_glow: Color
+## Transparent, the default, for none. Else the home and modal titles look engraved: a light lip under the letters
+## in this color, instead of title_glow.
+@export var title_engraving_highlight: Color = Color.TRANSPARENT
 ## Play and Continue. A transparent glow removes it; a dark one makes a soft shadow.
 @export var home_primary_button: Color
 @export var home_primary_button_border: Color
@@ -156,6 +168,10 @@ extends Resource
 @export var empty_cell: Color
 ## Thin light outline of empty cells.
 @export var cell_outline: Color
+## Both transparent, the default, for flat cells. Else empty cells look hollow: a soft shadow under their top edge
+## and a light lip along their bottom edge, instead of cell_outline.
+@export var cell_inset_shadow: Color = Color.TRANSPARENT
+@export var cell_inset_highlight: Color = Color.TRANSPARENT
 @export var axis: Color
 @export var axis_glow: Color
 ## Tutorial highlight of the target column, cells and axis.
@@ -168,6 +184,8 @@ extends Resource
 @export var tile_text_light: Color
 ## Opacity of the glow around each tile, in its own color; 0 removes it, the first saving to try if the frame rate drops.
 @export var tile_glow_opacity: float
+## Opacity of surface_grain over the tiles; 0, the default, draws none.
+@export var tile_grain_opacity: float = 0.0
 ## Least WCAG contrast of a tile against the empty cells and the frame; a tile below it gets an outline that reaches it.
 @export var min_tile_edge_contrast: float
 ## One color per level, from level 1.
@@ -178,6 +196,26 @@ extends Resource
 ## Transparent, the default, for none. Else every tile value takes tile_text_light, outlined in this color,
 ## so the value reads on any tile; its contrast is then measured against the outline.
 @export var tile_text_outline: Color = Color.TRANSPARENT
+
+
+func has_surface_grain() -> bool:
+	return surface_grain != null and surface_grain_opacity > 0.0
+
+
+func has_tile_grain() -> bool:
+	return surface_grain != null and tile_grain_opacity > 0.0
+
+
+func has_hollow_cells() -> bool:
+	return cell_inset_shadow.a > 0.0 or cell_inset_highlight.a > 0.0
+
+
+func has_engraved_hud_icons() -> bool:
+	return hud_icon_engraving.a > 0.0
+
+
+func has_engraved_titles() -> bool:
+	return title_engraving_highlight.a > 0.0
 
 
 func has_tile_rims() -> bool:

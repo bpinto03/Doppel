@@ -13,6 +13,8 @@ const NIGHT_TILE_COLORS: Array[Color] = [
 	Color(1, 0.6392, 0.5608, 1), Color(0.8235, 0.4627, 0.102, 1), Color(0.8863, 1, 0.5412, 1),
 ]
 const NIGHT_MIN_TILE_EDGE_CONTRAST: float = 3.0
+## Wood keeps the 3:1 threshold over its brown board, so its tiles are outlined instead (see 0009).
+const WOOD_MIN_TILE_EDGE_CONTRAST: float = 3.0
 ## Home screen colors every palette sets itself: a color left out would silently fall back to opaque black.
 const HOME_COLOR_PROPERTIES: Array[StringName] = [
 	&"logo_left_fill", &"logo_left_outline", &"logo_right_fill", &"logo_right_outline", &"logo_accent", &"logo_glow", &"title", &"title_glow",
@@ -53,13 +55,15 @@ func test_rims_are_absent_or_one_per_level() -> void:
 		assert_true(rim_count == 0 or rim_count == LEVEL_COUNT, "%s has %d rims" % [palette_name, rim_count])
 
 
-## Outlined values read against their outline, whatever the tile color.
+## Outlined values read against their outline, whatever the tile color; on grained tiles, against the darkest
+## and lightest grain too.
 func test_tile_text_is_readable_on_every_tile() -> void:
 	for palette_name: String in _get_palettes():
 		var painter := TilePainter.new(_get_palettes()[palette_name], TILE_TEXT_CONFIG)
+		var grain_opacity: float = painter.palette.tile_grain_opacity if painter.palette.has_tile_grain() else 0.0
 		for level: int in range(1, LEVEL_COUNT + 1):
-			var backdrop: Color = painter.palette.tile_text_outline if painter.palette.has_tile_text_outline() else painter.palette.get_tile_color(level)
-			var contrast: float = ColorContrast.calculate_ratio(painter.get_text_color(level), backdrop)
+			var text_color: Color = painter.get_text_color(level)
+			var contrast: float = ColorContrast.calculate_ratio(text_color, painter.palette.tile_text_outline) if painter.palette.has_tile_text_outline() 				else _calculate_least_ratio_on_grain(text_color, painter.palette.get_tile_color(level), grain_opacity)
 			assert_gte(contrast, MIN_TILE_TEXT_CONTRAST, "%s level %d" % [palette_name, level])
 
 
@@ -95,26 +99,28 @@ func test_every_palette_sets_every_home_and_modal_color() -> void:
 			assert_true(saved_palette.contains("\n%s = " % property), "%s %s" % [palette_name, property])
 
 
-## Both backgrounds are opaque, so the ratio is the one on screen.
+## Both backgrounds are opaque, so the ratio is the one on screen, at both grain extremes.
 func test_coin_texts_are_readable_on_their_background() -> void:
 	for palette_name: String in _get_palettes():
 		var palette: ThemePalette = _get_palettes()[palette_name]
+		var grain_opacity: float = _get_surface_grain_opacity(palette)
 		assert_eq(palette.coin_counter.a, 1.0, palette_name)
 		assert_eq(palette.modal_panel.a, 1.0, palette_name)
-		assert_gte(ColorContrast.calculate_ratio(palette.coin_counter_text, palette.coin_counter), MIN_TEXT_CONTRAST, "%s counter" % palette_name)
-		assert_gte(ColorContrast.calculate_ratio(palette.coin_gain_text, palette.modal_panel), MIN_TEXT_CONTRAST, "%s gain" % palette_name)
+		assert_gte(_calculate_least_ratio_on_grain(palette.coin_counter_text, palette.coin_counter, grain_opacity), MIN_TEXT_CONTRAST, "%s counter" % palette_name)
+		assert_gte(_calculate_least_ratio_on_grain(palette.coin_gain_text, palette.modal_panel, grain_opacity), MIN_TEXT_CONTRAST, "%s gain" % palette_name)
 
 
-## Disabled buttons are left out, as WCAG does for inactive controls; every fill here is opaque.
+## Disabled buttons are left out, as WCAG does for inactive controls; every fill here is opaque. Cards and buttons
+## are grained; the subtitle sits on the background, which is not.
 func test_shop_texts_are_readable_on_their_background() -> void:
 	for palette_name: StringName in _get_palettes():
 		var palette: ThemePalette = _get_palettes()[palette_name]
+		var grain_opacity: float = _get_surface_grain_opacity(palette)
 		var text_pairs: Dictionary[String, Array] = {
 			"name on card": [palette.shop_name_text, palette.shop_card],
 			"name on equipped card": [palette.shop_name_text, palette.shop_card_equipped],
 			"description on card": [palette.shop_description_text, palette.shop_card],
 			"description on equipped card": [palette.shop_description_text, palette.shop_card_equipped],
-			"subtitle on background": [palette.shop_description_text, palette.background],
 			"Equip": [palette.shop_button_text, palette.shop_equip_button],
 			"Equip highlight": [palette.shop_button_text, palette.shop_equip_button_highlight],
 			"Buy": [palette.shop_button_text, palette.shop_buy_button],
@@ -123,7 +129,32 @@ func test_shop_texts_are_readable_on_their_background() -> void:
 		for pair_name: String in text_pairs:
 			var colors: Array = text_pairs[pair_name]
 			assert_eq((colors[1] as Color).a, 1.0, "%s %s" % [palette_name, pair_name])
-			assert_gte(ColorContrast.calculate_ratio(colors[0], colors[1]), MIN_TEXT_CONTRAST, "%s %s" % [palette_name, pair_name])
+			assert_gte(_calculate_least_ratio_on_grain(colors[0], colors[1], grain_opacity), MIN_TEXT_CONTRAST, "%s %s" % [palette_name, pair_name])
+		assert_eq(palette.background.a, 1.0, "%s background" % palette_name)
+		assert_gte(ColorContrast.calculate_ratio(palette.shop_description_text, palette.background), MIN_TEXT_CONTRAST, "%s subtitle on background" % palette_name)
+
+
+## Grain lightens and darkens every opaque interface box, so its texts keep 4.5:1 at both extremes.
+func test_texts_on_grained_boxes_stay_readable() -> void:
+	for palette_name: StringName in _get_palettes():
+		var palette: ThemePalette = _get_palettes()[palette_name]
+		if not palette.has_surface_grain():
+			continue
+		var text_pairs: Dictionary[String, Array] = {
+			"home primary": [palette.home_primary_text, palette.home_primary_button],
+			"home secondary": [palette.home_secondary_text, palette.home_secondary_button],
+			"modal primary": [palette.modal_primary_text, palette.modal_primary_button],
+			"modal secondary": [palette.modal_secondary_text, palette.modal_secondary_button],
+			"modal title": [palette.title, palette.modal_panel],
+			"score caption": [palette.score_caption, palette.hud_capsule],
+			"score value": [palette.text, palette.hud_capsule],
+			"stat caption": [palette.game_over_stat_caption, palette.game_over_score_row],
+			"stat value": [palette.game_over_stat_value, palette.game_over_score_row],
+			"tutorial text": [palette.modal_secondary_text, palette.modal_panel],
+		}
+		for pair_name: String in text_pairs:
+			var colors: Array = text_pairs[pair_name]
+			assert_gte(_calculate_least_ratio_on_grain(colors[0], colors[1], palette.surface_grain_opacity), MIN_TEXT_CONTRAST, "%s %s" % [palette_name, pair_name])
 
 
 func test_night_tile_colors_do_not_change() -> void:
@@ -132,6 +163,10 @@ func test_night_tile_colors_do_not_change() -> void:
 
 func test_night_tile_edges_keep_the_three_to_one_contrast() -> void:
 	assert_eq(Settings.THEME_CATALOG.find_entry(&"night").palette.min_tile_edge_contrast, NIGHT_MIN_TILE_EDGE_CONTRAST)
+
+
+func test_wood_tile_edges_keep_the_three_to_one_contrast() -> void:
+	assert_eq(Settings.THEME_CATALOG.find_entry(&"wood").palette.min_tile_edge_contrast, WOOD_MIN_TILE_EDGE_CONTRAST)
 
 
 func test_night_tiles_need_no_outline() -> void:
@@ -165,7 +200,7 @@ func test_secondary_and_choice_buttons_are_outlined() -> void:
 		add_child_autofree(button)
 		for variation: StringName in [UiThemeBuilder.SECONDARY_BUTTON_TYPE, UiThemeBuilder.CHOICE_BUTTON_TYPE]:
 			button.theme_type_variation = variation
-			var normal_box := button.get_theme_stylebox(&"normal") as StyleBoxFlat
+			var normal_box: StyleBoxFlat = _unwrap_grain(button.get_theme_stylebox(&"normal"))
 			assert_eq(normal_box.border_width_top, UiThemeBuilder.SECONDARY_BORDER_WIDTH, String(variation))
 			assert_eq(normal_box.bg_color, palette.panel, String(variation))
 
@@ -176,3 +211,19 @@ func _get_palettes() -> Dictionary[StringName, ThemePalette]:
 	for entry: ThemeEntry in Settings.THEME_CATALOG.get_entries():
 		palettes[entry.id] = entry.palette
 	return palettes
+
+
+## A grained palette draws its boxes through GrainStyleBox; the flat box inside holds the colors and sizes.
+func _unwrap_grain(box: StyleBox) -> StyleBoxFlat:
+	return (box as GrainStyleBox).box if box is GrainStyleBox else box as StyleBoxFlat
+
+
+func _get_surface_grain_opacity(palette: ThemePalette) -> float:
+	return palette.surface_grain_opacity if palette.has_surface_grain() else 0.0
+
+
+## The grain overlay darkens a fill toward black or lightens it toward white by at most its opacity.
+func _calculate_least_ratio_on_grain(text_color: Color, fill_color: Color, grain_opacity: float) -> float:
+	var darkest: Color = fill_color.lerp(Color.BLACK, grain_opacity)
+	var lightest: Color = fill_color.lerp(Color.WHITE, grain_opacity)
+	return minf(ColorContrast.calculate_ratio(text_color, darkest), ColorContrast.calculate_ratio(text_color, lightest))

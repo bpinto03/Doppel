@@ -7,7 +7,7 @@
 | [balancing.md](balancing.md) | Tunable values and what they control |
 | [playtest_phase1.md](playtest_phase1.md) | Gate 1 playtest protocol and results sheet |
 | [release_checklist.md](release_checklist.md) | Package ID, signing and store submission notes |
-| [maquettes/](maquettes/) | AI-generated visual references of every screen, one folder per theme (Paper, Night, Neon), not a source of truth |
+| [maquettes/](maquettes/) | AI-generated visual references of every screen, one folder per theme (Paper, Night, Neon, Wood), not a source of truth |
 | [decisions/](decisions/) | Decision records |
 
 Decision records:
@@ -19,6 +19,7 @@ Decision records:
 - [0006 — Back button and game overlays](decisions/0006-back-button-and-overlays.md)
 - [0007 — Coins and wallet](decisions/0007-coins-and-wallet.md)
 - [0008 — Themes and purchase](decisions/0008-themes-and-purchase.md)
+- [0009 — Wood theme](decisions/0009-wood-theme.md)
 
 Product spec and roadmap (French): [`../CAHIER_DES_CHARGES.md`](../CAHIER_DES_CHARGES.md), [`../STEPS.md`](../STEPS.md).
 

@@ -377,6 +377,7 @@ func _draw() -> void:
 		return
 	draw_set_transform(_shake_offset)
 	_frame_box.draw(get_canvas_item(), _get_frame_rect())
+	_draw_frame_grain()
 	# Empty cells first, so no cell covers the glow of a neighboring tile.
 	for is_tile_pass: bool in [false, true]:
 		for column: int in _displayed_board.get_column_count():
@@ -395,6 +396,13 @@ func _draw() -> void:
 
 
 ## Both halves of a blocked pair are dimmed, since either one can be touched.
+## A translucent frame stays flat: grain over it would tint the background behind.
+func _draw_frame_grain() -> void:
+	var palette: ThemePalette = tile_painter.palette
+	if palette.has_surface_grain() and palette.frame_fill.a == 1.0:
+		SurfaceGrain.draw_over_box(get_canvas_item(), _get_frame_rect(), _frame_box, palette.surface_grain, palette.surface_grain_opacity)
+
+
 func _draw_blocked_columns() -> void:
 	if not is_input_enabled or _session == null:
 		return
